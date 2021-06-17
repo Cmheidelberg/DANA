@@ -123,7 +123,7 @@ public class WorkflowJson {
 	public ArrayList<WorkflowNode> getParents(WorkflowNode node) {
 		
 		ArrayList<WorkflowNode> parents = new ArrayList<WorkflowNode>();
-		for(WorkflowNode p:node.getIncomingLinks()) {
+		for(WorkflowNode p : node.getIncomingLinks()) {
 			getParentsRecursivePopulate(p, parents);
 		}
 		
@@ -143,7 +143,7 @@ public class WorkflowJson {
 	public ArrayList<WorkflowNode> getChildren(WorkflowNode node) {
 		
 		ArrayList<WorkflowNode> children = new ArrayList<WorkflowNode>();
-		for(WorkflowNode c:node.getIncomingLinks()) {
+		for(WorkflowNode c:node.getOutgoingLinks()) {
 			getChildrenRecursivePopulate(c, children);
 		}
 		
@@ -180,8 +180,10 @@ public class WorkflowJson {
 	private void getParentsRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> parentsList) {
 		if(curr != null && !parentsList.contains(curr)) {
 			parentsList.add(curr);
-			for(WorkflowNode p : curr.getIncomingLinks()) {
-				getParentsRecursivePopulate(p,parentsList);
+			if(curr.getIncomingLinks() != null) {
+				for(WorkflowNode p : curr.getIncomingLinks()) {
+					getParentsRecursivePopulate(p,parentsList);
+				}
 			}
 		}
 	}
@@ -195,8 +197,10 @@ public class WorkflowJson {
 	private void getChildrenRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> childList) {
 		if(curr != null && !childList.contains(curr)) {
 			childList.add(curr);
-			for(WorkflowNode c : curr.getOutgoingLinks()) {
-				getChildrenRecursivePopulate(c,childList);
+			if(curr.getOutgoingLinks() != null) {
+				for(WorkflowNode c : curr.getOutgoingLinks()) {
+					getChildrenRecursivePopulate(c,childList);
+				}
 			}
 		}
 	}
@@ -288,14 +292,14 @@ public class WorkflowJson {
 					
 					if(args.equals("toNode")) {
 						WorkflowNode toNode = getWorkflowNode(cJson.getString("id"));
-						curr.addIncomingLink(toNode);
-						toNode.addOutgoingLink(curr);
+						toNode.addIncomingLink(curr);
+						curr.addOutgoingLink(toNode);
 					}
 					
 					if(args.equals("fromNode")) {
 						WorkflowNode fromNode = getWorkflowNode(cJson.getString("id"));
-						curr.addOutgoingLink(fromNode);
-						fromNode.addIncomingLink(curr);
+						fromNode.addOutgoingLink(curr);
+						curr.addIncomingLink(fromNode);
 					}
 				}
 			}

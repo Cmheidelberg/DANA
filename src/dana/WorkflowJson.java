@@ -35,7 +35,7 @@ public class WorkflowJson {
 	 * Returns a full list of all nodes in this workflow
 	 * @return list of workflow nodes
 	 */
-	public ArrayList<WorkflowNode> getWorkflowNode() {
+	public ArrayList<WorkflowNode> getWorkflowNodes() {
 		return workflows;
 	}
 	

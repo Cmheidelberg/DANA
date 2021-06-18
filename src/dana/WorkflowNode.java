@@ -4,10 +4,17 @@ import java.util.ArrayList;
 
 public abstract class WorkflowNode {
 	
+	//Automatically generated metadata 
 	private String name;
 	private String id;
 	private ArrayList<WorkflowNode> outgoingLinks;
 	private ArrayList<WorkflowNode> incomingLinks;
+	
+	//Manually entered metadata
+	private String author = "";
+	private String license = "";
+	private String url = "";
+	private String citation = "";
 	
 	abstract boolean isDataset();
 	abstract boolean isParameter();
@@ -32,6 +39,22 @@ public abstract class WorkflowNode {
 		this.incomingLinks = incomingLinks;
 	}
 	
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	
+	public void setLicense(String license) {
+		this.license = license;
+	}
+	
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
+	public void setCitation(String citation) {
+		this.citation = citation;
+	}
+	
 	
 	//-------|
 	//GETTERS|
@@ -52,7 +75,22 @@ public abstract class WorkflowNode {
 	public ArrayList<WorkflowNode> getIncomingLinks() {
 		return incomingLinks;
 	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public String getUrl() {
+		return url;
+	}
 	
+	public String getCitation() {
+		return citation;
+	}
 	
 	//--------------|
 	//MUTATORS/OTHER|

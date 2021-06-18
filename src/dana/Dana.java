@@ -22,11 +22,10 @@ public class Dana {
 		
 		JsonObject workflowJson = openWorkflow();
 		WorkflowJson workflow = new WorkflowJson(workflowJson); 
+			
+		JsonWriter jw = new JsonWriter(workflow.getWorkflowNodes());
+		jw.writeJson();
 		
-		System.out.println("LINKS:");
-		for(WorkflowNode n: workflow.getFullWorkflowPathFromNode(workflow.getWorkflowNode().get(5))) {
-			System.out.println(n);
-		}
 	}
 	
 	public static JsonObject openWorkflow() {

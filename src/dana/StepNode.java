@@ -17,6 +17,38 @@ public class StepNode extends WorkflowNode{
 	//-------|
 	//SETTERS|
 	//-------|
+	
+	public String getGitHubDescription() {
+		return gitHubDescription;
+	}
+
+	public String getCriticality() {
+		return criticality;
+	}
+
+	public String getStepType() {
+		return stepType;
+	}
+
+	public String getWebsite() {
+		return website;
+	}
+
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+
+	public String getDependancies() {
+		return dependancies;
+	}
+
+	public String getDocumentationLink() {
+		return documentationLink;
+	}
+
+	public String getCommandLineInvocation() {
+		return commandLineInvocation;
+	}
 
 	public void setGitHubDescription(String gitHubDescription) {
 		this.gitHubDescription = gitHubDescription;
@@ -58,42 +90,9 @@ public class StepNode extends WorkflowNode{
 		this.longDescription = longDescription;
 	}
 	
-	
 	//-------|
 	//GETTERS|
 	//-------|
-	
-	public String getGitHubDescription() {
-		return gitHubDescription;
-	}
-
-	public String getCriticality() {
-		return criticality;
-	}
-
-	public String getStepType() {
-		return stepType;
-	}
-
-	public String getWebsite() {
-		return website;
-	}
-
-	public String getVersionNumber() {
-		return versionNumber;
-	}
-
-	public String getDependancies() {
-		return dependancies;
-	}
-
-	public String getDocumentationLink() {
-		return documentationLink;
-	}
-
-	public String getCommandLineInvocation() {
-		return commandLineInvocation;
-	}
 	
 	public String getShortDescription() {
 		return shortDescription;

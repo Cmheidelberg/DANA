@@ -14,7 +14,6 @@ public abstract class WorkflowNode {
 	private String author = "";
 	private String license = "";
 	private String url = "";
-	private String citation = "";
 	
 	abstract boolean isDataset();
 	abstract boolean isParameter();
@@ -31,14 +30,6 @@ public abstract class WorkflowNode {
 		this.name = name;
 	}
 	
-	public void setOutgoingLinks(ArrayList<WorkflowNode> outgoingLinks) {
-		this.outgoingLinks = outgoingLinks;
-	}
-	
-	public void setIncomingLinks(ArrayList<WorkflowNode> incomingLinks) {
-		this.incomingLinks = incomingLinks;
-	}
-	
 	public void setAuthor(String author) {
 		this.author = author;
 	}
@@ -51,8 +42,12 @@ public abstract class WorkflowNode {
 		this.url = url;
 	}
 	
-	public void setCitation(String citation) {
-		this.citation = citation;
+	public void setOutgoingLinks(ArrayList<WorkflowNode> outgoingLinks) {
+		this.outgoingLinks = outgoingLinks;
+	}
+	
+	public void setIncomingLinks(ArrayList<WorkflowNode> incomingLinks) {
+		this.incomingLinks = incomingLinks;
 	}
 	
 	
@@ -68,6 +63,18 @@ public abstract class WorkflowNode {
 		return name;
 	}
 	
+	public String getAuthor() {
+		return author;
+	}
+	
+	public String getLicense() {
+		return license;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+	
 	public ArrayList<WorkflowNode> getOutgoingLinks() {
 		return outgoingLinks;
 	}
@@ -75,22 +82,7 @@ public abstract class WorkflowNode {
 	public ArrayList<WorkflowNode> getIncomingLinks() {
 		return incomingLinks;
 	}
-
-	public String getAuthor() {
-		return author;
-	}
-
-	public String getLicense() {
-		return license;
-	}
-
-	public String getUrl() {
-		return url;
-	}
 	
-	public String getCitation() {
-		return citation;
-	}
 	
 	//--------------|
 	//MUTATORS/OTHER|

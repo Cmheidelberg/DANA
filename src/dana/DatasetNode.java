@@ -10,7 +10,6 @@ public class DatasetNode extends WorkflowNode {
 	private String description;
 	private String doi;
 	
-	
 	//-------|
 	//SETTERS|
 	//-------|
@@ -34,7 +33,6 @@ public class DatasetNode extends WorkflowNode {
 	public void setDoi(String doi) {
 		this.doi = doi;
 	}
-	
 	
 	//-------|
 	//GETTERS|
@@ -71,5 +69,17 @@ public class DatasetNode extends WorkflowNode {
 	
 	public void setIsParameter(boolean isParameter) {
 		this.isParameter = isParameter;
+	}
+	
+	public String toString() {
+		String out = super.toString();
+		if (description != null && description != "") {
+			out += "\nDescription: " + description; 
+		}
+		if (doi != null && doi != "") {
+			out += "\ndoi: " + doi; 
+		}
+		out += "\n";
+		return out;
 	}
 }

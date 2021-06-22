@@ -101,15 +101,21 @@ public class WorkflowJson {
 		ArrayList<WorkflowNode> parents = getParents(node);
 		ArrayList<WorkflowNode> children = getChildren(node);
 
-		for (WorkflowNode p : parents) {
-			if (!fullPath.contains(p)) {
-				fullPath.add(p);
+		if (parents != null) {
+			for (WorkflowNode p : parents) {
+				if (!fullPath.contains(p)) {
+					fullPath.add(p);
+				}
 			}
 		}
 
-		for (WorkflowNode c : children) {
-			if (!fullPath.contains(c)) {
-				fullPath.add(c);
+		fullPath.add(node);
+		
+		if (children != null) {
+			for (WorkflowNode c : children) {
+				if (!fullPath.contains(c)) {
+					fullPath.add(c);
+				}
 			}
 		}
 
@@ -130,6 +136,10 @@ public class WorkflowJson {
 	 */
 	public ArrayList<WorkflowNode> getParents(WorkflowNode node) {
 
+		if (node.getIncomingLinks() == null) {
+			return null;
+		}
+		
 		ArrayList<WorkflowNode> parents = new ArrayList<WorkflowNode>();
 		for (WorkflowNode p : node.getIncomingLinks()) {
 			getParentsRecursivePopulate(p, parents);
@@ -151,6 +161,10 @@ public class WorkflowJson {
 	 */
 	public ArrayList<WorkflowNode> getChildren(WorkflowNode node) {
 
+		if (node.getOutgoingLinks() == null) {
+			return null;
+		}
+		
 		ArrayList<WorkflowNode> children = new ArrayList<WorkflowNode>();
 		for (WorkflowNode c : node.getOutgoingLinks()) {
 			getChildrenRecursivePopulate(c, children);
@@ -246,11 +260,11 @@ public class WorkflowJson {
 			rindex += 1;
 		}
 		
-//		outp += "\n";
-//		ArrayList<WorkflowNode> path = getFullWorkflowPathFromNode(dn);
-//		for (WorkflowNode wn:path) {
-//			outp += wn.getName().equalsIgnoreCase(workflowNodeName) ? " (" + wn.getName() + ") ->" : wn.getName() + " ->";
-//		}
+		outp += "\n";
+		ArrayList<WorkflowNode> path = getFullWorkflowPathFromNode(dn);
+		for (WorkflowNode wn:path) {
+			outp += wn.getName().equalsIgnoreCase(workflowNodeName) ? " (" + wn.getName() + ") ->" : wn.getName() + " ->";
+		}
 		
 		return outp;
 	}
@@ -309,7 +323,7 @@ public class WorkflowJson {
 	 */
 	private void getParentsRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> parentsList) {
 		if (curr != null && !parentsList.contains(curr)) {
-			parentsList.add(curr);
+			parentsList.add(0, curr);
 			if (curr.getIncomingLinks() != null) {
 				for (WorkflowNode p : curr.getIncomingLinks()) {
 					getParentsRecursivePopulate(p, parentsList);

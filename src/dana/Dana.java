@@ -27,11 +27,10 @@ public class Dana {
 		System.out.println(workflow.generateDatasetNarative("Document"));
 		
 		System.out.println("DocumentWithLineBreaks description:");
-		System.out.println(workflow.generateDatasetNarative("DocumentWithLineBreaks"));
+		System.out.println(workflow.generateDatasetNarative("DocumentWithLineBreaks	"));
 		
 		System.out.println("EncryptedDocument description:");
 		System.out.println(workflow.generateDatasetNarative("EncryptedDocument"));
-
 
 	}
 

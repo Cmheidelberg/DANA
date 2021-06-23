@@ -5,6 +5,7 @@ public class StepNode extends WorkflowNode{
 	private String shortDescription = "";
 	private String longDescription = "";
 	private String gitHubDescription = "";
+	private String gitHubUrl = "";
 	private String criticality = "";
 	private String stepType = "";
 	private String website = "";
@@ -17,38 +18,7 @@ public class StepNode extends WorkflowNode{
 	//-------|
 	//SETTERS|
 	//-------|
-	
-	public String getGitHubDescription() {
-		return gitHubDescription;
-	}
 
-	public String getCriticality() {
-		return criticality;
-	}
-
-	public String getStepType() {
-		return stepType;
-	}
-
-	public String getWebsite() {
-		return website;
-	}
-
-	public String getVersionNumber() {
-		return versionNumber;
-	}
-
-	public String getDependancies() {
-		return dependancies;
-	}
-
-	public String getDocumentationLink() {
-		return documentationLink;
-	}
-
-	public String getCommandLineInvocation() {
-		return commandLineInvocation;
-	}
 
 	public void setGitHubDescription(String gitHubDescription) {
 		this.gitHubDescription = gitHubDescription;
@@ -90,6 +60,10 @@ public class StepNode extends WorkflowNode{
 		this.longDescription = longDescription;
 	}
 	
+	public void setGitHubUrl(String gitHubUrl) {
+		this.gitHubUrl = gitHubUrl;
+	}
+	
 	//-------|
 	//GETTERS|
 	//-------|
@@ -100,6 +74,42 @@ public class StepNode extends WorkflowNode{
 
 	public String getLongDescription() {
 		return longDescription;
+	}
+	
+	public String getGitHubDescription() {
+		return gitHubDescription;
+	}
+
+	public String getCriticality() {
+		return criticality;
+	}
+
+	public String getStepType() {
+		return stepType;
+	}
+
+	public String getWebsite() {
+		return website;
+	}
+
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+
+	public String getDependancies() {
+		return dependancies;
+	}
+
+	public String getDocumentationLink() {
+		return documentationLink;
+	}
+
+	public String getCommandLineInvocation() {
+		return commandLineInvocation;
+	}
+	
+	public String getGitHubUrl() {
+		return gitHubUrl;
 	}
 	
 	//-----|

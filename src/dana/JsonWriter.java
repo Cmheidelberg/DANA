@@ -143,7 +143,9 @@ public class JsonWriter {
 		}
 
 		keys.add(new KeyValuePair("datasets", keyValueStringFormatter(datasetKeys)));
-		keys.add(new KeyValuePair("patameters", keyValueStringFormatter(parameterKeys)));
+		keys.add(new KeyValuePair("parameters", keyValueStringFormatter(parameterKeys)));
+		System.out.println("ME STEEEEEEEEEEEEEEEEEEEEEEEEEEEEEPS");
+		System.out.println(keyValueStringFormatter(step()));
 		keys.add(new KeyValuePair("steps", keyValueStringFormatter(step())));
 		return keyValueStringFormatter(keys);
 	}
@@ -160,7 +162,7 @@ public class JsonWriter {
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
 				datasetMetadata.add(new KeyValuePair("shortDescription"));
 				datasetMetadata.add(new KeyValuePair("longDescription"));
-				datasetMetadata.add(new KeyValuePair("gitHubRepositoryLink"));
+				datasetMetadata.add(new KeyValuePair("gitHubUrl"));
 				datasetMetadata.add(new KeyValuePair("criticality"));
 				datasetMetadata.add(new KeyValuePair("stepType"));
 				datasetMetadata.add(new KeyValuePair("website"));
@@ -198,9 +200,11 @@ public class JsonWriter {
 				} else {
 					datasetMetadata.add(new KeyValuePair("hasOutput", null));
 				}
+				KeyValuePair c = new KeyValuePair(wn.getName(), keyValueStringFormatter(datasetMetadata));
+				stepKeys.add(c);
 			}
 		}
-
+		
 		return stepKeys;
 	}
 

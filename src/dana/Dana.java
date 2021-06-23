@@ -4,10 +4,8 @@ import javax.swing.JFileChooser;
 import java.io.*;
 import java.io.StringReader;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonValue;
 
 public class Dana {
 
@@ -23,14 +21,10 @@ public class Dana {
 
 		System.out.println("+++READ JSON+++");
 		workflow.readDanaJson("./readData.json");
-		System.out.println("Document description:");
-		System.out.println(workflow.generateDatasetNarative("Document"));
-		
-		System.out.println("DocumentWithLineBreaks description:");
-		System.out.println(workflow.generateDatasetNarative("DocumentWithLineBreaks	"));
-		
-		System.out.println("EncryptedDocument description:");
-		System.out.println(workflow.generateDatasetNarative("EncryptedDocument"));
+		for(WorkflowNode wf : workflow.getWorkflowNodes()) {
+			System.out.println(wf.getName() + " description: ");
+			System.out.println(workflow.generateNodeNarative(wf.getName()));
+		}
 
 	}
 

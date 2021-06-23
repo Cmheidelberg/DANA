@@ -44,6 +44,36 @@ public class WorkflowJson {
 	}
 
 	/**
+	 * Get a WorflowNode from the workflows array from the given id. id can either
+	 * be the name of the workflow or its id. If the workflow is not in the list
+	 * then this function returns null.
+	 * 
+	 * @param id Name or Id string of the node to search for
+	 * @return WorkflowNode with the given name/id or null if does not exist
+	 */
+	public WorkflowNode getWorkflowNode(String indicator) {
+
+		// O(n)
+		for (WorkflowNode wn : workflows) {
+			String name = wn.getName();
+			String id = wn.getId();
+
+			// Return workflow if it has the same name
+			if (name.equalsIgnoreCase(indicator)) {
+				return wn;
+			}
+
+			// Return workflow if it has the same id
+			if (id.equalsIgnoreCase(indicator)) {
+				return wn;
+			}
+		}
+
+		// Return null if nothing matched
+		return null;
+	}
+
+	/**
 	 * Returns outputs of the workflow. An output is any dataset node that does not
 	 * have any outgoing links
 	 * 
@@ -110,7 +140,7 @@ public class WorkflowJson {
 		}
 
 		fullPath.add(node);
-		
+
 		if (children != null) {
 			for (WorkflowNode c : children) {
 				if (!fullPath.contains(c)) {
@@ -139,7 +169,7 @@ public class WorkflowJson {
 		if (node.getIncomingLinks() == null) {
 			return null;
 		}
-		
+
 		ArrayList<WorkflowNode> parents = new ArrayList<WorkflowNode>();
 		for (WorkflowNode p : node.getIncomingLinks()) {
 			getParentsRecursivePopulate(p, parents);
@@ -164,7 +194,7 @@ public class WorkflowJson {
 		if (node.getOutgoingLinks() == null) {
 			return null;
 		}
-		
+
 		ArrayList<WorkflowNode> children = new ArrayList<WorkflowNode>();
 		for (WorkflowNode c : node.getOutgoingLinks()) {
 			getChildrenRecursivePopulate(c, children);
@@ -188,11 +218,11 @@ public class WorkflowJson {
 		JsonObject danaJson = jsonReader.readObject();
 		jsonReader.close();
 
-		String[] arr = { "nodes", "datasets" };
-		JsonObject datasets = getValue(danaJson, arr);
-		Set<String> variableKeys = datasets.keySet();
-
-		for (String key : variableKeys) {
+		// Add dataset metadata
+		String[] datasetArr = { "nodes", "datasets" };
+		JsonObject datasets = getValue(danaJson, datasetArr);
+		Set<String> datasetsleKeys = datasets.keySet();
+		for (String key : datasetsleKeys) {
 			DatasetNode curr = (DatasetNode) getWorkflowNode(key);
 			String[] currDatasetArr = { "nodes", "datasets", key };
 			JsonObject currKeyJson = getValue(danaJson, currDatasetArr);
@@ -212,60 +242,215 @@ public class WorkflowJson {
 			curr.setUrl(url);
 			curr.setType(type);
 		}
+
+		String[] parametersArr = { "nodes", "parameters" };
+		JsonObject parameters = getValue(danaJson, parametersArr);
+		Set<String> parametersKeys = parameters.keySet();
+		for (String key : parametersKeys) {
+			DatasetNode curr = (DatasetNode) getWorkflowNode(key);
+			String[] currParameterArr = { "nodes", "parameters", key };
+			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
+
+			String description = currKeyJson.get("description").toString();
+			String license = currKeyJson.get("license").toString();
+			String author = currKeyJson.get("author").toString();
+			String citation = currKeyJson.get("citation").toString();
+			String doi = currKeyJson.get("doi").toString();
+			String url = currKeyJson.get("url").toString();
+			String type = currKeyJson.get("type").toString();
+
+			curr.setDescription(description);
+			curr.setLicense(license);
+			curr.setAuthor(author);
+			curr.setDoi(doi);
+			curr.setUrl(url);
+			curr.setType(type);
+		}
+
+		String[] stepArr = { "nodes", "steps" };
+		JsonObject steps = getValue(danaJson, stepArr);
+		Set<String> stepsKeys = steps.keySet();
+		for (String key : stepsKeys) {
+			StepNode curr = (StepNode) getWorkflowNode(key);
+			String[] currStepsArr = { "nodes", "steps", key };
+			JsonObject currKeyJson = getValue(danaJson, currStepsArr);
+
+			String shortDescription = currKeyJson.get("shortDescription").toString();
+			String longDescription = currKeyJson.get("longDescription").toString();
+			String gitHubUrl = currKeyJson.get("gitHubUrl").toString();
+			String criticality = currKeyJson.get("criticality").toString();
+			String stepType = currKeyJson.get("stepType").toString();
+			String website = currKeyJson.get("website").toString();
+			String citation = currKeyJson.get("citation").toString();
+			String author = currKeyJson.get("author").toString();
+			String license = currKeyJson.get("license").toString();
+			String versionNumber = currKeyJson.get("versionNumber").toString();
+			String dependencies = currKeyJson.get("dependencies").toString();
+			String documentationLink = currKeyJson.get("documentationLink").toString();
+			String commandLineInvocation = currKeyJson.get("commandLineInvocation").toString();
+
+			curr.setShortDescription(shortDescription);
+			curr.setLongDescription(longDescription);
+			curr.setGitHubUrl(gitHubUrl);
+			curr.setCriticality(criticality);
+			curr.setStepType(stepType);
+			curr.setWebsite(website);
+			curr.setAuthor(author);
+			curr.setLicense(license);
+			curr.setVersionNumber(versionNumber);
+			curr.setDependancies(dependencies);
+			curr.setDocumentationLink(documentationLink);
+			curr.setCommandLineInvocation(commandLineInvocation);
+
+		}
+
 	}
 
-	public String generateDatasetNarative(String workflowNodeName) {
-		String outp = "";
-		
-		DatasetNode dn;
-		try {
-			dn = (DatasetNode) getWorkflowNode(workflowNodeName);
-		} catch (ClassCastException cce) {
-			System.out.println("Error: cannot cast \"" + workflowNodeName +"\" as a DatasetNode");
-			cce.printStackTrace();
-			return null;
+	/**
+	 * Generate the data narrative for the workflow node with a matching name as the
+	 * given string. Returns empty string if a workflow node with the given name
+	 * cannot be found. The returned string is in markdown format (to provide links
+	 * to other nodes/urls)
+	 * 
+	 * @param workflowNodeName name of the node to generate narrative for
+	 * @return data narrative
+	 */
+	public String generateNodeNarative(String workflowNodeName) {
+
+		WorkflowNode node = getWorkflowNode(workflowNodeName);
+		if (node.isDataset()) {
+			try {
+				DatasetNode dn = (DatasetNode) node;
+				return generateDatasetNarrative(dn);
+
+			} catch (ClassCastException cce) {
+				System.out.println("Error: cannot cast \"" + workflowNodeName + "\" as a DatasetNode");
+				cce.printStackTrace();
+				return null;
+			}
+		} else {
+			try {
+				StepNode sn = (StepNode) node;
+				return generateStepNarrative(sn);
+			} catch (ClassCastException cce) {
+				System.out.println("Error: cannot cast \"" + workflowNodeName + "\" as a StepNode");
+				cce.printStackTrace();
+				return null;
+			}
 		}
-		
-		String[] references = {dn.getName(), "This document", "It", "This document", "It", "This document", "It"}; 
-		int rindex = 0;
-		
-		
+
+	}
+
+	private String generateDatasetNarrative(DatasetNode dn) {
+		String outp = "";
+		String nameType = dn.isParameter() ? "parameter" : "document";
+		int inc = 0;
+
+		String[] references = { dn.getName(), "This " + nameType, "It" };
+
 		if (!dn.getType().equalsIgnoreCase("null")) {
-			outp += references[rindex] + " is a " + stripStringWrapper(dn.getType()) + " file. ";
-			rindex += 1;
+			outp += references[inc] + " is a " + stripStringWrapper(dn.getType()) + " file. ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getDescription().equalsIgnoreCase("null")) {
-			outp += references[rindex] + " " + stripStringWrapper(dn.getDescription()) + ". ";
-			rindex += 1;
+			outp += references[inc] + " " + stripStringWrapper(dn.getDescription()) + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getLicense().equalsIgnoreCase("null")) {
-			outp += references[rindex] + " has license " + stripStringWrapper(dn.getLicense()) + ". ";
-			rindex += 1;
+			outp += references[inc] + " has license " + stripStringWrapper(dn.getLicense()) + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getAuthor().equalsIgnoreCase("null")) {
-			outp += references[rindex] + " has author " + stripStringWrapper(dn.getAuthor()) + ". ";
-			rindex += 1;
+			outp += references[inc] + " has author " + stripStringWrapper(dn.getAuthor()) + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getDoi().equalsIgnoreCase("null")) {
-			outp += references[rindex] + " has doi " + stripStringWrapper(dn.getDoi()) + ". ";
-			rindex += 1;
+			outp += references[inc] + " has doi " + stripStringWrapper(dn.getDoi()) + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getUrl().equalsIgnoreCase("null")) {
-			outp += "More information on " + references[rindex] + " can be found at " + stripStringWrapper(dn.getUrl()) + ". ";
-			rindex += 1;
+			outp += "More information on " + references[inc] + " can be found at " + stripStringWrapper(dn.getUrl())
+					+ ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
-		
+
 		outp += "\n";
 		ArrayList<WorkflowNode> path = getFullWorkflowPathFromNode(dn);
-		for (WorkflowNode wn:path) {
-			outp += wn.getName().equalsIgnoreCase(workflowNodeName) ? " (" + wn.getName() + ") ->" : wn.getName() + " ->";
+		for (WorkflowNode wn : path) {
+			outp += wn.getName().equalsIgnoreCase(dn.getName()) ? " (" + wn.getName() + ") ->" : wn.getName() + " ->";
 		}
-		
+
+		return outp;
+	}
+
+	private String generateStepNarrative(StepNode sn) {
+		String outp = "";
+		int inc = 0;
+
+		String[] references = { sn.getName(), "This step", "It" };
+
+		// Website
+		if (!sn.getWebsite().equalsIgnoreCase("null")) {
+			outp += "The website for " + references[inc] + " can be found at " + sn.getWebsite() + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
+		}
+
+		// Documentation
+		if (!sn.getDocumentationLink().equalsIgnoreCase("null")) {
+
+			outp += "Documentation for " + references[inc] + " can be found at " + sn.getDocumentationLink() + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
+		}
+
+		// GitHub url
+		if (!sn.getGitHubUrl().equalsIgnoreCase("null")) {
+			if (inc != 0) {
+				outp += "The GitHub repository can be found at " + sn.getGitHubUrl() + ". ";
+			} else {
+				outp += "The GitHub repository for " + references[inc] + " can be found at " + sn.getGitHubUrl() + ". ";
+			}
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
+		}
+
+		// Version number
+		if (!sn.getVersionNumber().equalsIgnoreCase("null")) {
+			outp += "The version of " + sn.getName() + " used was " + sn.getVersionNumber() + ". ";
+			inc = inc == 0 ? 1 : (inc % 2) + 1;
+		}
+
+		// Human Descriptions
+		if (!sn.getLongDescription().equalsIgnoreCase("null") || !sn.getShortDescription().equalsIgnoreCase("null")) {
+			if (!sn.getLongDescription().equalsIgnoreCase("null")) {
+				outp += sn.getLongDescription() + ". ";
+			} else {
+				outp += sn.getShortDescription() + ". ";
+			}
+		}
+
+		// incoming/outgoing links
+		ArrayList<WorkflowNode> incoming = sn.getIncomingLinks();
+		ArrayList<WorkflowNode> outgoing = sn.getOutgoingLinks();
+		int inSize = incoming.size();
+		int outSize = outgoing.size();
+
+		if (inSize > 0) {
+			outp += references[inc] + " has " + Num2Word.convert(inSize) + " incoming[";
+			for (WorkflowNode wn : incoming) {
+				outp += wn != incoming.get(inSize - 1) ? wn.getName() + "," : wn.getName();
+			}
+			if (outSize > 0) {
+				outp += "] links and produces " + Num2Word.convert(outSize) + " output[";
+				for (WorkflowNode wn : outgoing) {
+					outp += wn != outgoing.get(outSize - 1) ? wn.getName() + "," : wn.getName();
+				}
+			}
+			outp += "] link. ";
+		}
 		return outp;
 	}
 
@@ -279,18 +464,18 @@ public class WorkflowJson {
 	 */
 	private String stripStringWrapper(String input) {
 		char start = input.charAt(0);
-		char end = input.charAt(input.length()-1);
+		char end = input.charAt(input.length() - 1);
 		int startIndex = 0;
 		int endIndex = input.length();
-		
+
 		if (start == '\"' || start == '\'') {
-			startIndex =+ 1;
+			startIndex = +1;
 		}
-		
+
 		if (end == '\"' || end == '\'') {
 			endIndex -= 1;
 		}
-		
+
 		return input.substring(startIndex, endIndex);
 	}
 
@@ -453,36 +638,6 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Get a WorflowNode from the workflows array from the given id. id can either
-	 * be the name of the workflow or its id. If the workflow is not in the list
-	 * then this function returns null.
-	 * 
-	 * @param id Name or Id string of the node to search for
-	 * @return WorkflowNode with the given name/id or null if does not exist
-	 */
-	private WorkflowNode getWorkflowNode(String indicator) {
-
-		// O(n)
-		for (WorkflowNode wn : workflows) {
-			String name = wn.getName();
-			String id = wn.getId();
-
-			// Return workflow if it has the same name
-			if (name.equalsIgnoreCase(indicator)) {
-				return wn;
-			}
-
-			// Return workflow if it has the same id
-			if (id.equalsIgnoreCase(indicator)) {
-				return wn;
-			}
-		}
-
-		// Return null if nothing matched
-		return null;
-	}
-
-	/**
 	 * Returns a jsonObject from the given key. If one can't be found, returns null.
 	 * Note: the value to return must be a jsonObject. This method cannot return a
 	 * value and will return and empty jsonObject if the given key links to a value
@@ -568,5 +723,63 @@ public class WorkflowJson {
 			e.printStackTrace();
 		}
 		return contentBuilder.toString();
+	}
+}
+
+/**
+ * Convert integer into the English word equivalent.
+ *
+ */
+class Num2Word {
+
+	public static final String[] units = { "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+			"ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+			"nineteen" };
+
+	public static final String[] tens = { "", // 0
+			"", // 1
+			"twenty", // 2
+			"thirty", // 3
+			"forty", // 4
+			"fifty", // 5
+			"sixty", // 6
+			"seventy", // 7
+			"eighty", // 8
+			"ninety" // 9
+	};
+
+	/**
+	 * Convert input number n into English word equivalent. For example 104 would
+	 * return one hundred and four
+	 * 
+	 * @param n number to convert
+	 * @return English string equivalent
+	 */
+	public static String convert(final int n) {
+		if (n < 0) {
+			return "minus " + convert(-n);
+		}
+
+		if (n < 20) {
+			return units[n];
+		}
+
+		if (n < 100) {
+			return tens[n / 10] + ((n % 10 != 0) ? " " : "") + units[n % 10];
+		}
+
+		if (n < 1000) {
+			return units[n / 100] + " hundred" + ((n % 100 != 0) ? " " : "") + convert(n % 100);
+		}
+
+		if (n < 1000000) {
+			return convert(n / 1000) + " thousand" + ((n % 1000 != 0) ? " " : "") + convert(n % 1000);
+		}
+
+		if (n < 1000000000) {
+			return convert(n / 1000000) + " million" + ((n % 1000000 != 0) ? " " : "") + convert(n % 1000000);
+		}
+
+		return convert(n / 1000000000) + " billion" + ((n % 1000000000 != 0) ? " " : "") + convert(n % 1000000000);
 	}
 }

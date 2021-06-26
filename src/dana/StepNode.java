@@ -21,47 +21,47 @@ public class StepNode extends WorkflowNode{
 
 
 	public void setGitHubDescription(String gitHubDescription) {
-		this.gitHubDescription = gitHubDescription;
+		this.gitHubDescription = super.stripStringWrapper(gitHubDescription);
 	}
 
 	public void setCriticality(String criticality) {
-		this.criticality = criticality;
+		this.criticality = super.stripStringWrapper(criticality);
 	}
 
 	public void setStepType(String stepType) {
-		this.stepType = stepType;
+		this.stepType = super.stripStringWrapper(stepType);
 	}
 
 	public void setWebsite(String website) {
-		this.website = website;
+		this.website = super.stripStringWrapper(website);
 	}
 
 	public void setVersionNumber(String versionNumber) {
-		this.versionNumber = versionNumber;
+		this.versionNumber = super.stripStringWrapper(versionNumber);
 	}
 
 	public void setDependancies(String dependancies) {
-		this.dependancies = dependancies;
+		this.dependancies = super.stripStringWrapper(dependancies);
 	}
 
 	public void setDocumentationLink(String documentationLink) {
-		this.documentationLink = documentationLink;
+		this.documentationLink = super.stripStringWrapper(documentationLink);
 	}
 
 	public void setCommandLineInvocation(String commandLineInvocation) {
-		this.commandLineInvocation = commandLineInvocation;
+		this.commandLineInvocation = super.stripStringWrapper(commandLineInvocation);
 	}
 
 	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
+		this.shortDescription = super.stripStringWrapper(shortDescription);
 	}
 	
 	public void setLongDescription(String longDescription) {
-		this.longDescription = longDescription;
+		this.longDescription = super.stripStringWrapper(longDescription);
 	}
 	
 	public void setGitHubUrl(String gitHubUrl) {
-		this.gitHubUrl = gitHubUrl;
+		this.gitHubUrl = super.stripStringWrapper(gitHubUrl);
 	}
 	
 	//-------|

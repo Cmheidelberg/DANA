@@ -11,6 +11,8 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import com.sun.tools.javac.comp.Todo;
+
 import java.util.*;
 
 /**
@@ -23,6 +25,7 @@ import java.util.*;
 public class WorkflowJson {
 
 	private JsonObject json;
+	private String workflowDescription = "will encript the unput document using a caesar cypher algorithm";
 	private ArrayList<WorkflowNode> workflows;
 
 	public WorkflowJson(JsonObject json) {
@@ -79,21 +82,16 @@ public class WorkflowJson {
 	 * 
 	 * @return output datasets
 	 */
-	public ArrayList<WorkflowNode> getInputs() {
+	public ArrayList<DatasetNode> getInputs() {
 
-		ArrayList<WorkflowNode> inputNodes = new ArrayList<WorkflowNode>();
-		boolean empty = true;
+		ArrayList<DatasetNode> inputNodes = new ArrayList<DatasetNode>();
 		for (WorkflowNode wn : workflows) {
 			if (wn.getIncomingLinks() == null) {
-				inputNodes.add(wn);
-				empty = false;
+				inputNodes.add((DatasetNode) wn);
 			}
 		}
+		return inputNodes;
 
-		if (!empty)
-			return inputNodes;
-		else
-			return null;
 	}
 
 	/**
@@ -102,21 +100,33 @@ public class WorkflowJson {
 	 * 
 	 * @return output datasets
 	 */
-	public ArrayList<WorkflowNode> getOutputs() {
+	public ArrayList<DatasetNode> getOutputs() {
 
-		ArrayList<WorkflowNode> outputNodes = new ArrayList<WorkflowNode>();
-		boolean empty = true;
+		ArrayList<DatasetNode> outputNodes = new ArrayList<DatasetNode>();
 		for (WorkflowNode wn : workflows) {
 			if (wn.getOutgoingLinks() == null) {
-				outputNodes.add(wn);
-				empty = false;
+				outputNodes.add((DatasetNode) wn);
 			}
 		}
+		return outputNodes;
 
-		if (!empty)
-			return outputNodes;
-		else
-			return null;
+	}
+
+	/**
+	 * Returns a list of every step node in the workflow. These are the nodes that
+	 * run code
+	 * 
+	 * @return array list of step nodes
+	 */
+	public ArrayList<StepNode> getSteps() {
+
+		ArrayList<StepNode> stepNodes = new ArrayList<StepNode>();
+		for (WorkflowNode wn : workflows) {
+			if (!wn.isDataset()) {
+				stepNodes.add((StepNode) wn);
+			}
+		}
+		return stepNodes;
 	}
 
 	/**
@@ -230,7 +240,6 @@ public class WorkflowJson {
 			String description = currKeyJson.get("description").toString();
 			String license = currKeyJson.get("license").toString();
 			String author = currKeyJson.get("author").toString();
-			String citation = currKeyJson.get("citation").toString();
 			String doi = currKeyJson.get("doi").toString();
 			String url = currKeyJson.get("url").toString();
 			String type = currKeyJson.get("type").toString();
@@ -254,7 +263,6 @@ public class WorkflowJson {
 			String description = currKeyJson.get("description").toString();
 			String license = currKeyJson.get("license").toString();
 			String author = currKeyJson.get("author").toString();
-			String citation = currKeyJson.get("citation").toString();
 			String doi = currKeyJson.get("doi").toString();
 			String url = currKeyJson.get("url").toString();
 			String type = currKeyJson.get("type").toString();
@@ -281,7 +289,6 @@ public class WorkflowJson {
 			String criticality = currKeyJson.get("criticality").toString();
 			String stepType = currKeyJson.get("stepType").toString();
 			String website = currKeyJson.get("website").toString();
-			String citation = currKeyJson.get("citation").toString();
 			String author = currKeyJson.get("author").toString();
 			String license = currKeyJson.get("license").toString();
 			String versionNumber = currKeyJson.get("versionNumber").toString();
@@ -301,7 +308,6 @@ public class WorkflowJson {
 			curr.setDependancies(dependencies);
 			curr.setDocumentationLink(documentationLink);
 			curr.setCommandLineInvocation(commandLineInvocation);
-
 		}
 
 	}
@@ -315,7 +321,7 @@ public class WorkflowJson {
 	 * @param workflowNodeName name of the node to generate narrative for
 	 * @return data narrative
 	 */
-	public String generateNodeNarative(String workflowNodeName) {
+	public String generateNodeNarrative(String workflowNodeName) {
 
 		WorkflowNode node = getWorkflowNode(workflowNodeName);
 		if (node.isDataset()) {
@@ -341,6 +347,64 @@ public class WorkflowJson {
 
 	}
 
+	public String generateHighLevelNarrative() {
+		return workflowDescription;
+	}
+
+	public String generateMediumLevelNarrative(int minCriticality) {
+
+		// TODO: this will not work for non-linear workflows (workflows with more than
+		// one i/o)
+
+		ArrayList<DatasetNode> inputs = getInputs();
+		ArrayList<DatasetNode> outputs = getOutputs();
+		
+		//TODO: get a better way to sort steps for instances with more than one input/output
+		ArrayList<StepNode> steps = new ArrayList<StepNode>();
+		ArrayList<WorkflowNode> tmp = getChildren(inputs.get(0));
+		for(WorkflowNode w : tmp) {
+			if(!w.isDataset()) {
+				steps.add((StepNode)w);
+			}
+		}
+
+		String outp = "";
+
+		outp += "The workflow takes in " + Num2Word.convert(inputs.size()) + " inputs and produces "
+				+ Num2Word.convert(outputs.size()) + " outputs. ";
+		outp += "This workflow has a total of " + Num2Word.convert(steps.size()) + " steps. ";
+
+		StepNode lastStep = null;
+		for (StepNode s : steps) {
+			if (Integer.parseInt(s.getCriticality()) <= minCriticality) {
+				if (lastStep == null) {
+					outp += "First, " + inputs.get(0).getName() + " is passed into a " + s.getStepType() + "[" + s.getName() + "] step. ";
+					outp += "This step " + s.getShortDescription() + ". ";
+				} else {
+					outp += "The output from " + lastStep.getName() + " is then passed into a " + s.getStepType() + "["
+							+ s.getName() + "] step. ";
+					outp += "This step " + s.getShortDescription() + ". ";
+				}
+				lastStep = s;
+			}
+		}
+
+		if (lastStep != null) {
+			outp += "Finally, " + lastStep.getName() + " produces one text document[" + outputs.get(0).getName()
+					+ "] as the workflows output. ";
+		} else {
+			System.out.println(
+					"Error: generateMediumLevelNarrative needs a min criticality that includes at least one step to generate a narrative");
+			return "";
+		}
+		return outp;
+
+	}
+
+	public String generateLowLevelNarrative(int minCriticality) {
+		return null;
+	}
+
 	private String generateDatasetNarrative(DatasetNode dn) {
 		String outp = "";
 		String nameType = dn.isParameter() ? "parameter" : "document";
@@ -349,33 +413,32 @@ public class WorkflowJson {
 		String[] references = { dn.getName(), "This " + nameType, "It" };
 
 		if (!dn.getType().equalsIgnoreCase("null")) {
-			outp += references[inc] + " is a " + stripStringWrapper(dn.getType()) + " file. ";
+			outp += references[inc] + " is a " + dn.getType() + " file. ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getDescription().equalsIgnoreCase("null")) {
-			outp += references[inc] + " " + stripStringWrapper(dn.getDescription()) + ". ";
+			outp += references[inc] + " " + dn.getDescription() + ". ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getLicense().equalsIgnoreCase("null")) {
-			outp += references[inc] + " has license " + stripStringWrapper(dn.getLicense()) + ". ";
+			outp += references[inc] + " has license " + dn.getLicense() + ". ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getAuthor().equalsIgnoreCase("null")) {
-			outp += references[inc] + " has author " + stripStringWrapper(dn.getAuthor()) + ". ";
+			outp += references[inc] + " has author " + dn.getAuthor() + ". ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getDoi().equalsIgnoreCase("null")) {
-			outp += references[inc] + " has doi " + stripStringWrapper(dn.getDoi()) + ". ";
+			outp += references[inc] + " has doi " + dn.getDoi() + ". ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
 		if (!dn.getUrl().equalsIgnoreCase("null")) {
-			outp += "More information on " + references[inc] + " can be found at " + stripStringWrapper(dn.getUrl())
-					+ ". ";
+			outp += "More information on " + references[inc] + " can be found at " + dn.getUrl() + ". ";
 			inc = inc == 0 ? 1 : (inc % 2) + 1;
 		}
 
@@ -426,9 +489,9 @@ public class WorkflowJson {
 		// Human Descriptions
 		if (!sn.getLongDescription().equalsIgnoreCase("null") || !sn.getShortDescription().equalsIgnoreCase("null")) {
 			if (!sn.getLongDescription().equalsIgnoreCase("null")) {
-				outp += sn.getLongDescription() + ". ";
+				outp += references[inc] + " " + sn.getLongDescription() + ". ";
 			} else {
-				outp += sn.getShortDescription() + ". ";
+				outp += references[inc] + " " + sn.getShortDescription() + ". ";
 			}
 		}
 
@@ -452,31 +515,6 @@ public class WorkflowJson {
 			outp += "] link. ";
 		}
 		return outp;
-	}
-
-	/**
-	 * Strips the " symbols from the front and back of a string. For example if the
-	 * input is: \"hello world\" then hello world is returned as the contents. This
-	 * is used to remove the string symbols from the readData.json.
-	 * 
-	 * @param input string
-	 * @return string without starting and ending quotationmarks
-	 */
-	private String stripStringWrapper(String input) {
-		char start = input.charAt(0);
-		char end = input.charAt(input.length() - 1);
-		int startIndex = 0;
-		int endIndex = input.length();
-
-		if (start == '\"' || start == '\'') {
-			startIndex = +1;
-		}
-
-		if (end == '\"' || end == '\'') {
-			endIndex -= 1;
-		}
-
-		return input.substring(startIndex, endIndex);
 	}
 
 	/**

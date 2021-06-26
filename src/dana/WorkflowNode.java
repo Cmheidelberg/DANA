@@ -23,23 +23,23 @@ public abstract class WorkflowNode {
 	//-------|
 	
 	public void setId(String roleId) {
-		this.id = roleId;
+		this.id = stripStringWrapper(roleId);
 	}
 	
 	public void setName(String name) {
-		this.name = name;
+		this.name = stripStringWrapper(name);
 	}
 	
 	public void setAuthor(String author) {
-		this.author = author;
+		this.author = stripStringWrapper(author);
 	}
 	
 	public void setLicense(String license) {
-		this.license = license;
+		this.license = stripStringWrapper(license);
 	}
 	
 	public void setUrl(String url) {
-		this.url = url;
+		this.url = stripStringWrapper(url);
 	}
 	
 	public void setOutgoingLinks(ArrayList<WorkflowNode> outgoingLinks) {
@@ -129,5 +129,30 @@ public abstract class WorkflowNode {
 		
 		return outp;
 		
+	}
+	
+	/**
+	 * Strips the " symbols from the front and back of a string. For example if the
+	 * input is: \"hello world\" then hello world is returned as the contents. This
+	 * is used to remove the string symbols from the readData.json.
+	 * 
+	 * @param input string
+	 * @return string without starting and ending quotationmarks
+	 */
+	protected String stripStringWrapper(String input) {
+		char start = input.charAt(0);
+		char end = input.charAt(input.length() - 1);
+		int startIndex = 0;
+		int endIndex = input.length();
+
+		if (start == '\"' || start == '\'') {
+			startIndex = +1;
+		}
+
+		if (end == '\"' || end == '\'') {
+			endIndex -= 1;
+		}
+
+		return input.substring(startIndex, endIndex);
 	}
 }

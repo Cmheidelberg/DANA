@@ -19,25 +19,6 @@ public class Dana {
 		JsonWriter jw = new JsonWriter(workflow.getWorkflowNodes());
 		//jw.writeJson();
 
-		System.out.println("+++READ JSON+++");
-		workflow.readDanaJson("./readData.json");
-		for(WorkflowNode wf : workflow.getWorkflowNodes()) {
-			System.out.println("\n" + wf.getName() + " description: ");
-			System.out.println(workflow.generateNodeNarrative(wf.getName()));
-		}
-		
-		System.out.println("\n");
-		System.out.println("High level narrative: ");
-		System.out.println(workflow.generateHighLevelNarrative());
-		
-		System.out.println("\n");
-		System.out.println("Med level narrative (cv 1): ");
-		System.out.println(workflow.generateMediumLevelNarrative(1));
-		
-		System.out.println("\n");
-		System.out.println("Med level narrative (cv 2): ");
-		System.out.println(workflow.generateMediumLevelNarrative(2));
-
 	}
 
 	public static JsonObject openWorkflow() {

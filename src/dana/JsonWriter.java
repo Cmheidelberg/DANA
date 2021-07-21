@@ -144,8 +144,6 @@ public class JsonWriter {
 
 		keys.add(new KeyValuePair("datasets", keyValueStringFormatter(datasetKeys)));
 		keys.add(new KeyValuePair("parameters", keyValueStringFormatter(parameterKeys)));
-		System.out.println("ME STEEEEEEEEEEEEEEEEEEEEEEEEEEEEEPS");
-		System.out.println(keyValueStringFormatter(step()));
 		keys.add(new KeyValuePair("steps", keyValueStringFormatter(step())));
 		return keyValueStringFormatter(keys);
 	}

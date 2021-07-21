@@ -71,9 +71,13 @@ public class StepNode extends WorkflowNode{
 	public String getShortDescription() {
 		return shortDescription;
 	}
-
+	
 	public String getLongDescription() {
-		return longDescription;
+		if (longDescription.length() == 0) {
+			return shortDescription;
+		}else {
+			return longDescription;
+		}
 	}
 	
 	public String getGitHubDescription() {
@@ -122,5 +126,9 @@ public class StepNode extends WorkflowNode{
 	
 	public boolean isParameter() {
 		return false;
+	}
+	
+	public Boolean hasLongDescription() {
+		return longDescription.length() > 0;
 	}
 }

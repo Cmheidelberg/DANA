@@ -15,7 +15,8 @@ public class NarrativeGenerator {
 	}
 
 	public String getStepNarrative(StepNode step) {
-
+		StepNarrative sn = new StepNarrative(workflow, step);
+		return sn.getNarrative();
 	}
 
 	public String getDatasetNarrative(DatasetNode dataset) {
@@ -51,67 +52,239 @@ public class NarrativeGenerator {
 class StepNarrative {
 
 	StepNode step;
+	WorkflowJson workflow;
+	int remainingDP;
+	int discussionPoints;
 
 	// Supporting fields
-	String[] stepReference = { step.getName(), "it", "this step", "it" };
+	String[] stepReference;
 	int stepReferenceCount = 0;
 
-	public StepNarrative(StepNode step) {
+	public StepNarrative(WorkflowJson workflow, StepNode step) {
 		this.step = step;
-	}
-
-	public String getNarrative() {
-		String outp = "";
-		outp += getMainDescription();
-	}
-
-	public String getMainDescription() {
-		return getNextStepReference() + " takes in " + getInputDescriptions() + getVerbLink() + getOutputDescription;
+		this.workflow = workflow;
+		String[] tmp = { step.getName(), "it", "this step", "it" };
+		stepReference = tmp;
 	}
 
 	/**
-	 * Generates a description for the inputs that come into this step. This is part
-	 * of the main description.
+	 * Generate a narrative for the step. A narrative is a human readable
+	 * description for the metadata associated with the step.
 	 * 
-	 * For example, if the main description is "CaesarNode takes in a text
-	 * file[DocumentWithLineBreaks] and a parameter[ShiftKey] it then encrypts them
-	 * producing another text file[EncryptedDocument]" 
-	 * 
-	 * Then the input description is: "a text file[DocumentWithLineBreaks] and a 
-	 * parameter[ShiftKey]"
-	 * 
+	 * @return narrative
 	 */
-	private String getInputDescriptions() {
+	public String getNarrative() {
+		String outp = "";
+		outp += getNextStepReference() + " takes in " + getInputDescription() + getVerbLink() + " producing "
+				+ getOutputDescription() + ".";
+
+		if (step.getLongDescription().length() > 0 && !step.getLongDescription().equalsIgnoreCase("null")) {
+			outp += " " + step.getName() + " " + step.getLongDescription() + ".";
+		}
+
+		int count = workflow.CountTimesUsedInWorkflow(step);
+		String times = count > 1 ? "times" : "time";
+
+		outp += " Overall, this step is used " + Num2Word.convert(count) + " " + times + " in the workflow.";
+
+		return outp;
+	}
+
+	/**
+	 * Writes the input description for the main step description. This description
+	 * discusses what file types/parameters go into the current step as well as how
+	 * many.
+	 * 
+	 * @return
+	 */
+	private String getInputDescription() {
 		ArrayList<WorkflowNode> inputs = step.getIncomingLinks();
 		ArrayList<DatasetNode> datasetInputs = new ArrayList<DatasetNode>();
-		ArrayList<DatasetNode> parameterInputs = new ArrayList <DatasetNode>();
-		
-		//Separate Datset inputs from parameter inputs
-		for(WorkflowNode i:inputs) {
+		ArrayList<DatasetNode> parameterInputs = new ArrayList<DatasetNode>();
+
+		// Separate Datset inputs from parameter inputs
+		for (WorkflowNode i : inputs) {
 			if (i.isDataset()) {
-				DatasetNode tmp = (DatasetNode)i;
-				if(tmp.isParameter()) {
+				DatasetNode tmp = (DatasetNode) i;
+				if (tmp.isParameter()) {
 					parameterInputs.add(tmp);
-				}else {
+				} else {
 					datasetInputs.add(tmp);
 				}
-			}else {
+			} else {
 				System.out.println("WARNING: found input to step (" + step.getName() + ") that is not a dataset: " + i);
 				System.out.println("Ignoring warning");
 			}
 		}
-		
+
 		String outp = "";
-		
-		//TODO: for each type of input add a description
-		//TODO: description for parameter
-		//TODO: track complexity
-//		if(datasetInputs.size() == 1) {
-//			outp += "a " + step.getStepType() + " file[" + datasetInputs.get(0).getName() + "] ";
-//			
-//		} else if (datasetInputs.size() > 1) {
-//			
-//		}
+
+		ArrayList<String> types = getUniqueTypes(datasetInputs);
+		discussionPoints = types.size();
+
+		if (parameterInputs.size() > 0) {
+			discussionPoints += 1;
+		}
+
+		remainingDP = discussionPoints;
+
+		// Generate description for eqch unique type of input
+		for (String ctype : types) {
+			ctype = ctype.toLowerCase();
+			ArrayList<DatasetNode> currDatasets = getDatasetsWithType(ctype, datasetInputs);
+
+			if (currDatasets.size() == 1) {
+				outp += "a " + ctype + " file[" + datasetInputs.get(0).getName() + "]";
+				remainingDP--;
+
+			} else if (currDatasets.size() > 1) {
+				outp += Num2Word.convert(currDatasets.size()) + " " + ctype + "files[";
+				for (int i = 0; i < currDatasets.size(); i++) {
+					outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getName()
+							: currDatasets.get(i).getName() + ",";
+				}
+				outp += "]";
+				remainingDP--;
+			}
+
+			if (parameterInputs.size() == 0) {
+				if (discussionPoints >= 2 && remainingDP > 1 && !ctype.equalsIgnoreCase(types.get(0))) {
+					outp += ", ";
+				} else if (remainingDP == 1 && discussionPoints > 1) {
+					outp += "and ";
+				} else {
+					outp += ", ";
+				}
+			}
+		}
+
+		// Parameter inputs are treated as one type of input
+		if (parameterInputs.size() > 0) {
+
+			if (discussionPoints >= 2 && remainingDP > 1) {
+				outp += ", ";
+			} else if (remainingDP == 1 && discussionPoints > 1) {
+				outp += " and ";
+			} else {
+				outp += " ";
+			}
+
+			if (parameterInputs.size() == 1) {
+				outp += "a parameter[" + parameterInputs.get(0).getName() + "],";
+			} else if (parameterInputs.size() > 1) {
+				outp += Num2Word.convert(parameterInputs.size()) + " parameters[";
+				for (int i = 0; i < parameterInputs.size(); i++) {
+					outp += i == parameterInputs.size() - 1 ? parameterInputs.get(i).getName()
+							: parameterInputs.get(i).getName() + ",";
+				}
+				outp += "],";
+			}
+		}
+		return outp;
+	}
+
+	/**
+	 * Links together the InputDescription and outputDescription. This transition
+	 * makes it a little less robotic to read the step descriptions
+	 */
+	private String getVerbLink() {
+
+		String outp = "";
+		if (discussionPoints > 2) {
+			outp += " then " + step.getStepType() + " them";
+		} else if (discussionPoints == 2) {
+			outp += " " + step.getStepType() + " them,";
+		} else {
+			outp += step.getStepType() + " it,";
+		}
+		return outp;
+	}
+
+	/**
+	 * Generates a description for any output datasets that are produced by this
+	 * step.
+	 */
+	private String getOutputDescription() {
+		ArrayList<DatasetNode> datasetOutputs = new ArrayList<DatasetNode>();
+		String outp = "";
+
+		ArrayList<DatasetNode> datasetInputs = new ArrayList<DatasetNode>();
+
+		// Separate Dataset inputs from parameter inputs
+		for (WorkflowNode i : step.getIncomingLinks()) {
+			if (i.isDataset()) {
+				DatasetNode tmp = (DatasetNode) i;
+				if (!tmp.isParameter()) {
+					datasetInputs.add(tmp);
+				}
+			} else {
+				System.out.println("WARNING: found input to step (" + step.getName() + ") that is not a dataset: " + i);
+				System.out.println("Ignoring warning");
+			}
+		}
+
+		// Get a string list of every unique type of file output from this step ie:
+		// {text,jpg,mp3}
+		ArrayList<String> types = getUniqueTypes(datasetInputs);
+
+		// Create a list of dataset objects from the output of this step
+		for (WorkflowNode w : step.getOutgoingLinks()) {
+			try {
+				datasetOutputs.add((DatasetNode) w);
+			} catch (Exception e) {
+				System.out.print("WARNING: exceptin when converting outgoing link " + w.getName() + " as dataset node");
+			}
+		}
+
+		// Descriptions for each unique type of output
+		if (step.getOutgoingLinks().size() == 1) {
+			String currType = datasetOutputs.get(0).getType().toLowerCase();
+			String reference = "";
+			if (datasetOutputs.get(0).getType() == null) {
+				if (types.get(0).equalsIgnoreCase("null")) {
+					reference = "another ";
+				} else {
+					reference = "a ";
+				}
+			} else if (types.size() == 1 && datasetOutputs.get(0).getType().equalsIgnoreCase(types.get(0))) {
+				reference = "another ";
+			} else {
+				reference = "a ";
+			}
+			outp += reference + currType + " file[" + datasetOutputs.get(0).getName() + "]";
+		} else {
+			ArrayList<String> uniqueOutputTypes = getUniqueTypes(datasetOutputs);
+			discussionPoints = uniqueOutputTypes.size();
+			remainingDP = discussionPoints;
+
+			for (String s : uniqueOutputTypes) {
+				ArrayList<DatasetNode> currDatasets = getDatasetsWithType(s, datasetOutputs);
+
+				if (currDatasets.size() == 1) {
+					outp += "a " + s + " file[" + datasetInputs.get(0).getName() + "]";
+					remainingDP--;
+
+				} else if (currDatasets.size() > 1) {
+					outp += Num2Word.convert(currDatasets.size()) + " " + s + "files[";
+					for (int i = 0; i < currDatasets.size(); i++) {
+						outp += i == currDatasets.size() - 1 ? currDatasets.get(i) : currDatasets.get(i) + ",";
+					}
+					outp += "]";
+					remainingDP--;
+				}
+
+				if (discussionPoints > 2 && remainingDP >= 1 && !s.equalsIgnoreCase(types.get(0))) {
+					outp += ", ";
+				} else if (remainingDP == 0 && discussionPoints > 1) {
+					outp += "and ";
+				} else {
+					outp += " ";
+				}
+			}
+
+		}
+
+		return outp;
 	}
 
 	/**
@@ -136,29 +309,41 @@ class StepNarrative {
 	private void resetStepReference() {
 		stepReferenceCount = 0;
 	}
-	
+
 	/**
 	 * Return a list of all the types within the given inputs arraylist
 	 */
-	private ArrayList<String> getInputTypes(ArrayList<DatasetNode> inputs) {
+	private ArrayList<String> getUniqueTypes(ArrayList<DatasetNode> inputs) {
 		ArrayList<String> out = new ArrayList<String>();
+
 		for (DatasetNode d : inputs) {
-			if(!out.contains(d.getType().toLowerCase())) {
+			if (d.getType() != null && !out.contains(d.getType().toLowerCase())) {
 				out.add(d.getType().toLowerCase());
+			}
+
+			if (d.getType() == null) {
+				out.add("null");
 			}
 		}
 		return out;
 	}
-	
+
 	/**
-	 * Return an array list with all the datasets from the given input list that contain the given type. 
+	 * Return an array list with all the datasets from the given input list that
+	 * contain the given type.
 	 */
 	private ArrayList<DatasetNode> getDatasetsWithType(String type, ArrayList<DatasetNode> inputs) {
-		
+
 		ArrayList<DatasetNode> out = new ArrayList<DatasetNode>();
 		for (DatasetNode d : inputs) {
-			if(d.getType().equalsIgnoreCase(type)) {
+			if (d.getType() != null && d.getType().equalsIgnoreCase(type)) {
 				out.add(d);
+			}
+
+			if (d.getType() == null) {
+				if (type.equalsIgnoreCase("null")) {
+					out.add(d);
+				}
 			}
 		}
 		return out;
@@ -166,7 +351,10 @@ class StepNarrative {
 }
 
 /**
- * Convert integer into the English word equivalent.
+ * Convert integer into the English word equivalent. This class works for all
+ * numbers -10 billion < num < 10 billion. If there is a workflow with more than
+ * 10 billion nodes, DANA is probably not going to work very well regardless of
+ * how large a number it can convert into English.
  *
  */
 class Num2Word {
@@ -196,7 +384,7 @@ class Num2Word {
 	 */
 	public static String convert(final int n) {
 		if (n < 0) {
-			return "minus " + convert(-n);
+			return "negative " + convert(-n);
 		}
 
 		if (n < 20) {

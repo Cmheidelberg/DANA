@@ -22,10 +22,14 @@ public class Dana {
 		
 		workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json");
 			
-		for(StepNode s : workflow.getSteps()) {
+		for(WorkflowNode s : workflow.getWorkflowNodes()) {
 			System.out.println("+++" + s.getName() + "+++");
-			System.out.println(ng.getStepNarrative(s));
+			System.out.println(ng.getNodeNarrative(s));
 			System.out.println("\n\n");
+		}
+		
+		for(String s : ng.getAllCitations()) {
+			System.out.println(s + "\n\n");
 		}
 
 	}

@@ -10,23 +10,40 @@ public class NarrativeGenerator {
 
 	WorkflowJson workflow;
 	int citationReference = 1;
+	ArrayList<Narrative> citations = new ArrayList<Narrative>();
 
 	public NarrativeGenerator(WorkflowJson workflow) {
 		this.workflow = workflow;
 	}
 
+	/**
+	 * Returns the data narrative for a given step in the workflow. Returns a string
+	 * of the description.
+	 */
 	public String getStepNarrative(StepNode step) {
 		StepNarrative sn = new StepNarrative(workflow, step, citationReference);
 
 		if (!step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("")) {
-			citationReference++;
+			updateCitations(sn);
 		}
 
 		return sn.getNarrative();
 	}
 
+	/**
+	 * Returns the data narrative for a given dataset in the workflow. Returns a
+	 * string of the description. This method will also automatically increment the
+	 * citatinReference variable if the dataset has a citation in it. The citation
+	 * reference is the citation number when the TODO: fix this description
+	 */
 	public String getDatasetNarrative(DatasetNode dataset) {
-		return getNodeNarrative(dataset);
+		DatasetNarrative dn = new DatasetNarrative(dataset, citationReference);
+
+		if (!dataset.getCitation().equalsIgnoreCase("null") && !dataset.getCitation().equals("")) {
+			updateCitations(dn);
+		}
+
+		return dn.getNarrative();
 	}
 
 	public String getNodeNarrative(WorkflowNode node) {
@@ -53,13 +70,102 @@ public class NarrativeGenerator {
 		}
 	}
 
-	public void resetCitationReference() {
-		citationReference = 0;
+	private void updateCitations(Narrative narrative) {
+		citations.add(narrative);
+		citationReference += 1;
 	}
-
+	
+	public void resetCitationReference() {
+		citationReference = 1;
+		citations.clear();
+	}
+	
+	public String getCitation(String nodeName) {
+		for(Narrative n : citations) {
+			if(n.getName().equalsIgnoreCase(nodeName)) {
+				return n.getCitation();
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<String> getAllCitations() {
+		ArrayList<String> out = new ArrayList<String>();
+		
+		for(Narrative n : citations) {
+			out.add(n.getCitation());
+		}
+		
+		return out;
+	}
 }
 
-class StepNarrative {
+interface Narrative {
+	public String getNarrative();
+	public String getCitation();
+	public String getName();
+}
+
+class DatasetNarrative implements Narrative{
+
+	DatasetNode dataset;
+	boolean hasCitation;
+	int citationReference;
+
+	DatasetNarrative(DatasetNode dataset, int citationReference) {
+		this.dataset = dataset;
+		this.hasCitation = !dataset.getCitation().equalsIgnoreCase("null") && !dataset.getCitation().equals("");
+		this.citationReference = citationReference;
+	}
+
+	public String getNarrative() {
+		String outp = "";
+		String citationReferenceString = "";
+
+		boolean hasFileType = dataset.getType() != null && !dataset.getType().equalsIgnoreCase("null")
+				&& !dataset.getType().equals("");
+		boolean hasDescription = dataset.getDescription() != null && !dataset.getDescription().equalsIgnoreCase("null")
+				&& !dataset.equals("");
+
+		if (hasCitation) {
+			citationReferenceString = " [" + citationReference + "]";
+		}
+
+		String fileType = "";
+		if (hasFileType) {
+			fileType = dataset.getType() + " file";
+		} else {
+			fileType = "dataset with an unspecified file type";
+		}
+		outp += dataset.getName() + citationReferenceString + " is a " + fileType + ".";
+
+		if (hasDescription) {
+			String descriptionNoun = "";
+			if (hasFileType) {
+				descriptionNoun = " This dataset";
+			} else {
+				descriptionNoun = " It";
+			}
+			outp += descriptionNoun + dataset.getName() + ".";
+		}
+
+		return outp;
+	}
+
+	public String getCitation() {
+		if (hasCitation) {
+			return "[" + citationReference + "] " + dataset.getCitation();
+		} else {
+			return "";
+		}
+	}
+	
+	public String getName() {
+		return dataset.getName();
+	}
+}
+
+class StepNarrative implements Narrative{
 
 	StepNode step;
 	WorkflowJson workflow;
@@ -112,10 +218,10 @@ class StepNarrative {
 
 		// ==ADDITIONAL INFORMATION
 		outp += getAdditionalInformation();
-		outp += "\n\n";
-
-		// CREDITS
-		outp += getCitation();
+//		outp += "\n\n";
+//
+//		// CREDITS
+//		outp += getCitation();
 		return outp;
 	}
 
@@ -127,6 +233,10 @@ class StepNarrative {
 		}
 	}
 
+	public String getName() {
+		return step.getName();
+	}
+	
 	private String getAdditionalInformation() {
 		String outp = "";
 

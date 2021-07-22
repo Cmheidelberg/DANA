@@ -9,13 +9,19 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 public class NarrativeGenerator {
 
 	WorkflowJson workflow;
+	int citationReference = 1;
 
 	public NarrativeGenerator(WorkflowJson workflow) {
 		this.workflow = workflow;
 	}
 
 	public String getStepNarrative(StepNode step) {
-		StepNarrative sn = new StepNarrative(workflow, step);
+		StepNarrative sn = new StepNarrative(workflow, step, citationReference);
+
+		if (!step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("")) {
+			citationReference++;
+		}
+
 		return sn.getNarrative();
 	}
 
@@ -47,6 +53,10 @@ public class NarrativeGenerator {
 		}
 	}
 
+	public void resetCitationReference() {
+		citationReference = 0;
+	}
+
 }
 
 class StepNarrative {
@@ -55,14 +65,18 @@ class StepNarrative {
 	WorkflowJson workflow;
 	int remainingDP;
 	int discussionPoints;
+	boolean hasCitation;
+	int citationReference;
 
 	// Supporting fields
 	String[] stepReference;
 	int stepReferenceCount = 0;
 
-	public StepNarrative(WorkflowJson workflow, StepNode step) {
+	public StepNarrative(WorkflowJson workflow, StepNode step, int citationReference) {
 		this.step = step;
 		this.workflow = workflow;
+		this.citationReference = citationReference;
+		hasCitation = !step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("");
 		String[] tmp = { step.getName(), "it", "this step", "it" };
 		stepReference = tmp;
 	}
@@ -75,8 +89,15 @@ class StepNarrative {
 	 */
 	public String getNarrative() {
 		String outp = "";
-		outp += getNextStepReference() + " takes in " + getInputDescription() + getVerbLink() + " producing "
-				+ getOutputDescription() + ".";
+
+		String citationReferenceString = "";
+		if (hasCitation) {
+			citationReferenceString = " [" + citationReference + "]";
+		}
+
+		// ==MAIN DESCRIPTION==
+		outp += getNextStepReference() + citationReferenceString + " takes in " + getInputDescription() + getVerbLink()
+				+ " producing " + getOutputDescription() + ".";
 
 		if (step.getLongDescription().length() > 0 && !step.getLongDescription().equalsIgnoreCase("null")) {
 			outp += " " + step.getName() + " " + step.getLongDescription() + ".";
@@ -86,6 +107,75 @@ class StepNarrative {
 		String times = count > 1 ? "times" : "time";
 
 		outp += " Overall, this step is used " + Num2Word.convert(count) + " " + times + " in the workflow.";
+
+		outp += "\n\n";
+
+		// ==ADDITIONAL INFORMATION
+		outp += getAdditionalInformation();
+		outp += "\n\n";
+
+		// CREDITS
+		outp += getCitation();
+		return outp;
+	}
+
+	public String getCitation() {
+		if (hasCitation) {
+			return "[" + citationReference + "] " + step.getCitation();
+		} else {
+			return "";
+		}
+	}
+
+	private String getAdditionalInformation() {
+		String outp = "";
+
+		boolean hasUrl = !step.getUrl().equals("") && !step.getUrl().equalsIgnoreCase("null");
+		boolean hasGitHubRepo = !step.getGitHubUrl().equals("") && !step.getGitHubUrl().equalsIgnoreCase("null");
+		boolean hasDocumentationLink = !step.getDocumentationLink().equals("")
+				&& !step.getDocumentationLink().equalsIgnoreCase("null");
+		boolean hasVersion = !step.getVersionNumber().equals("") && !step.getVersionNumber().equalsIgnoreCase("null");
+
+		if (hasUrl || hasGitHubRepo || hasDocumentationLink) {
+			outp += "For more information about the software implemented in this step,";
+
+			if (hasUrl) {
+				outp += " the website can be found at " + step.getUrl() + ".";
+				if (hasGitHubRepo) {
+					outp += " Additionally, a repository exists at " + step.getGitHubUrl();
+					if (hasVersion)
+						outp += ", this workflow used version " + step.getVersionNumber() + ".";
+					else
+						outp += ".";
+				} else if (hasVersion) {
+					outp += " This workflow used version " + step.getVersionNumber() + ".";
+				}
+
+				if (hasDocumentationLink) {
+					outp += " For implementation details, see the documentation at " + step.getDocumentationLink()
+							+ ".";
+				}
+			} else if (hasDocumentationLink) {
+				outp += " see the documentation at " + step.getDocumentationLink() + ".";
+				if (hasGitHubRepo) {
+					outp += " Additionally, a repository exists at " + step.getGitHubUrl();
+					if (hasVersion)
+						outp += ", this workflow used version " + step.getVersionNumber() + ".";
+					else
+						outp += ".";
+				} else if (hasVersion) {
+					outp += " This workflow used version " + step.getVersionNumber() + ".";
+				}
+			} else if (hasGitHubRepo) {
+				outp += " a repository can be found at " + step.getGitHubUrl();
+				if (hasVersion)
+					outp += ", this workflow used version " + step.getVersionNumber() + ".";
+				else
+					outp += ".";
+			}
+		} else if (hasVersion) {
+			outp += "This workflow used version " + step.getVersionNumber() + ".";
+		}
 
 		return outp;
 	}
@@ -102,7 +192,7 @@ class StepNarrative {
 		ArrayList<DatasetNode> datasetInputs = new ArrayList<DatasetNode>();
 		ArrayList<DatasetNode> parameterInputs = new ArrayList<DatasetNode>();
 
-		// Separate Datset inputs from parameter inputs
+		// Separate Dataset inputs from parameter inputs
 		for (WorkflowNode i : inputs) {
 			if (i.isDataset()) {
 				DatasetNode tmp = (DatasetNode) i;
@@ -128,7 +218,7 @@ class StepNarrative {
 
 		remainingDP = discussionPoints;
 
-		// Generate description for eqch unique type of input
+		// Generate description for each unique type of input
 		for (String ctype : types) {
 			ctype = ctype.toLowerCase();
 			ArrayList<DatasetNode> currDatasets = getDatasetsWithType(ctype, datasetInputs);

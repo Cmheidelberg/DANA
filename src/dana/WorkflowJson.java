@@ -257,15 +257,19 @@ public class WorkflowJson {
 			String doi = currKeyJson.get("doi").toString();
 			String url = currKeyJson.get("url").toString();
 			String type = currKeyJson.get("type").toString();
-
+			String citation = currKeyJson.get("citation").toString();
+			
 			curr.setDescription(description);
 			curr.setLicense(license);
 			curr.setAuthor(author);
 			curr.setDoi(doi);
 			curr.setUrl(url);
 			curr.setType(type);
+			curr.setCitation(citation);
 		}
 
+		
+		//Create parameter objects
 		String[] parametersArr = { "nodes", "parameters" };
 		JsonObject parameters = getValue(danaJson, parametersArr);
 		Set<String> parametersKeys = parameters.keySet();
@@ -289,6 +293,7 @@ public class WorkflowJson {
 			curr.setType(type);
 		}
 
+		//Create step objects
 		String[] stepArr = { "nodes", "steps" };
 		JsonObject steps = getValue(danaJson, stepArr);
 		Set<String> stepsKeys = steps.keySet();
@@ -301,6 +306,7 @@ public class WorkflowJson {
 			String longDescription = currKeyJson.get("longDescription").toString();
 			String gitHubUrl = currKeyJson.get("gitHubUrl").toString();
 			String criticality = currKeyJson.get("criticality").toString();
+			String citation = currKeyJson.get("citation").toString();
 			String stepType = currKeyJson.get("stepType").toString();
 			String website = currKeyJson.get("website").toString();
 			String author = currKeyJson.get("author").toString();
@@ -314,8 +320,9 @@ public class WorkflowJson {
 			curr.setLongDescription(longDescription);
 			curr.setGitHubUrl(gitHubUrl);
 			curr.setCriticality(criticality);
+			curr.setCitation(citation);
 			curr.setStepType(stepType);
-			curr.setWebsite(website);
+			curr.setUrl(website);
 			curr.setAuthor(author);
 			curr.setLicense(license);
 			curr.setVersionNumber(versionNumber);

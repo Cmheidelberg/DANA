@@ -14,6 +14,7 @@ public abstract class WorkflowNode {
 	private String author = "";
 	private String license = "";
 	private String url = "";
+	private String citation = "";
 	
 	abstract boolean isDataset();
 	abstract boolean isParameter();
@@ -21,6 +22,10 @@ public abstract class WorkflowNode {
 	//-------|
 	//SETTERS|
 	//-------|
+	
+	public void setCitation(String citation) {
+		this.citation = stripStringWrapper(citation);
+	}
 	
 	public void setId(String roleId) {
 		this.id = stripStringWrapper(roleId);
@@ -54,6 +59,10 @@ public abstract class WorkflowNode {
 	//-------|
 	//GETTERS|
 	//-------|
+	
+	public String getCitation() {
+		return citation;
+	}
 	
 	public String getId() {
 		return id;

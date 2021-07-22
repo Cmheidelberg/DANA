@@ -8,7 +8,6 @@ public class StepNode extends WorkflowNode{
 	private String gitHubUrl = "";
 	private String criticality = "";
 	private String stepType = "";
-	private String website = "";
 	private String versionNumber = "";
 	private String dependancies = "";
 	private String documentationLink = "";
@@ -30,10 +29,6 @@ public class StepNode extends WorkflowNode{
 
 	public void setStepType(String stepType) {
 		this.stepType = super.stripStringWrapper(stepType);
-	}
-
-	public void setWebsite(String website) {
-		this.website = super.stripStringWrapper(website);
 	}
 
 	public void setVersionNumber(String versionNumber) {
@@ -90,10 +85,6 @@ public class StepNode extends WorkflowNode{
 
 	public String getStepType() {
 		return stepType;
-	}
-
-	public String getWebsite() {
-		return website;
 	}
 
 	public String getVersionNumber() {

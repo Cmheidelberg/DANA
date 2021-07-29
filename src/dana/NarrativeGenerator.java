@@ -34,10 +34,12 @@ public class NarrativeGenerator {
 	 * Returns the data narrative for a given dataset in the workflow. Returns a
 	 * string of the description. This method will also automatically increment the
 	 * citatinReference variable if the dataset has a citation in it. The citation
-	 * reference is the citation number when the TODO: fix this description
+	 * reference is the citation number when the 
+	 * 
+	 * TODO: update this description
 	 */
 	public String getDatasetNarrative(DatasetNode dataset) {
-		DatasetNarrative dn = new DatasetNarrative(dataset, citationReference);
+		DatasetNarrative dn = new DatasetNarrative(workflow, dataset, citationReference);
 
 		if (!dataset.getCitation().equalsIgnoreCase("null") && !dataset.getCitation().equals("")) {
 			updateCitations(dn);
@@ -46,6 +48,12 @@ public class NarrativeGenerator {
 		return dn.getNarrative();
 	}
 
+	
+	/**
+	 * Calls the appropriate narrative generating function for a given WorkflowNode.
+	 * This is to make it easier to generate data narratives while looping over
+	 * every node in a workflow. Returns a string narrative for the given node. 
+	 */
 	public String getNodeNarrative(WorkflowNode node) {
 
 		if (node.isDataset()) {
@@ -69,50 +77,65 @@ public class NarrativeGenerator {
 			}
 		}
 	}
+	
+	public String getWorkflowNarrative() {
+		return getWorkflowNarrative(true);
+	}
+	
+	public String getWorkflowNarrative(boolean trackCitations) {
+		String outp = "";
+		
+		
+		return outp;
+	}
 
 	private void updateCitations(Narrative narrative) {
 		citations.add(narrative);
 		citationReference += 1;
 	}
-	
+
 	public void resetCitationReference() {
 		citationReference = 1;
 		citations.clear();
 	}
-	
+
 	public String getCitation(String nodeName) {
-		for(Narrative n : citations) {
-			if(n.getName().equalsIgnoreCase(nodeName)) {
+		for (Narrative n : citations) {
+			if (n.getName().equalsIgnoreCase(nodeName)) {
 				return n.getCitation();
 			}
 		}
 		return null;
 	}
-	
+
 	public ArrayList<String> getAllCitations() {
 		ArrayList<String> out = new ArrayList<String>();
-		
-		for(Narrative n : citations) {
+
+		for (Narrative n : citations) {
 			out.add(n.getCitation());
 		}
-		
+
 		return out;
 	}
 }
 
 interface Narrative {
 	public String getNarrative();
+
 	public String getCitation();
+
 	public String getName();
 }
 
-class DatasetNarrative implements Narrative{
+class DatasetNarrative implements Narrative {
 
 	DatasetNode dataset;
+	WorkflowJson workflow;
 	boolean hasCitation;
 	int citationReference;
 
-	DatasetNarrative(DatasetNode dataset, int citationReference) {
+	DatasetNarrative(WorkflowJson workflow, DatasetNode dataset, int citationReference) {
+		this.workflow = workflow;
 		this.dataset = dataset;
 		this.hasCitation = !dataset.getCitation().equalsIgnoreCase("null") && !dataset.getCitation().equals("");
 		this.citationReference = citationReference;
@@ -132,21 +155,45 @@ class DatasetNarrative implements Narrative{
 		}
 
 		String fileType = "";
-		if (hasFileType) {
-			fileType = dataset.getType() + " file";
+		if (dataset.isParameter()) {
+			fileType = "parameter";
 		} else {
-			fileType = "dataset with an unspecified file type";
+			if (hasFileType) {
+				fileType = dataset.getType() + " file";
+			} else {
+				fileType = "dataset";
+			}
 		}
 		outp += dataset.getName() + citationReferenceString + " is a " + fileType + ".";
 
 		if (hasDescription) {
 			String descriptionNoun = "";
-			if (hasFileType) {
+			if (dataset.isParameter()) {
+				descriptionNoun = " This parameter";
+			} else if (hasFileType) {
 				descriptionNoun = " This dataset";
 			} else {
 				descriptionNoun = " It";
 			}
-			outp += descriptionNoun + dataset.getName() + ".";
+			outp += descriptionNoun + " " + dataset.getDescription() + ".";
+		}
+
+		if (isInput()) {
+			int inputLen = workflow.getInputs().size();
+			if (inputLen > 1) {
+				outp += " It is one of " + Num2Word.convert(inputLen) + " inputs for this workflow.";
+			} else {
+				outp += " It is the workflows input datset.";
+			}
+		}
+
+		if (isOutput()) {
+			int outLen = workflow.getOutputs().size();
+			if (outLen > 1) {
+				outp += " It is one of " + Num2Word.convert(outLen) + " outputs for this workflow.";
+			} else {
+				outp += " It is the workflows output datset.";
+			}
 		}
 
 		return outp;
@@ -159,13 +206,35 @@ class DatasetNarrative implements Narrative{
 			return "";
 		}
 	}
-	
+
 	public String getName() {
 		return dataset.getName();
 	}
+
+	private boolean isInput() {
+		ArrayList<DatasetNode> inputs = workflow.getInputs();
+
+		for (DatasetNode dn : inputs) {
+			if (dataset.equals(dn)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isOutput() {
+		ArrayList<DatasetNode> outputs = workflow.getOutputs();
+
+		for (DatasetNode dn : outputs) {
+			if (dataset.equals(dn)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
-class StepNarrative implements Narrative{
+class StepNarrative implements Narrative {
 
 	StepNode step;
 	WorkflowJson workflow;
@@ -236,7 +305,7 @@ class StepNarrative implements Narrative{
 	public String getName() {
 		return step.getName();
 	}
-	
+
 	private String getAdditionalInformation() {
 		String outp = "";
 

@@ -9,7 +9,7 @@ import javax.json.JsonReader;
 
 public class Dana {
 
-	final static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\Caesar_Cypher.json";
+	final static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\tmp.json";
 
 	public static void main(String[] args) {
 
@@ -36,6 +36,7 @@ public class Dana {
 		
 		String workflowNarrative = ngWorkflow.getWorkflowNarrative();
 		System.out.println(workflowNarrative);
+		System.out.println(ngWorkflow.getCitation("workflow"));
 	}
 
 	public static JsonObject openWorkflow() {

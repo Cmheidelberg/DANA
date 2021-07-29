@@ -34,7 +34,7 @@ public class NarrativeGenerator {
 	 * Returns the data narrative for a given dataset in the workflow. Returns a
 	 * string of the description. This method will also automatically increment the
 	 * citatinReference variable if the dataset has a citation in it. The citation
-	 * reference is the citation number when the 
+	 * reference is the citation number when the
 	 * 
 	 * TODO: update this description
 	 */
@@ -47,11 +47,10 @@ public class NarrativeGenerator {
 		return dn.getNarrative();
 	}
 
-	
 	/**
 	 * Calls the appropriate narrative generating function for a given WorkflowNode.
 	 * This is to make it easier to generate data narratives while looping over
-	 * every node in a workflow. Returns a string narrative for the given node. 
+	 * every node in a workflow. Returns a string narrative for the given node.
 	 */
 	public String getNodeNarrative(WorkflowNode node) {
 
@@ -76,11 +75,11 @@ public class NarrativeGenerator {
 			}
 		}
 	}
-	
+
 	public String getWorkflowNarrative() {
 		return getWorkflowNarrative(true);
 	}
-	
+
 	/**
 	 * Warning: Calling this function resets the citationReference counter.
 	 */
@@ -131,38 +130,72 @@ interface Narrative {
 	public String getName();
 }
 
-
 class WorkflowNarrative implements Narrative {
 	WorkflowJson workflow;
 	boolean hasCitation;
-	int citationReference; 
-	
+	int citationReference;
+
 	WorkflowNarrative(WorkflowJson workflow, int citationReference) {
 		this.workflow = workflow;
 		this.hasCitation = !workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("");
 		this.citationReference = citationReference;
 	}
-	
+
 	public String getNarrative() {
 		String outp = "";
-		boolean hasDescription = workflow.getDescription() != null && !workflow.getDescription().equalsIgnoreCase("null")
-				&& !workflow.getDescription().equals("");
-		//Workflow metadata
+
+		int numInputs = workflow.getInputs().size();
+		int numOutputs = workflow.getOutputs().size();
+		int numParameters = workflow.getParameters().size();
+
+		boolean hasDescription = workflow.getDescription() != null
+				&& !workflow.getDescription().equalsIgnoreCase("null") && !workflow.getDescription().equals("");
+		// Workflow metadata
 		String citationReferenceString = "";
 		if (hasCitation) {
 			citationReferenceString = " [" + citationReference + "] ";
 		}
-		
-		if(hasDescription) {
+
+		if (hasDescription) {
 			outp += "This workflow" + citationReferenceString + workflow.getDescription() + ".\n";
 		}
-		//Workflow link descriptions
-		//TODO FINISH WORKFLOW DESCRIPTION
-		//Citataion
-		
+		outp += "\n";
+
+		// Workflow link descriptions
+		outp += "[THIS WORKFLOW] ";
+		if (numInputs > 0) {
+			String inputs = numInputs == 1 ? "input" : "inputs";
+			outp += "takes in " + Num2Word.convert(numInputs) + " " + inputs;
+			if (numParameters > 0) {
+				String parameters = numParameters == 1 ? "parameter" : "parameters";
+				outp += ", " + Num2Word.convert(numParameters) + " " + parameters + ",";
+			}
+
+			String outputs = numOutputs == 1 ? "output" : "outputs";
+			outp += " and produces " + Num2Word.convert(numOutputs) + " " + outputs + ".";
+
+		} else if (numParameters > 0) {
+			String parameters = numParameters == 1 ? "parameter" : "parameters";
+			outp += "takes in " + Num2Word.convert(numParameters) + " " + parameters;
+
+			String outputs = numOutputs == 1 ? "output" : "outputs";
+			outp += " and produces " + Num2Word.convert(numOutputs) + " " + outputs + ".";
+
+		} else {
+			String outputs = numOutputs == 1 ? "output" : "outputs";
+			outp += " produces " + Num2Word.convert(numOutputs) + " " + outputs + ".";
+			outp += " There are no inputs for this workflow.";
+		}
+
+		ArrayList<WorkflowNode> longerstPath = workflow.getLongestPath();
+		System.out.println("LONGESTPATH_LEN: " + longerstPath.size());
+		for(WorkflowNode wn :longerstPath) {
+			System.out.println("lpn: ");
+			System.out.println(wn.getName());
+		}
 		return outp;
 	}
-	
+
 	public String getCitation() {
 		if (hasCitation) {
 			return "[" + citationReference + "] " + workflow.getCitation();
@@ -290,6 +323,7 @@ class StepNarrative implements Narrative {
 	int remainingDP;
 	int discussionPoints;
 	boolean hasCitation;
+	Boolean hasStepType;
 	int citationReference;
 
 	// Supporting fields
@@ -300,8 +334,10 @@ class StepNarrative implements Narrative {
 		this.step = step;
 		this.workflow = workflow;
 		this.citationReference = citationReference;
-		hasCitation = !step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("");
+		this.hasCitation = !step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("");
+		this.hasStepType = !step.getStepType().equalsIgnoreCase("null") && !step.getStepType().equals("");
 		String[] tmp = { step.getName(), "it", "this step", "it" };
+
 		stepReference = tmp;
 	}
 
@@ -320,8 +356,13 @@ class StepNarrative implements Narrative {
 		}
 
 		// ==MAIN DESCRIPTION==
-		outp += getNextStepReference() + citationReferenceString + " takes in " + getInputDescription() + getVerbLink()
-				+ " producing " + getOutputDescription() + ".";
+		if (hasStepType) {
+			outp += getNextStepReference() + citationReferenceString + " takes in " + getInputDescription()
+					+ getVerbLink() + " producing " + getOutputDescription() + ".";
+		} else {
+			outp += getNextStepReference() + citationReferenceString + " takes in " + getInputDescription()
+					+ " and produces " + getOutputDescription() + ".";
+		}
 
 		if (step.getLongDescription().length() > 0 && !step.getLongDescription().equalsIgnoreCase("null")) {
 			outp += " " + step.getName() + " " + step.getLongDescription() + ".";
@@ -330,9 +371,10 @@ class StepNarrative implements Narrative {
 		int count = workflow.CountTimesUsedInWorkflow(step);
 		String times = count > 1 ? "times" : "time";
 
-		outp += " Overall, this step is used " + Num2Word.convert(count) + " " + times + " in the workflow.";
-
-		outp += "\n\n";
+		if (count > 1) {
+			outp += " Overall, this step is used " + Num2Word.convert(count) + " " + times + " in the workflow.";
+		}
+		outp += "\n";
 
 		// ==ADDITIONAL INFORMATION
 		outp += getAdditionalInformation();
@@ -508,12 +550,15 @@ class StepNarrative implements Narrative {
 	private String getVerbLink() {
 
 		String outp = "";
-		if (discussionPoints > 2) {
-			outp += " then " + step.getStepType() + " them";
-		} else if (discussionPoints == 2) {
-			outp += " " + step.getStepType() + " them,";
-		} else {
-			outp += step.getStepType() + " it,";
+
+		if (hasStepType) {
+			if (discussionPoints > 2) {
+				outp += " then " + step.getStepType() + " them";
+			} else if (discussionPoints == 2) {
+				outp += " " + step.getStepType() + " them,";
+			} else {
+				outp += step.getStepType() + " it,";
+			}
 		}
 		return outp;
 	}

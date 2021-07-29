@@ -278,6 +278,7 @@ public class WorkflowJson {
 			String[] currParameterArr = { "nodes", "parameters", key };
 			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
 
+			String citation = currKeyJson.get("citation").toString();
 			String description = currKeyJson.get("description").toString();
 			String license = currKeyJson.get("license").toString();
 			String author = currKeyJson.get("author").toString();
@@ -291,6 +292,7 @@ public class WorkflowJson {
 			curr.setDoi(doi);
 			curr.setUrl(url);
 			curr.setType(type);
+			curr.setCitation(citation);
 		}
 
 		//Create step objects

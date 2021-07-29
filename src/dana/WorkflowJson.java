@@ -23,7 +23,8 @@ import java.util.*;
 public class WorkflowJson {
 
 	private JsonObject json;
-	private String workflowDescription = "will encript the unput document using a caesar cypher algorithm"; //TODO
+	private String description = "";
+	private String citation = "";
 	private ArrayList<WorkflowNode> workflows;
 
 	public WorkflowJson(JsonObject json) {
@@ -35,6 +36,15 @@ public class WorkflowJson {
 		generateWorkflowNodesListFromWings();
 	}
 
+	
+	public String getDescription() {
+		return this.description;
+	}
+	
+	public String getCitation() {
+		return this.citation;
+	}
+	
 	/**
 	 * Returns a full list of all nodes in this workflow
 	 * 
@@ -89,7 +99,6 @@ public class WorkflowJson {
 			}
 		}
 		return inputNodes;
-
 	}
 
 	/**
@@ -107,7 +116,6 @@ public class WorkflowJson {
 			}
 		}
 		return outputNodes;
-
 	}
 
 	/**
@@ -242,6 +250,12 @@ public class WorkflowJson {
 		JsonObject danaJson = jsonReader.readObject();
 		jsonReader.close();
 
+		// Add workflow metadata
+		JsonObject metadata = getValue(danaJson, "metadata");
+		this.description = metadata.get("description").toString();
+		this.citation = metadata.get("citation").toString();
+		
+		
 		// Add dataset metadata
 		String[] datasetArr = { "nodes", "datasets" };
 		JsonObject datasets = getValue(danaJson, datasetArr);
@@ -391,6 +405,10 @@ public class WorkflowJson {
 		}
 	}
 
+	private void addWorkflowMetadata() {
+		System.out.println(json.toString());
+		String[] arr = { "template", "Variables" };
+	}
 	/**
 	 * Adds any dataset nodes from the json into the workflows array. This method
 	 * must be called before the addInOutLinks() method so that the program can add

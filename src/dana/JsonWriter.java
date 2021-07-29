@@ -71,6 +71,8 @@ public class JsonWriter {
 		}
 
 		ArrayList<KeyValuePair> keys = new ArrayList<KeyValuePair>();
+		keys.add(new KeyValuePair("description"));
+		keys.add(new KeyValuePair("citation"));
 		keys.add(new KeyValuePair("author"));
 		keys.add(new KeyValuePair("dateCreated"));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));

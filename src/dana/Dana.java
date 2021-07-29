@@ -31,7 +31,11 @@ public class Dana {
 		for(String s : ng.getAllCitations()) {
 			System.out.println(s);
 		}
-
+		
+		NarrativeGenerator ngWorkflow = new NarrativeGenerator(workflow);
+		
+		String workflowNarrative = ngWorkflow.getWorkflowNarrative();
+		System.out.println(workflowNarrative);
 	}
 
 	public static JsonObject openWorkflow() {

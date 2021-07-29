@@ -44,7 +44,6 @@ public class NarrativeGenerator {
 		if (!dataset.getCitation().equalsIgnoreCase("null") && !dataset.getCitation().equals("")) {
 			updateCitations(dn);
 		}
-
 		return dn.getNarrative();
 	}
 
@@ -82,11 +81,16 @@ public class NarrativeGenerator {
 		return getWorkflowNarrative(true);
 	}
 	
+	/**
+	 * Warning: Calling this function resets the citationReference counter.
+	 */
 	public String getWorkflowNarrative(boolean trackCitations) {
-		String outp = "";
-		
-		
-		return outp;
+		resetCitationReference();
+		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference);
+		if (!workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("")) {
+			updateCitations(wn);
+		}
+		return wn.getNarrative();
 	}
 
 	private void updateCitations(Narrative narrative) {
@@ -127,6 +131,51 @@ interface Narrative {
 	public String getName();
 }
 
+
+class WorkflowNarrative implements Narrative {
+	WorkflowJson workflow;
+	boolean hasCitation;
+	int citationReference; 
+	
+	WorkflowNarrative(WorkflowJson workflow, int citationReference) {
+		this.workflow = workflow;
+		this.hasCitation = !workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("");
+		this.citationReference = citationReference;
+	}
+	
+	public String getNarrative() {
+		String outp = "";
+		boolean hasDescription = workflow.getDescription() != null && !workflow.getDescription().equalsIgnoreCase("null")
+				&& !workflow.getDescription().equals("");
+		//Workflow metadata
+		String citationReferenceString = "";
+		if (hasCitation) {
+			citationReferenceString = " [" + citationReference + "] ";
+		}
+		
+		if(hasDescription) {
+			outp += "This workflow" + citationReferenceString + workflow.getDescription() + ".\n";
+		}
+		//Workflow link descriptions
+		//TODO FINISH WORKFLOW DESCRIPTION
+		//Citataion
+		
+		return outp;
+	}
+	
+	public String getCitation() {
+		if (hasCitation) {
+			return "[" + citationReference + "] " + workflow.getCitation();
+		} else {
+			return "";
+		}
+	}
+
+	public String getName() {
+		return "workflow";
+	}
+}
+
 class DatasetNarrative implements Narrative {
 
 	DatasetNode dataset;
@@ -148,7 +197,7 @@ class DatasetNarrative implements Narrative {
 		boolean hasFileType = dataset.getType() != null && !dataset.getType().equalsIgnoreCase("null")
 				&& !dataset.getType().equals("");
 		boolean hasDescription = dataset.getDescription() != null && !dataset.getDescription().equalsIgnoreCase("null")
-				&& !dataset.equals("");
+				&& !dataset.getDescription().equals("");
 
 		if (hasCitation) {
 			citationReferenceString = " [" + citationReference + "]";

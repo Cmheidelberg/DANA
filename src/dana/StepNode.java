@@ -6,7 +6,7 @@ public class StepNode extends WorkflowNode{
 	private String longDescription = "";
 	private String gitHubDescription = "";
 	private String gitHubUrl = "";
-	private String criticality = "";
+	private int criticality = 0;
 	private String stepType = "";
 	private String versionNumber = "";
 	private String dependancies = "";
@@ -24,7 +24,11 @@ public class StepNode extends WorkflowNode{
 	}
 
 	public void setCriticality(String criticality) {
-		this.criticality = super.stripStringWrapper(criticality);
+		this.criticality = Integer.parseInt(super.stripStringWrapper(criticality));
+	}
+	
+	public void setCriticality(int criticality) {
+		this.criticality = criticality;
 	}
 
 	public void setStepType(String stepType) {
@@ -79,7 +83,7 @@ public class StepNode extends WorkflowNode{
 		return gitHubDescription;
 	}
 
-	public String getCriticality() {
+	public int getCriticality() {
 		return criticality;
 	}
 

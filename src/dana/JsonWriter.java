@@ -163,7 +163,7 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("shortDescription"));
 				datasetMetadata.add(new KeyValuePair("longDescription"));
 				datasetMetadata.add(new KeyValuePair("gitHubUrl"));
-				datasetMetadata.add(new KeyValuePair("criticality"));
+				datasetMetadata.add(new KeyValuePair("criticality",1));
 				datasetMetadata.add(new KeyValuePair("stepType"));
 				datasetMetadata.add(new KeyValuePair("website"));
 				datasetMetadata.add(new KeyValuePair("citation"));

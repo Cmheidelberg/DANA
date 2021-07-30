@@ -20,6 +20,10 @@ import java.util.*;
  *         any inputs and outputs. There are also helper methods for finding
  *         relationships between nodes.
  */
+/**
+ * @author Admin
+ *
+ */
 public class WorkflowJson {
 
 	private JsonObject json;
@@ -241,43 +245,78 @@ public class WorkflowJson {
 	 * Returns the longest path in the workflow. This is defined as the path that
 	 * has the most steps and contains an input + output node.
 	 */
-	public ArrayList<WorkflowNode> getLongestPath() {
+	public ArrayList<WorkflowNode> getLongestPath(int minCriticality) {
 		ArrayList<WorkflowNode> longestPath = new ArrayList<WorkflowNode>();
 		ArrayList<DatasetNode> inputs = getInputs();
-		
-		for(DatasetNode i : inputs) {
-			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(i);
-			if(tmp.size() > longestPath.size()) {
+
+		for (DatasetNode i : inputs) {
+			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(i, minCriticality);
+			if (tmp.size() > longestPath.size()) {
 				longestPath = tmp;
 			}
 		}
-		
 		return longestPath;
 	}
 
 	/**
-	 * Helper function for getLongestPath(). Recursively finds the longest sup-path for the given path
+	 * Returns whether a dataset has a step parent in the array that is within the
+	 * minimum criticality. This is used as a helper function to getLongestPath() to
+	 * decide if a dataset should be included in the path. If a step is not critical
+	 * enough then its output also needs to not be included in the path
 	 */
-	private ArrayList<WorkflowNode> recursiveGetLongestPath(WorkflowNode node) {
+	private boolean datasetParentMeetsCriticality(WorkflowNode dataset, int minCriticality) {
+		if(dataset.getIncomingLinks() == null) {
+			return true;
+		}
+		for (WorkflowNode parent : dataset.getIncomingLinks()) {
+			try {
+				StepNode step = (StepNode)parent;
+				if (step.getCriticality() <= minCriticality) {
+					return true;
+				}
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Helper function for getLongestPath(). Recursively finds the longest sup-path
+	 * for the given path
+	 */
+	private ArrayList<WorkflowNode> recursiveGetLongestPath(WorkflowNode node, int minCriticality) {
 		ArrayList<WorkflowNode> outputs = node.getOutgoingLinks();
 		ArrayList<WorkflowNode> largestSubPath = new ArrayList<WorkflowNode>();
-		if(outputs == null || outputs.size() == 0) {
-			
+		if (outputs == null || outputs.size() == 0) {
 			largestSubPath.add(node);
 			return largestSubPath;
 		}
-		
-		for(WorkflowNode o : outputs) {
-			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o);
-			tmp.add(node);
+
+		for (WorkflowNode o : outputs) {
+			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o, minCriticality);
 			
-			if(tmp.size() > largestSubPath.size()) {
+			if(node.isDataset() && datasetParentMeetsCriticality(node, minCriticality)) {
+				tmp.add(0, node);
+				
+			} else if (!node.isDataset()) {
+				try {
+					StepNode s = (StepNode)node;
+					if(s.getCriticality() <= minCriticality) {
+						tmp.add(0,node);
+					}
+				} catch (Exception e) {
+					System.out.println("WARNING: couldnt convert WorkflowNode to StepNode while finding longest path");
+				}
+			}
+
+			if (tmp.size() > largestSubPath.size()) {
 				largestSubPath = tmp;
 			}
 		}
 		return largestSubPath;
 	}
-	
+
 	/**
 	 * Count how many time a node is used/appears in a workflow
 	 * 

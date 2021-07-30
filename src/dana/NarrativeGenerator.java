@@ -187,12 +187,12 @@ class WorkflowNarrative implements Narrative {
 			outp += " There are no inputs for this workflow.";
 		}
 
-		ArrayList<WorkflowNode> longerstPath = workflow.getLongestPath();
-		System.out.println("LONGESTPATH_LEN: " + longerstPath.size());
-		for(WorkflowNode wn :longerstPath) {
-			System.out.println("lpn: ");
-			System.out.println(wn.getName());
+		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(1);
+		for(WorkflowNode wn : longestPath) {
+			String line = wn.equals(longestPath.get(longestPath.size()-1)) ? wn.getName() + "\n" : wn.getName() + " -> ";
+			System.out.print(line);
 		}
+		
 		return outp;
 	}
 

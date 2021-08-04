@@ -6,9 +6,8 @@ public class StepNode extends WorkflowNode{
 	private String longDescription = "";
 	private String gitHubDescription = "";
 	private String gitHubUrl = "";
-	private String criticality = "";
+	private int criticality = 0;
 	private String stepType = "";
-	private String website = "";
 	private String versionNumber = "";
 	private String dependancies = "";
 	private String documentationLink = "";
@@ -18,50 +17,49 @@ public class StepNode extends WorkflowNode{
 	//-------|
 	//SETTERS|
 	//-------|
-
-
+	
 	public void setGitHubDescription(String gitHubDescription) {
-		this.gitHubDescription = super.stripStringWrapper(gitHubDescription);
+		this.gitHubDescription = gitHubDescription;
 	}
 
 	public void setCriticality(String criticality) {
-		this.criticality = super.stripStringWrapper(criticality);
+		this.criticality = Integer.parseInt(criticality);
+	}
+	
+	public void setCriticality(int criticality) {
+		this.criticality = criticality;
 	}
 
 	public void setStepType(String stepType) {
-		this.stepType = super.stripStringWrapper(stepType);
-	}
-
-	public void setWebsite(String website) {
-		this.website = super.stripStringWrapper(website);
+		this.stepType = stepType;
 	}
 
 	public void setVersionNumber(String versionNumber) {
-		this.versionNumber = super.stripStringWrapper(versionNumber);
+		this.versionNumber = versionNumber;
 	}
 
 	public void setDependancies(String dependancies) {
-		this.dependancies = super.stripStringWrapper(dependancies);
+		this.dependancies = dependancies;
 	}
 
 	public void setDocumentationLink(String documentationLink) {
-		this.documentationLink = super.stripStringWrapper(documentationLink);
+		this.documentationLink = documentationLink;
 	}
 
 	public void setCommandLineInvocation(String commandLineInvocation) {
-		this.commandLineInvocation = super.stripStringWrapper(commandLineInvocation);
+		this.commandLineInvocation = commandLineInvocation;
 	}
 
 	public void setShortDescription(String shortDescription) {
-		this.shortDescription = super.stripStringWrapper(shortDescription);
+		this.shortDescription = shortDescription;
 	}
 	
 	public void setLongDescription(String longDescription) {
-		this.longDescription = super.stripStringWrapper(longDescription);
+		this.longDescription = longDescription;
 	}
 	
 	public void setGitHubUrl(String gitHubUrl) {
-		this.gitHubUrl = super.stripStringWrapper(gitHubUrl);
+		this.gitHubUrl = gitHubUrl;
 	}
 	
 	//-------|
@@ -71,25 +69,25 @@ public class StepNode extends WorkflowNode{
 	public String getShortDescription() {
 		return shortDescription;
 	}
-
+	
 	public String getLongDescription() {
-		return longDescription;
+		if (longDescription.length() == 0) {
+			return shortDescription;
+		}else {
+			return longDescription;
+		}
 	}
 	
 	public String getGitHubDescription() {
 		return gitHubDescription;
 	}
 
-	public String getCriticality() {
+	public int getCriticality() {
 		return criticality;
 	}
 
 	public String getStepType() {
 		return stepType;
-	}
-
-	public String getWebsite() {
-		return website;
 	}
 
 	public String getVersionNumber() {
@@ -122,5 +120,9 @@ public class StepNode extends WorkflowNode{
 	
 	public boolean isParameter() {
 		return false;
+	}
+	
+	public Boolean hasLongDescription() {
+		return longDescription.length() > 0;
 	}
 }

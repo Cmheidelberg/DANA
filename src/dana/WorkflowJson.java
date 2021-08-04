@@ -20,10 +20,6 @@ import java.util.*;
  *         any inputs and outputs. There are also helper methods for finding
  *         relationships between nodes.
  */
-/**
- * @author Admin
- *
- */
 public class WorkflowJson {
 
 	private JsonObject json;
@@ -69,7 +65,7 @@ public class WorkflowJson {
 
 		// O(n)
 		for (WorkflowNode wn : workflows) {
-			String name = wn.getName();
+			String name = wn.getFullName();
 			String id = wn.getId();
 
 			// Return workflow if it has the same name
@@ -241,6 +237,17 @@ public class WorkflowJson {
 			return null;
 	}
 
+	public boolean validateJson() {
+		try {
+
+			return true;
+		} catch (Exception e) {
+			System.out.println("WARNIGN: Runtime error thrown in validateJson. " + e.getMessage());
+			return false;
+		}
+
+	}
+
 	/**
 	 * Returns the longest path in the workflow. This is defined as the path that
 	 * has the most steps and contains an input + output node.
@@ -265,12 +272,12 @@ public class WorkflowJson {
 	 * enough then its output also needs to not be included in the path
 	 */
 	private boolean datasetParentMeetsCriticality(WorkflowNode dataset, int minCriticality) {
-		if(dataset.getIncomingLinks() == null) {
+		if (dataset.getIncomingLinks() == null) {
 			return true;
 		}
 		for (WorkflowNode parent : dataset.getIncomingLinks()) {
 			try {
-				StepNode step = (StepNode)parent;
+				StepNode step = (StepNode) parent;
 				if (step.getCriticality() <= minCriticality) {
 					return true;
 				}
@@ -295,15 +302,15 @@ public class WorkflowJson {
 
 		for (WorkflowNode o : outputs) {
 			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o, minCriticality);
-			
-			if(node.isDataset() && datasetParentMeetsCriticality(node, minCriticality)) {
+
+			if (node.isDataset() && datasetParentMeetsCriticality(node, minCriticality)) {
 				tmp.add(0, node);
-				
+
 			} else if (!node.isDataset()) {
 				try {
-					StepNode s = (StepNode)node;
-					if(s.getCriticality() <= minCriticality) {
-						tmp.add(0,node);
+					StepNode s = (StepNode) node;
+					if (s.getCriticality() <= minCriticality) {
+						tmp.add(0, node);
 					}
 				} catch (Exception e) {
 					System.out.println("WARNING: couldnt convert WorkflowNode to StepNode while finding longest path");
@@ -325,7 +332,7 @@ public class WorkflowJson {
 	public int CountTimesUsedInWorkflow(WorkflowNode node) {
 		int count = 0;
 		for (WorkflowNode wn : workflows) {
-			if (wn.getName().equalsIgnoreCase(node.getName())) {
+			if (wn.getDisplayName().equalsIgnoreCase(node.getDisplayName())) {
 				count++;
 			}
 		}
@@ -358,13 +365,13 @@ public class WorkflowJson {
 			String[] currDatasetArr = { "nodes", "datasets", key };
 			JsonObject currKeyJson = getValue(danaJson, currDatasetArr);
 
-			String description = currKeyJson.get("description").toString();
-			String license = currKeyJson.get("license").toString();
-			String author = currKeyJson.get("author").toString();
-			String doi = currKeyJson.get("doi").toString();
-			String url = currKeyJson.get("url").toString();
-			String type = currKeyJson.get("type").toString();
-			String citation = currKeyJson.get("citation").toString();
+			String description = readJsonValue("description", currKeyJson);
+			String license = readJsonValue("license", currKeyJson);
+			String author = readJsonValue("author", currKeyJson);
+			String doi = readJsonValue("doi", currKeyJson);
+			String url = readJsonValue("url", currKeyJson);
+			String type = readJsonValue("type", currKeyJson);
+			String citation = readJsonValue("citation", currKeyJson);
 
 			curr.setDescription(description);
 			curr.setLicense(license);
@@ -384,13 +391,13 @@ public class WorkflowJson {
 			String[] currParameterArr = { "nodes", "parameters", key };
 			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
 
-			String citation = currKeyJson.get("citation").toString();
-			String description = currKeyJson.get("description").toString();
-			String license = currKeyJson.get("license").toString();
-			String author = currKeyJson.get("author").toString();
-			String doi = currKeyJson.get("doi").toString();
-			String url = currKeyJson.get("url").toString();
-			String type = currKeyJson.get("type").toString();
+			String citation = readJsonValue("citation", currKeyJson);
+			String description = readJsonValue("description", currKeyJson);
+			String license = readJsonValue("license", currKeyJson);
+			String author = readJsonValue("author", currKeyJson);
+			String doi = readJsonValue("doi", currKeyJson);
+			String url = readJsonValue("url", currKeyJson);
+			String type = readJsonValue("type", currKeyJson);
 
 			curr.setDescription(description);
 			curr.setLicense(license);
@@ -410,19 +417,19 @@ public class WorkflowJson {
 			String[] currStepsArr = { "nodes", "steps", key };
 			JsonObject currKeyJson = getValue(danaJson, currStepsArr);
 
-			String shortDescription = currKeyJson.get("shortDescription").toString();
-			String longDescription = currKeyJson.get("longDescription").toString();
-			String gitHubUrl = currKeyJson.get("gitHubUrl").toString();
-			String criticality = currKeyJson.get("criticality").toString();
-			String citation = currKeyJson.get("citation").toString();
-			String stepType = currKeyJson.get("stepType").toString();
-			String website = currKeyJson.get("website").toString();
-			String author = currKeyJson.get("author").toString();
-			String license = currKeyJson.get("license").toString();
-			String versionNumber = currKeyJson.get("versionNumber").toString();
-			String dependencies = currKeyJson.get("dependencies").toString();
-			String documentationLink = currKeyJson.get("documentationLink").toString();
-			String commandLineInvocation = currKeyJson.get("commandLineInvocation").toString();
+			String shortDescription = readJsonValue("shortDescription", currKeyJson);
+			String longDescription = readJsonValue("longDescription", currKeyJson);
+			String gitHubUrl = readJsonValue("gitHubUrl", currKeyJson);
+			String criticality = readJsonValue("criticality", currKeyJson);
+			String citation = readJsonValue("citation", currKeyJson);
+			String stepType = readJsonValue("stepType", currKeyJson);
+			String website = readJsonValue("website", currKeyJson);
+			String author = readJsonValue("author", currKeyJson);
+			String license = readJsonValue("license", currKeyJson);
+			String versionNumber = readJsonValue("versionNumber", currKeyJson);
+			String dependencies = readJsonValue("dependencies", currKeyJson);
+			String documentationLink = readJsonValue("documentationLink", currKeyJson);
+			String commandLineInvocation = readJsonValue("commandLineInvocation", currKeyJson);
 
 			curr.setShortDescription(shortDescription);
 			curr.setLongDescription(longDescription);
@@ -441,6 +448,28 @@ public class WorkflowJson {
 
 	}
 
+	private String readJsonValue(String key, JsonObject json) {
+		try {
+			String read = json.get(key).toString();
+
+			// String the string wrapper if it exists (leading and trailing ")
+			char start = read.charAt(0);
+			char end = read.charAt(read.length() - 1);
+			int startIndex = 0;
+			int endIndex = read.length();
+			if (start == '\"' || start == '\'') {
+				startIndex = +1;
+			}
+			if (end == '\"' || end == '\'') {
+				endIndex -= 1;
+			}
+
+			return read.substring(startIndex, endIndex);
+		} catch (NullPointerException npe) {
+			return "";
+		}
+	}
+
 	/**
 	 * Use the wings json to populate the workflows array with nodes from the wings
 	 * workflow. This populates with any dataset, parameter and step nodes, as well
@@ -454,9 +483,8 @@ public class WorkflowJson {
 		addSteps(); // Add all step nodes to the workflows array
 		addInOutLinks(); // Add i/o links for every node in the workflows array
 
-		// Print the workflows
 		for (WorkflowNode wn : workflows) {
-			System.out.println("------------");
+			System.out.println("====" + wn.getFullName() + "====");
 			System.out.println(wn);
 		}
 	}
@@ -497,11 +525,6 @@ public class WorkflowJson {
 		}
 	}
 
-	private void addWorkflowMetadata() {
-		System.out.println(json.toString());
-		String[] arr = { "template", "Variables" };
-	}
-
 	/**
 	 * Adds any dataset nodes from the json into the workflows array. This method
 	 * must be called before the addInOutLinks() method so that the program can add
@@ -520,14 +543,26 @@ public class WorkflowJson {
 
 			// Get name from key string (Key is URL with the variable #name at end)
 			String[] split = key.split("#");
-			String name = split[split.length - 1];
+			String fullName = split[split.length - 1];
+
+			String[] bindingId = { "template", "Nodes", key, "componentVariable", "binding" };
+			JsonObject binding = getValue(json, bindingId);
+			String displayName;
+			if (!binding.isEmpty()) {
+				displayName = binding.getString("id");
+				split = displayName.split("#");
+				displayName = displayName.length() > 0 ? split[split.length - 1] : "";
+			} else {
+				displayName = fullName;
+			}
 
 			// Get the variable's type: 1=dataset, 2=parameter
 			Boolean isParameter = Integer.parseInt(curr.get("type").toString()) == 2 ? true : false;
 
 			// Set basic metadata
 			DatasetNode dataset = new DatasetNode();
-			dataset.setName(name);
+			dataset.setDisplayName(displayName);
+			dataset.setFullName(fullName);
 			dataset.setIsParameter(isParameter);
 			dataset.setId(key);
 
@@ -552,11 +587,23 @@ public class WorkflowJson {
 			// Get name from componentVariable binding (owl url)
 			String id = key;
 			String[] split = id.split("#");
-			String name = split[split.length - 1];
+			String fullName = split[split.length - 1];
+
+			String[] bindingId = { "template", "Nodes", key, "componentVariable", "binding" };
+			JsonObject binding = getValue(json, bindingId);
+			String displayName;
+			if (!binding.isEmpty()) {
+				displayName = binding.getString("id");
+				split = displayName.split("#");
+				displayName = displayName.length() > 0 ? split[split.length - 1] : "";
+			} else {
+				displayName = fullName;
+			}
 
 			// Set basic metadata
 			StepNode step = new StepNode();
-			step.setName(name);
+			step.setFullName(fullName);
+			step.setDisplayName(displayName);
 			step.setId(id);
 
 			workflows.add(step);
@@ -618,7 +665,7 @@ public class WorkflowJson {
 		try {
 			return object.get(key).asJsonObject();
 		} catch (Exception e) {
-			System.out.println("Error getting key: " + key + " from object: " + object);
+			// System.out.println("Error getting key: " + key + " from object: " + object);
 			JsonReader jsonReader = Json.createReader(new StringReader("{}"));
 			return jsonReader.readObject();
 		}
@@ -640,7 +687,8 @@ public class WorkflowJson {
 		try {
 			o = object.get(key[0]).asJsonObject();
 		} catch (NullPointerException e) {
-			System.out.println("Error getting key: " + key[0] + " from object: " + object);
+			// System.out.println("Error getting key: " + key[0] + " from object: " +
+			// object);
 			JsonReader jsonReader = Json.createReader(new StringReader("{}"));
 			return jsonReader.readObject();
 		}
@@ -651,8 +699,8 @@ public class WorkflowJson {
 				if (tmp.getValueType().toString().equalsIgnoreCase("object")) {
 					o = tmp.asJsonObject();
 				} else if (i != key.length - 1) {
-					System.out.println("Error getting key: " + key[i] + " from object: " + tmp
-							+ ". Too many keys; not enough json objects");
+					// System.out.println("Error getting key: " + key[i] + " from object: " + tmp
+					// + ". Too many keys; not enough json objects");
 					JsonReader jsonReader = Json.createReader(new StringReader("{}"));
 					return jsonReader.readObject();
 				} else {
@@ -662,7 +710,7 @@ public class WorkflowJson {
 					return jsonReader.readObject();
 				}
 			} catch (NullPointerException e) {
-				System.out.println("Error getting key: " + key[i] + " from object: " + o);
+				// System.out.println("Error getting key: " + key[i] + " from object: " + o);
 				JsonReader jsonReader = Json.createReader(new StringReader("{}"));
 				return jsonReader.readObject();
 			}

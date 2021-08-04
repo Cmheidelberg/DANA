@@ -2,10 +2,6 @@ package dana;
 
 import java.util.ArrayList;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 public class NarrativeGenerator {
 
 	WorkflowJson workflow;
@@ -60,7 +56,7 @@ public class NarrativeGenerator {
 				return getDatasetNarrative(dn);
 
 			} catch (ClassCastException cce) {
-				System.out.println("Error: cannot cast \"" + node.getName() + "\" as a DatasetNode");
+				System.out.println("Error: cannot cast \"" + node.getFullName() + "\" as a DatasetNode");
 				cce.printStackTrace();
 				return null;
 			}
@@ -69,23 +65,23 @@ public class NarrativeGenerator {
 				StepNode sn = (StepNode) node;
 				return getStepNarrative(sn);
 			} catch (ClassCastException cce) {
-				System.out.println("Error: cannot cast \"" + node.getName() + "\" as a StepNode");
+				System.out.println("Error: cannot cast \"" + node.getFullName() + "\" as a StepNode");
 				cce.printStackTrace();
 				return null;
 			}
 		}
 	}
 
-	public String getWorkflowNarrative() {
-		return getWorkflowNarrative(true);
+	public String getWorkflowNarrative(int minCriticality) {
+		return getWorkflowNarrative(true, minCriticality);
 	}
 
 	/**
 	 * Warning: Calling this function resets the citationReference counter.
 	 */
-	public String getWorkflowNarrative(boolean trackCitations) {
+	public String getWorkflowNarrative(boolean trackCitations, int minCriticality) {
 		resetCitationReference();
-		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference);
+		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference, minCriticality);
 		if (!workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("")) {
 			updateCitations(wn);
 		}
@@ -134,11 +130,13 @@ class WorkflowNarrative implements Narrative {
 	WorkflowJson workflow;
 	boolean hasCitation;
 	int citationReference;
+	int minCriticality;
 
-	WorkflowNarrative(WorkflowJson workflow, int citationReference) {
+	WorkflowNarrative(WorkflowJson workflow, int citationReference, int minCriticality) {
 		this.workflow = workflow;
 		this.hasCitation = !workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("");
 		this.citationReference = citationReference;
+		this.minCriticality = minCriticality;
 	}
 
 	public String getNarrative() {
@@ -155,14 +153,15 @@ class WorkflowNarrative implements Narrative {
 		if (hasCitation) {
 			citationReferenceString = " [" + citationReference + "] ";
 		}
-
+		
 		if (hasDescription) {
 			outp += "This workflow" + citationReferenceString + workflow.getDescription() + ".\n";
 		}
 		outp += "\n";
 
 		// Workflow link descriptions
-		outp += "[THIS WORKFLOW] ";
+		
+		outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
 		if (numInputs > 0) {
 			String inputs = numInputs == 1 ? "input" : "inputs";
 			outp += "takes in " + Num2Word.convert(numInputs) + " " + inputs;
@@ -186,11 +185,13 @@ class WorkflowNarrative implements Narrative {
 			outp += " produces " + Num2Word.convert(numOutputs) + " " + outputs + ".";
 			outp += " There are no inputs for this workflow.";
 		}
-
-		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(1);
+		
+		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
+		outp += "\n";
 		for(WorkflowNode wn : longestPath) {
-			String line = wn.equals(longestPath.get(longestPath.size()-1)) ? wn.getName() + "\n" : wn.getName() + " -> ";
+			String line = wn.equals(longestPath.get(longestPath.size()-1)) ? wn.getDisplayName() + "\n" : wn.getDisplayName() + " -> ";
 			System.out.print(line);
+			outp += line; //TODO replace this with the actual description			
 		}
 		
 		return outp;
@@ -246,7 +247,7 @@ class DatasetNarrative implements Narrative {
 				fileType = "dataset";
 			}
 		}
-		outp += dataset.getName() + citationReferenceString + " is a " + fileType + ".";
+		outp += dataset.getDisplayName() + citationReferenceString + " is a " + fileType + ".";
 
 		if (hasDescription) {
 			String descriptionNoun = "";
@@ -290,7 +291,7 @@ class DatasetNarrative implements Narrative {
 	}
 
 	public String getName() {
-		return dataset.getName();
+		return dataset.getDisplayName();
 	}
 
 	private boolean isInput() {
@@ -336,7 +337,7 @@ class StepNarrative implements Narrative {
 		this.citationReference = citationReference;
 		this.hasCitation = !step.getCitation().equalsIgnoreCase("null") && !step.getCitation().equals("");
 		this.hasStepType = !step.getStepType().equalsIgnoreCase("null") && !step.getStepType().equals("");
-		String[] tmp = { step.getName(), "it", "this step", "it" };
+		String[] tmp = { step.getDisplayName(), "it", "this step", "it" };
 
 		stepReference = tmp;
 	}
@@ -365,7 +366,7 @@ class StepNarrative implements Narrative {
 		}
 
 		if (step.getLongDescription().length() > 0 && !step.getLongDescription().equalsIgnoreCase("null")) {
-			outp += " " + step.getName() + " " + step.getLongDescription() + ".";
+			outp += " " + step.getDisplayName() + " " + step.getLongDescription() + ".";
 		}
 
 		int count = workflow.CountTimesUsedInWorkflow(step);
@@ -374,7 +375,6 @@ class StepNarrative implements Narrative {
 		if (count > 1) {
 			outp += " Overall, this step is used " + Num2Word.convert(count) + " " + times + " in the workflow.";
 		}
-		outp += "\n";
 
 		// ==ADDITIONAL INFORMATION
 		outp += getAdditionalInformation();
@@ -394,7 +394,7 @@ class StepNarrative implements Narrative {
 	}
 
 	public String getName() {
-		return step.getName();
+		return step.getDisplayName();
 	}
 
 	private String getAdditionalInformation() {
@@ -407,6 +407,7 @@ class StepNarrative implements Narrative {
 		boolean hasVersion = !step.getVersionNumber().equals("") && !step.getVersionNumber().equalsIgnoreCase("null");
 
 		if (hasUrl || hasGitHubRepo || hasDocumentationLink) {
+			outp += "\n\n";
 			outp += "For more information about the software implemented in this step,";
 
 			if (hasUrl) {
@@ -472,7 +473,7 @@ class StepNarrative implements Narrative {
 					datasetInputs.add(tmp);
 				}
 			} else {
-				System.out.println("WARNING: found input to step (" + step.getName() + ") that is not a dataset: " + i);
+				System.out.println("WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
 				System.out.println("Ignoring warning");
 			}
 		}
@@ -494,14 +495,14 @@ class StepNarrative implements Narrative {
 			ArrayList<DatasetNode> currDatasets = getDatasetsWithType(ctype, datasetInputs);
 
 			if (currDatasets.size() == 1) {
-				outp += "a " + ctype + " file[" + datasetInputs.get(0).getName() + "]";
+				outp += "a " + ctype + " file[" + datasetInputs.get(0).getDisplayName() + "]";
 				remainingDP--;
 
 			} else if (currDatasets.size() > 1) {
 				outp += Num2Word.convert(currDatasets.size()) + " " + ctype + "files[";
 				for (int i = 0; i < currDatasets.size(); i++) {
-					outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getName()
-							: currDatasets.get(i).getName() + ",";
+					outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName()
+							: currDatasets.get(i).getDisplayName() + ",";
 				}
 				outp += "]";
 				remainingDP--;
@@ -530,12 +531,12 @@ class StepNarrative implements Narrative {
 			}
 
 			if (parameterInputs.size() == 1) {
-				outp += "a parameter[" + parameterInputs.get(0).getName() + "],";
+				outp += "a parameter[" + parameterInputs.get(0).getDisplayName() + "],";
 			} else if (parameterInputs.size() > 1) {
 				outp += Num2Word.convert(parameterInputs.size()) + " parameters[";
 				for (int i = 0; i < parameterInputs.size(); i++) {
-					outp += i == parameterInputs.size() - 1 ? parameterInputs.get(i).getName()
-							: parameterInputs.get(i).getName() + ",";
+					outp += i == parameterInputs.size() - 1 ? parameterInputs.get(i).getDisplayName()
+							: parameterInputs.get(i).getDisplayName() + ",";
 				}
 				outp += "],";
 			}
@@ -581,7 +582,7 @@ class StepNarrative implements Narrative {
 					datasetInputs.add(tmp);
 				}
 			} else {
-				System.out.println("WARNING: found input to step (" + step.getName() + ") that is not a dataset: " + i);
+				System.out.println("WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
 				System.out.println("Ignoring warning");
 			}
 		}
@@ -595,7 +596,7 @@ class StepNarrative implements Narrative {
 			try {
 				datasetOutputs.add((DatasetNode) w);
 			} catch (Exception e) {
-				System.out.print("WARNING: exceptin when converting outgoing link " + w.getName() + " as dataset node");
+				System.out.print("WARNING: exceptin when converting outgoing link " + w.getFullName() + " as dataset node");
 			}
 		}
 
@@ -614,7 +615,7 @@ class StepNarrative implements Narrative {
 			} else {
 				reference = "a ";
 			}
-			outp += reference + currType + " file[" + datasetOutputs.get(0).getName() + "]";
+			outp += reference + currType + " file[" + datasetOutputs.get(0).getDisplayName() + "]";
 		} else {
 			ArrayList<String> uniqueOutputTypes = getUniqueTypes(datasetOutputs);
 			discussionPoints = uniqueOutputTypes.size();
@@ -624,7 +625,7 @@ class StepNarrative implements Narrative {
 				ArrayList<DatasetNode> currDatasets = getDatasetsWithType(s, datasetOutputs);
 
 				if (currDatasets.size() == 1) {
-					outp += "a " + s + " file[" + datasetInputs.get(0).getName() + "]";
+					outp += "a " + s + " file[" + datasetInputs.get(0).getDisplayName() + "]";
 					remainingDP--;
 
 				} else if (currDatasets.size() > 1) {

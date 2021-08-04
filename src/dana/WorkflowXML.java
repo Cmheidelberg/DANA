@@ -37,7 +37,7 @@ public class WorkflowXML {
 	
 	public WorkflowNode getWorkflowNodeByName(String name) {
 		for(WorkflowNode n : workflows) {
-			if(name.toLowerCase().equals(n.getName().toLowerCase())) {
+			if(name.toLowerCase().equals(n.getDisplayName().toLowerCase())) {
 				return n;
 			}
 		}
@@ -49,7 +49,7 @@ public class WorkflowXML {
 		NodeList linksList = workflow.getElementsByTagName("j.0:hasLink");
 		ArrayList<WorkflowNode> workflowNodes = new ArrayList<WorkflowNode>();
 		
-		String name = dataset.getName().toLowerCase().replace("#", "");
+		String name = dataset.getDisplayName().toLowerCase().replace("#", "");
 		for(int i = 0; i < linksList.getLength(); i++) {
 			Node curr = linksList.item(i);
 			Node dataVariable = recursiveGetChildNodeFromName(curr,"j.0:InputLink");
@@ -68,12 +68,12 @@ public class WorkflowXML {
 							WorkflowNode sn = getWorkflowNodeByName(stepNodeName);
 							if(sn == null) {
 								sn = new StepNode();
-								sn.setName(stepNodeName);
+								sn.setDisplayName(stepNodeName);
 								workflows.add(sn);
 							} 
 							workflowNodes.add(sn);
 						} else {
-							System.out.println("cant fine j.0:hasDestinationNode for dataset (name): " + dataset.getName());
+							System.out.println("cant fine j.0:hasDestinationNode for dataset (name): " + dataset.getDisplayName());
 						}
 					}
 				}
@@ -114,10 +114,10 @@ public class WorkflowXML {
 			}
 			
 			if (dataVariable != null) {
-				inp.setName(getAttribute(dataVariable, "rdf:ID"));
+				inp.setDisplayName(getAttribute(dataVariable, "rdf:ID"));
 				
 			} else {
-				inp.setName("[not found!]");
+				inp.setDisplayName("[not found!]");
 			}
 			
 			inp.setOutgoingLinks(findDatasetOutputNodes(inp));
@@ -140,13 +140,13 @@ public class WorkflowXML {
 			Node id = recursiveGetChildNodeFromName(role,"j.0:hasRoleID");
 			if (id != null) {
 				inp.setId(id.getTextContent());
-				inp.setName(id.getTextContent());
+				inp.setDisplayName(id.getTextContent());
 			} else {
 				inp.setId("[not found!]");
-				inp.setName("[not found!]");
+				inp.setDisplayName("[not found!]");
 			}
 
-			inp.setIncomingLinks(findInputsFromOutputNode(inp.getName()));
+			inp.setIncomingLinks(findInputsFromOutputNode(inp.getDisplayName()));
 			
 			workflows.add(inp);
 		}
@@ -171,7 +171,7 @@ public class WorkflowXML {
 						WorkflowNode sn = getWorkflowNodeByName(incomingName);
 						if(sn == null) {
 							sn = new StepNode();
-							sn.setName(incomingName);
+							sn.setDisplayName(incomingName);
 							workflows.add(sn);
 						}
 						outNodes.add(sn);
@@ -194,7 +194,7 @@ public class WorkflowXML {
 				System.out.println("======(i/o:" + i + ")======");
 				Node variable = recursiveGetChildNodeFromName(ioLink, "j.0:hasVariable");
 				if(variable != null) {
-					dn.setName(getAttribute(recursiveGetChildNodeFromName(ioLink, "j.0:DataVariable"),"rdf:ID"));
+					dn.setDisplayName(getAttribute(recursiveGetChildNodeFromName(ioLink, "j.0:DataVariable"),"rdf:ID"));
 				}
 				
 				// Find origin node
@@ -205,12 +205,12 @@ public class WorkflowXML {
 					WorkflowNode sn = getWorkflowNodeByName(originName);
 					if(sn == null) {
 						sn = new StepNode();
-						sn.setName(originName);
+						sn.setDisplayName(originName);
 						workflows.add(sn);
 					}
 					dn.addIncomingLink(sn);	
 				} else {
-					System.out.println("inOut link \"" + dn.getName() + "\" doesnt have origin node!?");
+					System.out.println("inOut link \"" + dn.getDisplayName() + "\" doesnt have origin node!?");
 				}
 				
 				// Find destination node
@@ -222,16 +222,16 @@ public class WorkflowXML {
 						WorkflowNode sn = getWorkflowNodeByName(originName);
 						if(sn == null) {
 							sn = new StepNode();
-							sn.setName(originName);
+							sn.setDisplayName(originName);
 							workflows.add(sn);
 						}
 						dn.addOutgoingLink(sn);	
 					} else {
-						System.out.println("inOut link \"" + dn.getName() + "\" has no attribute \"rdf:resource\" for destination Node!");
+						System.out.println("inOut link \"" + dn.getDisplayName() + "\" has no attribute \"rdf:resource\" for destination Node!");
 					}
 
 				} else {
-					System.out.println("inOut link \"" + dn.getName() + "\" has no destination	 node!?");
+					System.out.println("inOut link \"" + dn.getDisplayName() + "\" has no destination	 node!?");
 				}
 				
 				workflows.add(dn);
@@ -247,7 +247,7 @@ public class WorkflowXML {
 					if (tmp != null) {
 						for(WorkflowNode incomingLink : tmp) {
 							count++;
-							if(incomingLink.getName().equalsIgnoreCase(n.getName())) {	
+							if(incomingLink.getDisplayName().equalsIgnoreCase(n.getDisplayName())) {	
 								n.addOutgoingLink(curr);
 							}
 						}
@@ -257,7 +257,7 @@ public class WorkflowXML {
 					if(tmp != null) {
 						for(WorkflowNode outgoingLink : tmp) {
 							count++;
-							if(outgoingLink.getName().equalsIgnoreCase(n.getName())) {
+							if(outgoingLink.getDisplayName().equalsIgnoreCase(n.getDisplayName())) {
 								n.addIncomingLink(curr);
 							}
 						}

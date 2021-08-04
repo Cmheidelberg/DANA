@@ -19,19 +19,19 @@ public class DatasetNode extends WorkflowNode {
 	}
 
 	public void setType(String type) {
-		this.type = super.stripStringWrapper(type);
+		this.type = type;
 	}
 
 	public void setPathToData(String pathToData) {
-		this.pathToData = super.stripStringWrapper(pathToData);
+		this.pathToData = pathToData;
 	}
 
 	public void setDescription(String description) {
-		this.description = super.stripStringWrapper(description);
+		this.description = description;
 	}
 
 	public void setDoi(String doi) {
-		this.doi = super.stripStringWrapper(doi);
+		this.doi = doi;
 	}
 	
 	//-------|

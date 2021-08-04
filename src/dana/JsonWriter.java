@@ -67,7 +67,7 @@ public class JsonWriter {
 		// Create an array of the names of each node.
 		String[] nodes = new String[workflow.size()];
 		for (int i = 0; i < workflow.size(); i++) {
-			nodes[i] = workflow.get(i).getName();
+			nodes[i] = workflow.get(i).getFullName();
 		}
 
 		ArrayList<KeyValuePair> keys = new ArrayList<KeyValuePair>();
@@ -113,7 +113,7 @@ public class JsonWriter {
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
 
 					for (int i = 0; i < incoming.size(); i++) {
-						inputLinks[i] = incoming.get(i).getName();
+						inputLinks[i] = incoming.get(i).getFullName();
 					}
 					datasetMetadata.add(new KeyValuePair("hasInput", arrayToCsv(inputLinks)));
 				} else {
@@ -126,7 +126,7 @@ public class JsonWriter {
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
 
 					for (int i = 0; i < outgoing.size(); i++) {
-						outgoingLinks[i] = outgoing.get(i).getName();
+						outgoingLinks[i] = outgoing.get(i).getFullName();
 					}
 
 					datasetMetadata.add(new KeyValuePair("hasOutput", arrayToCsv(outgoingLinks)));
@@ -135,7 +135,7 @@ public class JsonWriter {
 				}
 
 				//Keep separate objects for parameters and datasets
-				KeyValuePair c = new KeyValuePair(wn.getName(), keyValueStringFormatter(datasetMetadata));
+				KeyValuePair c = new KeyValuePair(wn.getFullName(), keyValueStringFormatter(datasetMetadata));
 				if (wn.isParameter()) {
 					parameterKeys.add(c);
 				} else {
@@ -160,6 +160,8 @@ public class JsonWriter {
 
 				//Add all metadata fields (these are all fields that a human will need to fill out)
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
+				datasetMetadata.add(new KeyValuePair("fullName", wn.getFullName()));
+				datasetMetadata.add(new KeyValuePair("displayName", wn.getDisplayName()));
 				datasetMetadata.add(new KeyValuePair("shortDescription"));
 				datasetMetadata.add(new KeyValuePair("longDescription"));
 				datasetMetadata.add(new KeyValuePair("gitHubUrl"));
@@ -181,7 +183,7 @@ public class JsonWriter {
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
 
 					for (int i = 0; i < incoming.size(); i++) {
-						inputLinks[i] = incoming.get(i).getName();
+						inputLinks[i] = incoming.get(i).getFullName();
 					}
 					datasetMetadata.add(new KeyValuePair("hasInput", arrayToCsv(inputLinks)));
 				} else {
@@ -194,13 +196,13 @@ public class JsonWriter {
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
 
 					for (int i = 0; i < outgoing.size(); i++) {
-						outgoingLinks[i] = outgoing.get(i).getName();
+						outgoingLinks[i] = outgoing.get(i).getFullName();
 					}
 					datasetMetadata.add(new KeyValuePair("hasOutput", arrayToCsv(outgoingLinks)));
 				} else {
 					datasetMetadata.add(new KeyValuePair("hasOutput", null));
 				}
-				KeyValuePair c = new KeyValuePair(wn.getName(), keyValueStringFormatter(datasetMetadata));
+				KeyValuePair c = new KeyValuePair(wn.getFullName(), keyValueStringFormatter(datasetMetadata));
 				stepKeys.add(c);
 			}
 		}

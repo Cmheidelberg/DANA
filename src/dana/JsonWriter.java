@@ -76,7 +76,6 @@ public class JsonWriter {
 		keys.add(new KeyValuePair("author"));
 		keys.add(new KeyValuePair("dateCreated"));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));
-		keys.add(new KeyValuePair("jsonCreatedBy", "DANA"));
 
 		return keyValueStringFormatter(keys);
 	}

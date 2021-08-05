@@ -5,13 +5,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
-import java.util.*;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.loader.SchemaLoader;
+
+import org.json.JSONObject;
+
 
 /**
  * @author Christopher Heidelberg
@@ -237,15 +242,24 @@ public class WorkflowJson {
 			return null;
 	}
 
-	public boolean validateJson() {
+	/**
+	 * validate the provided json path against the dana schema.json. Return true if
+	 * given json is valid, prints the ValidationException otherwise.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public boolean validateJson(String path) {
 		try {
-
-			return true;
-		} catch (Exception e) {
-			System.out.println("WARNIGN: Runtime error thrown in validateJson. " + e.getMessage());
+			String schemaString = readFile("schema.json");
+			JSONObject rawSchema = new JSONObject(schemaString);
+			Schema schema = SchemaLoader.load(rawSchema);
+			schema.validate(new JSONObject(readFile(path))); // throws a ValidationException if this object is invalid
+		} catch (org.everit.json.schema.ValidationException e) {
+			System.out.println("[ERROR] Invalid DANA JSON: " + e.getMessage());
 			return false;
 		}
-
+		return true;
 	}
 
 	/**
@@ -344,8 +358,15 @@ public class WorkflowJson {
 	 * This will populate the metadata fields for each of the workflow nodes
 	 * 
 	 * @param path to json
+	 * @return true if json was successfully read and serialized; false otherwise
 	 */
-	public void readDanaJson(String path) {
+	public boolean readDanaJson(String path) {
+		
+		if(!validateJson(path)) {
+			System.out.println("Cannot read an invalid JSON");
+			return false;
+		}
+		
 		String danaJsonString = readFile(path);
 		JsonReader jsonReader = Json.createReader(new StringReader(danaJsonString));
 		JsonObject danaJson = jsonReader.readObject();
@@ -445,7 +466,7 @@ public class WorkflowJson {
 			curr.setDocumentationLink(documentationLink);
 			curr.setCommandLineInvocation(commandLineInvocation);
 		}
-
+		return true;
 	}
 
 	private String readJsonValue(String key, JsonObject json) {

@@ -21,30 +21,31 @@ public class Dana {
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow.getWorkflowNodes());
-		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		// jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
-		
-		workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json");
-			
-		for(WorkflowNode s : workflow.getWorkflowNodes()) {
-			System.out.println("+++" + s.getDisplayName() + "+++");
-			System.out.println(ng.getNodeNarrative(s));
-			System.out.println("\n");
+
+		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+
+			for (WorkflowNode s : workflow.getWorkflowNodes()) {
+				System.out.println("+++" + s.getDisplayName() + "+++");
+				System.out.println(ng.getNodeNarrative(s));
+				System.out.println("\n");
+			}
+
+			for (String s : ng.getAllCitations()) {
+				System.out.println(s);
+			}
+
+			NarrativeGenerator ngWorkflow = new NarrativeGenerator(workflow);
+
+			String workflowNarrative = ngWorkflow.getWorkflowNarrative(1);
+			System.out.println(workflowNarrative);
+
+			for (String s : ngWorkflow.getAllCitations()) {
+				System.out.println(s);
+			}
 		}
-		
-		for(String s : ng.getAllCitations()) {
-			System.out.println(s);
-		}
-		
-		NarrativeGenerator ngWorkflow = new NarrativeGenerator(workflow);
-		
-		String workflowNarrative = ngWorkflow.getWorkflowNarrative(1);
-		System.out.println(workflowNarrative);
-		
-		for(String s : ngWorkflow.getAllCitations()) {
-			System.out.println(s);
-		}
-		//danaCliMenu();
+		// danaCliMenu();
 
 	}
 
@@ -92,8 +93,7 @@ public class Dana {
 		}
 		return contentBuilder.toString();
 	}
-	
-	
+
 	/**
 	 * Cli menu for DANA. This is the command line interface representation of DANA.
 	 * This is designed for debugging and is not a representation of the final
@@ -102,8 +102,13 @@ public class Dana {
 	public static void danaCliMenu() {
 		JsonObject workflowJson = openWorkflow(false);
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
-		workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json");
-		NarrativeGenerator ng = new NarrativeGenerator(workflow);
+		NarrativeGenerator ng = null;
+		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+			ng = new NarrativeGenerator(workflow);
+		} else {
+			System.out.println("Please read in a new Wings JSON");
+		}
+
 		Scanner scan = new Scanner(System.in);
 		String question = "Please select an action (" + workflowPath + ")";
 		String[] choices = { "Read Wings JSON", "Get all node descriptions", "Get workflow description", "Quit" };
@@ -123,7 +128,6 @@ public class Dana {
 					break;
 				}
 
-				
 				workflowJson = openWorkflow(true);
 				System.out.println(workflowJson);
 				workflow = new WorkflowJson(workflowJson);
@@ -134,30 +138,37 @@ public class Dana {
 						.println("Please enter in additional metadata to readData.json and hit any button to continue");
 				scan.next();
 
-				workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json");
-				ng = new NarrativeGenerator(workflow);
+				if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+					ng = new NarrativeGenerator(workflow);
+				} else {
+					System.out.println("Error. Invalid metadata entered!");
+				}
 
 				System.out.println("Succesfully generated new narrative");
 				break;
 			case 1:
-				System.out.println("Printing " + workflow.getWorkflowNodes().size() + " narratives:\n");
+				if (!ng.equals(null)) {
+					System.out.println("Printing " + workflow.getWorkflowNodes().size() + " narratives:\n");
 
-				for (WorkflowNode s : workflow.getWorkflowNodes()) {
-					System.out.println("+++" + s.getDisplayName() + "+++");
-					System.out.println(ng.getNodeNarrative(s));
-					System.out.println("");
-				}
-
-				if (ng.getAllCitations().size() > 0) {
-					System.out.println("Citations:");
-					for (String s : ng.getAllCitations()) {
-						System.out.println(s);
+					for (WorkflowNode s : workflow.getWorkflowNodes()) {
+						System.out.println("+++" + s.getDisplayName() + "+++");
+						System.out.println(ng.getNodeNarrative(s));
+						System.out.println("");
 					}
+
+					if (ng.getAllCitations().size() > 0) {
+						System.out.println("Citations:");
+						for (String s : ng.getAllCitations()) {
+							System.out.println(s);
+						}
+					}
+
+					System.out.println("Hit any button to continue");
+					scan.nextLine();
+				} else {
+					System.out.println(
+							"Workflow was never serialized! Please read in a new wings json and enter the appropriate metadata");
 				}
-
-				System.out.println("Hit any button to continue");
-				scan.nextLine();
-
 				break;
 			case 2:
 				System.out.println("Enter a criticality value (1-5)");
@@ -165,7 +176,7 @@ public class Dana {
 				try {
 					int cv = Integer.parseInt(scan.nextLine());
 					ng.getWorkflowNarrative(cv);
-					//System.out.println(ng.getWorkflowNarrative(cv));
+					// System.out.println(ng.getWorkflowNarrative(cv));
 
 //					if (ng.getAllCitations().size() > 0) {
 //						System.out.println("Citations:");
@@ -187,8 +198,6 @@ public class Dana {
 		}
 		scan.close();
 	}
-	
-	
 
 	/**
 	 * Simple menu to prompt the user with a list of choices. This method will ask
@@ -235,6 +244,5 @@ public class Dana {
 			}
 		}
 	}
-
 
 }

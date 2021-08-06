@@ -6,8 +6,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.json.JsonObject;
-
 /**
  * @author Chris Heidelberg
  * 
@@ -17,10 +15,10 @@ import javax.json.JsonObject;
  */
 public class JsonWriter {
 
-	ArrayList<WorkflowNode> workflow;
-	JsonObject json;
+	WorkflowJson workflow;
 
-	public JsonWriter(ArrayList<WorkflowNode> workflow) {
+
+	public JsonWriter(WorkflowJson workflow) {
 		this.workflow = workflow;
 	}
 
@@ -65,9 +63,10 @@ public class JsonWriter {
 	private String metadata() {
 
 		// Create an array of the names of each node.
-		String[] nodes = new String[workflow.size()];
-		for (int i = 0; i < workflow.size(); i++) {
-			nodes[i] = workflow.get(i).getFullName();
+		ArrayList<WorkflowNode> list = workflow.getWorkflowNodes();
+		String[] nodes = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			nodes[i] = list.get(i).getFullName();
 		}
 
 		ArrayList<KeyValuePair> keys = new ArrayList<KeyValuePair>();
@@ -75,6 +74,7 @@ public class JsonWriter {
 		keys.add(new KeyValuePair("citation"));
 		keys.add(new KeyValuePair("author"));
 		keys.add(new KeyValuePair("dateCreated"));
+		keys.add(new KeyValuePair("name", workflow.getName()));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));
 
 		return keyValueStringFormatter(keys);
@@ -90,9 +90,9 @@ public class JsonWriter {
 		ArrayList<KeyValuePair> keys = new ArrayList<KeyValuePair>();
 		ArrayList<KeyValuePair> datasetKeys = new ArrayList<KeyValuePair>();
 		ArrayList<KeyValuePair> parameterKeys = new ArrayList<KeyValuePair>();
-
+		ArrayList<WorkflowNode> nodes = workflow.getWorkflowNodes();
 		// Add datasets and parameters
-		for (WorkflowNode wn : workflow) {
+		for (WorkflowNode wn : nodes) {
 			if (wn.isDataset()) {
 
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
@@ -106,7 +106,7 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("data", "(path to data should go here)"));
 				datasetMetadata.add(new KeyValuePair("id", wn.getId()));
 
-				//Reference to any nodes that point into the current node
+				//Reference to any nodes that point into the current no)de
 				if (wn.getIncomingLinks() != null) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
@@ -152,9 +152,9 @@ public class JsonWriter {
 	private ArrayList<KeyValuePair> step() {
 
 		ArrayList<KeyValuePair> stepKeys = new ArrayList<KeyValuePair>();
-
+		ArrayList<WorkflowNode> list = workflow.getWorkflowNodes();
 		// Add step nodes
-		for (WorkflowNode wn : workflow) {
+		for (WorkflowNode wn : list) {
 			if (!wn.isDataset()) {
 
 				//Add all metadata fields (these are all fields that a human will need to fill out)

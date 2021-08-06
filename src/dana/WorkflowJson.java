@@ -30,6 +30,7 @@ public class WorkflowJson {
 	private JsonObject json;
 	private String description = "";
 	private String citation = "";
+	private String name = "";
 	private ArrayList<WorkflowNode> workflows;
 
 	public WorkflowJson(JsonObject json) {
@@ -47,6 +48,14 @@ public class WorkflowJson {
 
 	public String getCitation() {
 		return this.citation;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -500,6 +509,10 @@ public class WorkflowJson {
 	 */
 	private void generateWorkflowNodesListFromWings() {
 
+		JsonObject t = getValue(json, "template");
+		String[] url = t.getString("id").split("#");
+		this.name = url[url.length-1];
+		
 		addDatasets(); // Add all dataset nodes to the workflows array
 		addSteps(); // Add all step nodes to the workflows array
 		addInOutLinks(); // Add i/o links for every node in the workflows array

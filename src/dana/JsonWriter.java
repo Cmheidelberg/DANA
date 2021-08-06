@@ -76,6 +76,7 @@ public class JsonWriter {
 		keys.add(new KeyValuePair("dateCreated"));
 		keys.add(new KeyValuePair("name", workflow.getName()));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));
+		keys.add(new KeyValuePair("fragments", keyValueStringFormatter(new ArrayList<KeyValuePair>()))); 
 
 		return keyValueStringFormatter(keys);
 	}

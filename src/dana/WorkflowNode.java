@@ -16,7 +16,7 @@ public abstract class WorkflowNode {
 	private String license = "";
 	private String url = "";
 	private String citation = "";
-	private ArrayList<String> fragments;
+	private ArrayList<Fragment> fragments;
 
 	abstract boolean isDataset();
 
@@ -26,7 +26,7 @@ public abstract class WorkflowNode {
 	// SETTERS|
 	// -------|
 
-	public void setFragments(ArrayList<String> fragments) {
+	public void setFragments(ArrayList<Fragment> fragments) {
 		this.fragments = fragments;
 	}
 
@@ -70,7 +70,7 @@ public abstract class WorkflowNode {
 	// GETTERS|
 	// -------|
 
-	public ArrayList<String> getFragments() {
+	public ArrayList<Fragment> getFragments() {
 		return fragments;
 	}
 
@@ -118,23 +118,27 @@ public abstract class WorkflowNode {
 	// MUTATORS/OTHER|
 	// --------------|
 
-	public void addFragment(String fragment) {
+	public void addFragment(Fragment fragment) {
 		if (fragments == null) {
-			fragments = new ArrayList<String>();
+			fragments = new ArrayList<Fragment>();
 		}
 
+		for(Fragment f : fragments) {
+			if(f.getName().equalsIgnoreCase(fragment.getName())) 
+				return;
+		}
 		fragments.add(fragment);
 	}
 
 	/**
 	 * Returns true if this node is within the given fragment
 	 */
-	public boolean hasFragment(String fragment) {
+	public boolean hasFragment(Fragment fragment) {
 		if (fragments == null)
 			return false;
-
-		for (String s : fragments) {
-			if (fragment.equalsIgnoreCase(s)) {
+		
+		for (Fragment s : fragments) {
+			if (fragment.equals(s)) {
 				return true;
 			}
 		}
@@ -182,8 +186,8 @@ public abstract class WorkflowNode {
 
 		outp += "\nFragments: ";
 		if(fragments != null) {
-			for(String s : fragments) {
-				outp += s.equals(fragments.get(fragments.size()-1)) ? s : s + ",";
+			for(Fragment s : fragments) {
+				outp += s.equals(fragments.get(fragments.size()-1)) ? s.getName() : s.getName() + ",";
 			}
 		}else {
 			outp += "null";

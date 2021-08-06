@@ -30,11 +30,13 @@ public class WorkflowJson {
 	private String description = "";
 	private String citation = "";
 	private String name = "";
-	private ArrayList<WorkflowNode> workflows;
+	private ArrayList<WorkflowNode> workflows; // This should be "workflow" but i'm too used to the original name now
+	private ArrayList<Fragment> fragments;
 
 	public WorkflowJson(JsonObject json) {
 		this.json = json;
 		workflows = new ArrayList<WorkflowNode>();
+		fragments = new ArrayList<Fragment>();
 
 		// Populate the workflows array list with all nodes from the workflow as well as
 		// gather metadata on them from the json.
@@ -55,6 +57,51 @@ public class WorkflowJson {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public ArrayList<Fragment> getWorkflowFragments() {
+		return fragments;
+	}
+
+	public Fragment getFragment(String name) {
+		for (Fragment f : fragments) {
+			if(f.getName().equalsIgnoreCase(name)) {
+				return f;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasFragment(Fragment fragment) {
+		return fragments.contains(fragment);
+	}
+	
+	public boolean hasFragment(String name) {
+		for (Fragment f : fragments) {
+			if(f.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void addFragment(String name, String description) {
+		if(!hasFragment(name)) {
+			Fragment fragment = new Fragment(name, description);
+			fragments.add(fragment);
+		}
+	}
+	
+	public void addFragmentNodeRelation(String fragmentName, WorkflowNode node) {
+		if(fragmentName == null || fragmentName.equalsIgnoreCase("null"))
+			return;
+		
+		if(hasFragment(fragmentName)) {
+			Fragment fragment = getFragment(fragmentName);
+			fragment.addNode(node);
+		} else {
+			System.out.println("Error adding fragment("+fragmentName+") node("+ node.getFullName()+") relation. There is no fragment with this name.");
+		}
 	}
 
 	/**
@@ -384,7 +431,13 @@ public class WorkflowJson {
 		JsonObject metadata = getValue(danaJson, "metadata");
 		this.description = metadata.get("description").toString();
 		this.citation = metadata.get("citation").toString();
-
+		
+		JsonObject fragmentMetadata = getValue(metadata, "fragments");
+		for(String key : fragmentMetadata.keySet()) {
+			String description = readJsonValue("description", getValue(fragmentMetadata, key));
+			addFragment(key, description);
+		}
+		
 		// Add dataset metadata
 		String[] datasetArr = { "nodes", "datasets" };
 		JsonObject datasets = getValue(danaJson, datasetArr);
@@ -402,13 +455,13 @@ public class WorkflowJson {
 			String type = readJsonValue("type", currKeyJson);
 			String citation = readJsonValue("citation", currKeyJson);
 
-			//Add fragments to current dataset object
+			// Add fragments to current dataset object
 			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
 			String[] fragments = fragmentsCsv.split(",");
-			for(String f : fragments) {
-				curr.addFragment(f);
+			for (String f : fragments) {
+				addFragmentNodeRelation(f, curr);
 			}
-			
+
 			curr.setDescription(description);
 			curr.setLicense(license);
 			curr.setAuthor(author);
@@ -426,18 +479,17 @@ public class WorkflowJson {
 			DatasetNode curr = (DatasetNode) getWorkflowNode(key);
 			String[] currParameterArr = { "nodes", "parameters", key };
 			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
-			
+
 			String description = readJsonValue("description", currKeyJson);
 			String type = readJsonValue("type", currKeyJson);
 
-			//Add fragments to current parameter object
+			// Add fragments to current parameter object
 			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
-			System.out.println("FRAGMENTS_CSV: " + fragmentsCsv);
 			String[] fragments = fragmentsCsv.split(",");
-			for(String f : fragments) {
-				curr.addFragment(f);
+			for (String f : fragments) {
+				addFragmentNodeRelation(f, curr);
 			}
-			
+
 			curr.setDescription(description);
 			curr.setType(type);
 			curr.setCitation(citation);
@@ -466,13 +518,13 @@ public class WorkflowJson {
 			String documentationLink = readJsonValue("documentationLink", currKeyJson);
 			String commandLineInvocation = readJsonValue("commandLineInvocation", currKeyJson);
 
-			//Add fragments to current parameter object
+			// Add fragments to current parameter object
 			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
 			String[] fragments = fragmentsCsv.split(",");
-			for(String f : fragments) {
-				curr.addFragment(f);
+			for (String f : fragments) {
+				addFragmentNodeRelation(f, curr);
 			}
-			
+
 			curr.setShortDescription(shortDescription);
 			curr.setLongDescription(longDescription);
 			curr.setGitHubUrl(gitHubUrl);
@@ -490,6 +542,33 @@ public class WorkflowJson {
 		return true;
 	}
 
+	/**
+	 * Test to make sure the workflow (and metadata entered) is logical. This means
+	 * checking that each node has a connection. Checking that each fragment is part
+	 * of a connected subgraph. And validating the date entered is in a valid
+	 * format.
+	 * 
+	 * This function is intended to be called after readDanaJson() to validate a
+	 * narrative of this workflow can be generated
+	 * 
+	 */
+	private boolean checkWorkflowLogicIsValid() {
+
+		// Validate each fragment is part of a connected subgraph
+
+	}
+
+	/**
+	 * Helper function for readDanaJson(). This function gears the value from the
+	 * specified key of the given json. If there is an error reading in the value,
+	 * it will return an empty string. Additionally, since the strings read in from
+	 * the json have their string wrapper attached, this function removes the
+	 * leading and trailing quotes (if applicable)
+	 * 
+	 * @param key
+	 * @param json
+	 * @return
+	 */
 	private String readJsonValue(String key, JsonObject json) {
 		try {
 			String read = json.get(key).toString();

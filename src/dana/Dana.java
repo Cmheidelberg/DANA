@@ -23,9 +23,15 @@ public class Dana {
 		JsonWriter jw = new JsonWriter(workflow);
 		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
-
+		
 		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
 
+			//Print workflows debug tostring
+			for (WorkflowNode wn : workflow.getWorkflowNodes()) {
+				System.out.println("====" + wn.getFullName() + "====");
+				System.out.println(wn);
+			}
+			
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
 				System.out.println("+++" + s.getDisplayName() + "+++");
 				System.out.println(ng.getNodeNarrative(s));

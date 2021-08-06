@@ -6,7 +6,6 @@ public class DatasetNode extends WorkflowNode {
 	private boolean isParameter = false;
 	private String type;
 	private String pathToData;
-	
 	private String description;
 	private String doi;
 	
@@ -19,7 +18,7 @@ public class DatasetNode extends WorkflowNode {
 	}
 
 	public void setType(String type) {
-		this.type = type;
+		this.type = type.equalsIgnoreCase("null") ? "" : type;
 	}
 
 	public void setPathToData(String pathToData) {

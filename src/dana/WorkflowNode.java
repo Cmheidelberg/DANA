@@ -16,6 +16,7 @@ public abstract class WorkflowNode {
 	private String license = "";
 	private String url = "";
 	private String citation = "";
+	private ArrayList<String> fragments;
 
 	abstract boolean isDataset();
 
@@ -24,6 +25,10 @@ public abstract class WorkflowNode {
 	// -------|
 	// SETTERS|
 	// -------|
+
+	public void setFragments(ArrayList<String> fragments) {
+		this.fragments = fragments;
+	}
 
 	public void setFullName(String name) {
 		this.fullName = name;
@@ -64,6 +69,10 @@ public abstract class WorkflowNode {
 	// -------|
 	// GETTERS|
 	// -------|
+
+	public ArrayList<String> getFragments() {
+		return fragments;
+	}
 
 	public String getFullName() {
 		if (fullName.length() > 0) {
@@ -109,6 +118,30 @@ public abstract class WorkflowNode {
 	// MUTATORS/OTHER|
 	// --------------|
 
+	public void addFragment(String fragment) {
+		if (fragments == null) {
+			fragments = new ArrayList<String>();
+		}
+
+		fragments.add(fragment);
+	}
+
+	/**
+	 * Returns true if this node is within the given fragment
+	 */
+	public boolean hasFragment(String fragment) {
+		if (fragments == null)
+			return false;
+
+		for (String s : fragments) {
+			if (fragment.equalsIgnoreCase(s)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public void addOutgoingLink(WorkflowNode outgoingLink) {
 		if (outgoingLinks == null) {
 			outgoingLinks = new ArrayList<WorkflowNode>();
@@ -126,9 +159,8 @@ public abstract class WorkflowNode {
 	}
 
 	public String toString() {
-		String outp = "DisplayName: " + displayName + " |=| fullName: " + fullName + " |=| isDataset: " + isDataset() + " | isParameter: " + isParameter()
-				+ " \n";
-		outp += "Id: " + id + "\n";
+		String outp = "DisplayName: " + displayName + " |=| fullName: " + fullName + " |=| isDataset: " + isDataset()
+				+ " | isParameter: " + isParameter() + " \n";
 
 		outp += "Incoming Link Names: ";
 		if (incomingLinks != null) {
@@ -144,12 +176,19 @@ public abstract class WorkflowNode {
 			for (WorkflowNode a : outgoingLinks) {
 				outp += a.getFullName() + ",";
 			}
-			outp += "\n";
 		} else {
-			outp += "null\n";
+			outp += "null";
 		}
 
-		return outp;
+		outp += "\nFragments: ";
+		if(fragments != null) {
+			for(String s : fragments) {
+				outp += s.equals(fragments.get(fragments.size()-1)) ? s : s + ",";
+			}
+		}else {
+			outp += "null";
+		}
+		return outp + "\n";
 
 	}
 }

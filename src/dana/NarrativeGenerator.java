@@ -153,14 +153,14 @@ class WorkflowNarrative implements Narrative {
 		if (hasCitation) {
 			citationReferenceString = " [" + citationReference + "] ";
 		}
-		
+
 		if (hasDescription) {
 			outp += "This workflow" + citationReferenceString + workflow.getDescription() + ".\n";
 		}
 		outp += "\n";
 
 		// Workflow link descriptions
-		
+
 		outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
 		if (numInputs > 0) {
 			String inputs = numInputs == 1 ? "input" : "inputs";
@@ -185,15 +185,16 @@ class WorkflowNarrative implements Narrative {
 			outp += " produces " + Num2Word.convert(numOutputs) + " " + outputs + ".";
 			outp += " There are no inputs for this workflow.";
 		}
-		
+
 		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
 		outp += "\n";
-		for(WorkflowNode wn : longestPath) {
-			String line = wn.equals(longestPath.get(longestPath.size()-1)) ? wn.getDisplayName() + "\n" : wn.getDisplayName() + " -> ";
+		for (WorkflowNode wn : longestPath) {
+			String line = wn.equals(longestPath.get(longestPath.size() - 1)) ? wn.getDisplayName() + "\n"
+					: wn.getDisplayName() + " -> ";
 			System.out.print(line);
-			outp += line; //TODO replace this with the actual description			
+			outp += line; // TODO replace this with the actual description
 		}
-		
+
 		return outp;
 	}
 
@@ -473,7 +474,8 @@ class StepNarrative implements Narrative {
 					datasetInputs.add(tmp);
 				}
 			} else {
-				System.out.println("WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
+				System.out.println(
+						"WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
 				System.out.println("Ignoring warning");
 			}
 		}
@@ -492,14 +494,16 @@ class StepNarrative implements Narrative {
 		// Generate description for each unique type of input
 		for (String ctype : types) {
 			ctype = ctype.toLowerCase();
+			ctype = ctype.length() > 0 ? " " + ctype : ctype;
+
 			ArrayList<DatasetNode> currDatasets = getDatasetsWithType(ctype, datasetInputs);
 
 			if (currDatasets.size() == 1) {
-				outp += "a " + ctype + " file[" + datasetInputs.get(0).getDisplayName() + "]";
+				outp += "a" + ctype + " file[" + datasetInputs.get(0).getDisplayName() + "]";
 				remainingDP--;
 
 			} else if (currDatasets.size() > 1) {
-				outp += Num2Word.convert(currDatasets.size()) + " " + ctype + "files[";
+				outp += Num2Word.convert(currDatasets.size()) + ctype + "files[";
 				for (int i = 0; i < currDatasets.size(); i++) {
 					outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName()
 							: currDatasets.get(i).getDisplayName() + ",";
@@ -514,7 +518,7 @@ class StepNarrative implements Narrative {
 				} else if (remainingDP == 1 && discussionPoints > 1) {
 					outp += "and ";
 				} else {
-					outp += ", ";
+					outp += ",";
 				}
 			}
 		}
@@ -582,7 +586,8 @@ class StepNarrative implements Narrative {
 					datasetInputs.add(tmp);
 				}
 			} else {
-				System.out.println("WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
+				System.out.println(
+						"WARNING: found input to step (" + step.getFullName() + ") that is not a dataset: " + i);
 				System.out.println("Ignoring warning");
 			}
 		}
@@ -596,24 +601,26 @@ class StepNarrative implements Narrative {
 			try {
 				datasetOutputs.add((DatasetNode) w);
 			} catch (Exception e) {
-				System.out.print("WARNING: exceptin when converting outgoing link " + w.getFullName() + " as dataset node");
+				System.out.print(
+						"WARNING: exceptin when converting outgoing link " + w.getFullName() + " as dataset node");
 			}
 		}
 
 		// Descriptions for each unique type of output
 		if (step.getOutgoingLinks().size() == 1) {
 			String currType = datasetOutputs.get(0).getType().toLowerCase();
+			currType = currType.length() > 0 ? " " + currType : currType;
 			String reference = "";
 			if (datasetOutputs.get(0).getType() == null) {
 				if (types.get(0).equalsIgnoreCase("null")) {
-					reference = "another ";
+					reference = "another";
 				} else {
-					reference = "a ";
+					reference = "a";
 				}
 			} else if (types.size() == 1 && datasetOutputs.get(0).getType().equalsIgnoreCase(types.get(0))) {
-				reference = "another ";
+				reference = "another";
 			} else {
-				reference = "a ";
+				reference = "a";
 			}
 			outp += reference + currType + " file[" + datasetOutputs.get(0).getDisplayName() + "]";
 		} else {
@@ -625,11 +632,11 @@ class StepNarrative implements Narrative {
 				ArrayList<DatasetNode> currDatasets = getDatasetsWithType(s, datasetOutputs);
 
 				if (currDatasets.size() == 1) {
-					outp += "a " + s + " file[" + datasetInputs.get(0).getDisplayName() + "]";
+					outp += "a" + s + " file[" + datasetInputs.get(0).getDisplayName() + "]";
 					remainingDP--;
 
 				} else if (currDatasets.size() > 1) {
-					outp += Num2Word.convert(currDatasets.size()) + " " + s + "files[";
+					outp += Num2Word.convert(currDatasets.size()) + s + "files[";
 					for (int i = 0; i < currDatasets.size(); i++) {
 						outp += i == currDatasets.size() - 1 ? currDatasets.get(i) : currDatasets.get(i) + ",";
 					}

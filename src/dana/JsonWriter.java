@@ -97,15 +97,19 @@ public class JsonWriter {
 
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
 				datasetMetadata.add(new KeyValuePair("description"));
-				datasetMetadata.add(new KeyValuePair("license"));
-				datasetMetadata.add(new KeyValuePair("author"));
-				datasetMetadata.add(new KeyValuePair("citation"));
-				datasetMetadata.add(new KeyValuePair("doi"));
-				datasetMetadata.add(new KeyValuePair("url"));
-				datasetMetadata.add(new KeyValuePair("type", "(not detected)"));
+				datasetMetadata.add(new KeyValuePair("fragments"));
+				datasetMetadata.add(new KeyValuePair("type"));
 				datasetMetadata.add(new KeyValuePair("data", "(path to data should go here)"));
 				datasetMetadata.add(new KeyValuePair("id", wn.getId()));
 
+				if(!wn.isParameter()) {
+					datasetMetadata.add(new KeyValuePair("doi"));
+					datasetMetadata.add(new KeyValuePair("url"));
+					datasetMetadata.add(new KeyValuePair("license"));
+					datasetMetadata.add(new KeyValuePair("author"));
+					datasetMetadata.add(new KeyValuePair("citation"));
+				}
+				
 				//Reference to any nodes that point into the current no)de
 				if (wn.getIncomingLinks() != null) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
@@ -165,6 +169,7 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("longDescription"));
 				datasetMetadata.add(new KeyValuePair("gitHubUrl"));
 				datasetMetadata.add(new KeyValuePair("criticality",1));
+				datasetMetadata.add(new KeyValuePair("fragments"));
 				datasetMetadata.add(new KeyValuePair("stepType"));
 				datasetMetadata.add(new KeyValuePair("website"));
 				datasetMetadata.add(new KeyValuePair("citation"));

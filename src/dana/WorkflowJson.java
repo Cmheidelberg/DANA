@@ -17,7 +17,6 @@ import org.everit.json.schema.loader.SchemaLoader;
 
 import org.json.JSONObject;
 
-
 /**
  * @author Christopher Heidelberg
  *
@@ -49,11 +48,11 @@ public class WorkflowJson {
 	public String getCitation() {
 		return this.citation;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -370,12 +369,12 @@ public class WorkflowJson {
 	 * @return true if json was successfully read and serialized; false otherwise
 	 */
 	public boolean readDanaJson(String path) {
-		
-		if(!validateJson(path)) {
+
+		if (!validateJson(path)) {
 			System.out.println("Cannot read an invalid JSON");
 			return false;
 		}
-		
+
 		String danaJsonString = readFile(path);
 		JsonReader jsonReader = Json.createReader(new StringReader(danaJsonString));
 		JsonObject danaJson = jsonReader.readObject();
@@ -403,6 +402,13 @@ public class WorkflowJson {
 			String type = readJsonValue("type", currKeyJson);
 			String citation = readJsonValue("citation", currKeyJson);
 
+			//Add fragments to current dataset object
+			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
+			String[] fragments = fragmentsCsv.split(",");
+			for(String f : fragments) {
+				curr.addFragment(f);
+			}
+			
 			curr.setDescription(description);
 			curr.setLicense(license);
 			curr.setAuthor(author);
@@ -420,20 +426,19 @@ public class WorkflowJson {
 			DatasetNode curr = (DatasetNode) getWorkflowNode(key);
 			String[] currParameterArr = { "nodes", "parameters", key };
 			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
-
-			String citation = readJsonValue("citation", currKeyJson);
+			
 			String description = readJsonValue("description", currKeyJson);
-			String license = readJsonValue("license", currKeyJson);
-			String author = readJsonValue("author", currKeyJson);
-			String doi = readJsonValue("doi", currKeyJson);
-			String url = readJsonValue("url", currKeyJson);
 			String type = readJsonValue("type", currKeyJson);
 
+			//Add fragments to current parameter object
+			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
+			System.out.println("FRAGMENTS_CSV: " + fragmentsCsv);
+			String[] fragments = fragmentsCsv.split(",");
+			for(String f : fragments) {
+				curr.addFragment(f);
+			}
+			
 			curr.setDescription(description);
-			curr.setLicense(license);
-			curr.setAuthor(author);
-			curr.setDoi(doi);
-			curr.setUrl(url);
 			curr.setType(type);
 			curr.setCitation(citation);
 		}
@@ -461,6 +466,13 @@ public class WorkflowJson {
 			String documentationLink = readJsonValue("documentationLink", currKeyJson);
 			String commandLineInvocation = readJsonValue("commandLineInvocation", currKeyJson);
 
+			//Add fragments to current parameter object
+			String fragmentsCsv = readJsonValue("fragments", currKeyJson);
+			String[] fragments = fragmentsCsv.split(",");
+			for(String f : fragments) {
+				curr.addFragment(f);
+			}
+			
 			curr.setShortDescription(shortDescription);
 			curr.setLongDescription(longDescription);
 			curr.setGitHubUrl(gitHubUrl);
@@ -511,16 +523,12 @@ public class WorkflowJson {
 
 		JsonObject t = getValue(json, "template");
 		String[] url = t.getString("id").split("#");
-		this.name = url[url.length-1];
-		
+		this.name = url[url.length - 1];
+
 		addDatasets(); // Add all dataset nodes to the workflows array
 		addSteps(); // Add all step nodes to the workflows array
 		addInOutLinks(); // Add i/o links for every node in the workflows array
 
-		for (WorkflowNode wn : workflows) {
-			System.out.println("====" + wn.getFullName() + "====");
-			System.out.println(wn);
-		}
 	}
 
 	/**

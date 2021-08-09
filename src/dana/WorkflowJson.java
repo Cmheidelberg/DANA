@@ -65,20 +65,20 @@ public class WorkflowJson {
 
 	public Fragment getFragment(String name) {
 		for (Fragment f : fragments) {
-			if(f.getName().equalsIgnoreCase(name)) {
+			if (f.getName().equalsIgnoreCase(name)) {
 				return f;
 			}
 		}
 		return null;
 	}
-	
+
 	public boolean hasFragment(Fragment fragment) {
 		return fragments.contains(fragment);
 	}
-	
+
 	public boolean hasFragment(String name) {
 		for (Fragment f : fragments) {
-			if(f.getName().equalsIgnoreCase(name)) {
+			if (f.getName().equalsIgnoreCase(name)) {
 				return true;
 			}
 		}
@@ -86,21 +86,22 @@ public class WorkflowJson {
 	}
 
 	public void addFragment(String name, String description) {
-		if(!hasFragment(name)) {
+		if (!hasFragment(name)) {
 			Fragment fragment = new Fragment(name, description);
 			fragments.add(fragment);
 		}
 	}
-	
+
 	public void addFragmentNodeRelation(String fragmentName, WorkflowNode node) {
-		if(fragmentName == null || fragmentName.equalsIgnoreCase("null"))
+		if (fragmentName == null || fragmentName.equalsIgnoreCase("null"))
 			return;
-		
-		if(hasFragment(fragmentName)) {
+
+		if (hasFragment(fragmentName)) {
 			Fragment fragment = getFragment(fragmentName);
 			fragment.addNode(node);
 		} else {
-			System.out.println("Error adding fragment("+fragmentName+") node("+ node.getFullName()+") relation. There is no fragment with this name.");
+			System.out.println("Error adding fragment(" + fragmentName + ") node(" + node.getFullName()
+					+ ") relation. There is no fragment with this name.");
 		}
 	}
 
@@ -431,13 +432,13 @@ public class WorkflowJson {
 		JsonObject metadata = getValue(danaJson, "metadata");
 		this.description = metadata.get("description").toString();
 		this.citation = metadata.get("citation").toString();
-		
+
 		JsonObject fragmentMetadata = getValue(metadata, "fragments");
-		for(String key : fragmentMetadata.keySet()) {
+		for (String key : fragmentMetadata.keySet()) {
 			String description = readJsonValue("description", getValue(fragmentMetadata, key));
 			addFragment(key, description);
 		}
-		
+
 		// Add dataset metadata
 		String[] datasetArr = { "nodes", "datasets" };
 		JsonObject datasets = getValue(danaJson, datasetArr);
@@ -539,7 +540,12 @@ public class WorkflowJson {
 			curr.setDocumentationLink(documentationLink);
 			curr.setCommandLineInvocation(commandLineInvocation);
 		}
-		return true;
+
+		if (checkWorkflowLogicIsValid()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -554,8 +560,75 @@ public class WorkflowJson {
 	 */
 	private boolean checkWorkflowLogicIsValid() {
 
-		// Validate each fragment is part of a connected subgraph
+		boolean isValid = true;
 
+		try {
+			
+			// Validate each fragment is part of a connected subgraph
+			for (Fragment f : fragments) {
+				for (WorkflowNode wn : f.getNodes()) {
+					if (!wn.hasFragment(f)) {
+						System.out.println(
+								"WorkflowNode(" + wn.getFullName() + ") is missing fragment(" + f.getName() + ")");
+						isValid = false;
+					}
+				}
+
+				//Check that the workflow has a connected subgraph
+				if (f.getNodes().size() > 0) {
+					ArrayList<WorkflowNode> subgraph = new ArrayList<WorkflowNode>();
+					fragmentSubgraphIsConnected(f, f.getNodes().get(0), subgraph);
+					if (subgraph.size() != f.getNodes().size()) {
+						System.out.println("A fragment(" + f.getName()
+								+ ") has a disconnected node. Please make sure all nodes wihtin a fragment are connected");
+						isValid = false;
+					}
+				} else {
+					// Throw a warning but does not need to invalidate the workflow
+					System.out.println("Warning a fragment(" + f.getName() + ") has no nodes associated with it");
+				}
+				
+				//TODO: check every node has correct fragment
+				//TODO: check workflow is connected (subgraph from any node is length of all nodes in workflow)
+				return isValid;
+			}
+		} catch (Exception e) {
+			System.out.println(
+					"An exception has been thrown while validating the json's logic. Please check that the workflow is valid");
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * Helper function for checkWorkflowLogicIsValid(). This function recursively
+	 * finds all the nodes connected to the given node within the same fragment. If
+	 * the returned graph is the same size as the list of all nodes in the given
+	 * fragment then we know the subgraph of fragments is connected
+	 * 
+	 */
+	private void fragmentSubgraphIsConnected(Fragment fragment, WorkflowNode curr, ArrayList<WorkflowNode> subgraph) {
+
+		ArrayList<WorkflowNode> incoming = curr.getIncomingLinks();
+		ArrayList<WorkflowNode> outgoing = curr.getOutgoingLinks();
+
+		if (!fragment.hasNode(curr) || subgraph.contains(curr)) {
+			return;
+		} else {
+			subgraph.add(curr);
+		}
+
+		if (incoming != null) {
+			for (WorkflowNode i : incoming) {
+				fragmentSubgraphIsConnected(fragment, i, subgraph);
+			}
+		}
+
+		if (outgoing != null) {
+			for (WorkflowNode o : outgoing) {
+				fragmentSubgraphIsConnected(fragment, o, subgraph);
+			}
+		}
 	}
 
 	/**

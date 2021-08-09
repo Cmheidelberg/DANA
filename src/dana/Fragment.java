@@ -25,4 +25,20 @@ public class Fragment {
 		return description;
 	}
 	
+	public ArrayList<WorkflowNode> getNodes() {
+		return nodes;
+	}
+	
+	public boolean hasNode(String fullName) {
+		for(WorkflowNode wn : nodes) {
+			if (fullName.equalsIgnoreCase(wn.getFullName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasNode(WorkflowNode node) {
+		return nodes.contains(node);
+	}
 }

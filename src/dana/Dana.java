@@ -30,11 +30,13 @@ public class Dana {
 		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
 
 			// Print workflows debug tostring
+			System.out.println("NODE METADATA DEBUG: ");
 			for (WorkflowNode wn : workflow.getWorkflowNodes()) {
 				System.out.println("====" + wn.getFullName() + "====");
 				System.out.println(wn);
 			}
 
+			System.out.println("DATA NARRATIVES FOR EACH STEP: ");
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
 				System.out.println("+++" + s.getDisplayName() + "+++");
 				System.out.println(ng.getNodeNarrative(s));

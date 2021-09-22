@@ -2,6 +2,13 @@ package dana;
 
 import java.util.ArrayList;
 
+/**
+ * WorkflowNode is an abstract class representation of each node on the
+ * workflow. This class has two children classes that inherit its properties:
+ * StepNode and DatasetNode. Step node represents a node on the workflow that
+ * contains executable code. A dataset node represents either a dataset
+ * (input/output file) or a parameter.
+ */
 public abstract class WorkflowNode {
 
 	// Automatically generated metadata
@@ -123,10 +130,13 @@ public abstract class WorkflowNode {
 			fragments = new ArrayList<Fragment>();
 		}
 
-		for(Fragment f : fragments) {
-			if(f.getName().equalsIgnoreCase(fragment.getName())) 
+		// Validate the given fragment doesnt already exist in the fragments array
+		// before adding it. Only unique fragments should exist in the fragments array
+		for (Fragment f : fragments) {
+			if (f.getName().equalsIgnoreCase(fragment.getName()))
 				return;
 		}
+
 		fragments.add(fragment);
 	}
 
@@ -136,7 +146,7 @@ public abstract class WorkflowNode {
 	public boolean hasFragment(Fragment fragment) {
 		if (fragments == null)
 			return false;
-		
+
 		for (Fragment s : fragments) {
 			if (fragment.equals(s)) {
 				return true;
@@ -162,6 +172,7 @@ public abstract class WorkflowNode {
 		incomingLinks.add(incomingLink);
 	}
 
+	// toString provides general debug information
 	public String toString() {
 		String outp = "DisplayName: " + displayName + " |=| fullName: " + fullName + " |=| isDataset: " + isDataset()
 				+ " | isParameter: " + isParameter() + " \n";
@@ -185,11 +196,11 @@ public abstract class WorkflowNode {
 		}
 
 		outp += "\nFragments: ";
-		if(fragments != null) {
-			for(Fragment s : fragments) {
-				outp += s.equals(fragments.get(fragments.size()-1)) ? s.getName() : s.getName() + ",";
+		if (fragments != null) {
+			for (Fragment s : fragments) {
+				outp += s.equals(fragments.get(fragments.size() - 1)) ? s.getName() : s.getName() + ",";
 			}
-		}else {
+		} else {
 			outp += "null";
 		}
 		return outp + "\n";

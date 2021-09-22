@@ -13,25 +13,29 @@ import javax.swing.JFileChooser;
 
 public class Dana {
 
+	// This path is used so a path does not have to be entered each time while
+	// developing. It represents the json from wings
 	static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\Caesar_Cypher.json";
 
 	public static void main(String[] args) {
 
+		// Read in
 		JsonObject workflowJson = openWorkflow(false);
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow);
-		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
 		
+		System.out.println(workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json"));
 		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
 
-			//Print workflows debug tostring
+			// Print workflows debug tostring
 			for (WorkflowNode wn : workflow.getWorkflowNodes()) {
 				System.out.println("====" + wn.getFullName() + "====");
 				System.out.println(wn);
 			}
-			
+
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
 				System.out.println("+++" + s.getDisplayName() + "+++");
 				System.out.println(ng.getNodeNarrative(s));
@@ -55,17 +59,28 @@ public class Dana {
 
 	}
 
+	/**
+	 * Open a json file as a JsonObject. If the class variable workflowPath is
+	 * defined (and overrideWorkflowPath is false) it will open the json from that
+	 * path. Otherwise, a file selection menu will appear asking the user to provide
+	 * a json file. Note: in testing this menu does not have default focus for
+	 * windows, so it might appear behind your IDE or terminal.
+	 * 
+	 * @param overrideWorkflowPath boolean flag representing if method should prompt
+	 *                             user for a path to json file.
+	 * @return JsonObject for file provided in path
+	 */
 	public static JsonObject openWorkflow(boolean overrideWorkflowPath) {
 		JsonObject doc = null;
 		String path = "";
 
-		// If the workflow path isnt hard coded prompt the user for a path
+		// If the workflow path isnt hard-coded prompt the user for a path
 		if (workflowPath.length() == 0 || overrideWorkflowPath) {
 			final JFileChooser fc = new JFileChooser();
-
+			
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON files", "json");
 			fc.addChoosableFileFilter(filter);
-			fc.setCurrentDirectory(new File("C:\\Users\\Admin\\Desktop"));
+			//fc.setCurrentDirectory(new File("C:\\Users\\Admin\\Desktop"));
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -74,6 +89,7 @@ public class Dana {
 		} else {
 			path = workflowPath;
 		}
+		
 		String jsonString = readFile(path);
 		JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
 		JsonObject object = jsonReader.readObject();

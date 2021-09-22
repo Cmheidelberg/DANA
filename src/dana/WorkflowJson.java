@@ -22,7 +22,10 @@ import org.json.JSONObject;
  *
  *         Represents an ArrayList of every node in the workflow with links to
  *         any inputs and outputs. There are also helper methods for finding
- *         relationships between nodes.
+ *         relationships between nodes. This class stores all data on a workflow
+ *         and any collected metadata. After the DANA json has been filled out,
+ *         read it in with the readDanaJson() method to update each node with
+ *         all gathered metadata.
  */
 public class WorkflowJson {
 
@@ -33,6 +36,7 @@ public class WorkflowJson {
 	private ArrayList<WorkflowNode> workflows; // This should be "workflow" but i'm too used to the original name now
 	private ArrayList<Fragment> fragments;
 
+	// Read in WINGS json file to populate workflow list with nodes
 	public WorkflowJson(JsonObject json) {
 		this.json = json;
 		workflows = new ArrayList<WorkflowNode>();
@@ -43,26 +47,37 @@ public class WorkflowJson {
 		generateWorkflowNodesListFromWings();
 	}
 
+	// Returns workflow's description
 	public String getDescription() {
 		return this.description;
 	}
 
+	// Returns workflow's citation
 	public String getCitation() {
 		return this.citation;
 	}
 
+	// Returns workflow's name
 	public String getName() {
 		return this.name;
 	}
 
+	// Set workflow's name
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	// Return a ArrayList of all fragments defined in the workflow
 	public ArrayList<Fragment> getWorkflowFragments() {
 		return fragments;
 	}
 
+	/**
+	 * Get a specific fragment by name. Returns null if no such fragment exists
+	 * 
+	 * @param name | Name of fragment to search for. Case insensitive
+	 * @return Fragment object if exists. Null otherwise
+	 */
 	public Fragment getFragment(String name) {
 		for (Fragment f : fragments) {
 			if (f.getName().equalsIgnoreCase(name)) {
@@ -72,10 +87,19 @@ public class WorkflowJson {
 		return null;
 	}
 
+	/**
+	 * @param fragment
+	 * @return T/F if given fragment exists within the workflow
+	 */
 	public boolean hasFragment(Fragment fragment) {
 		return fragments.contains(fragment);
 	}
 
+	/**
+	 * @param fragment
+	 * @return T/F if a fragment with the given name exists within the workflow.
+	 *         Case insensitive
+	 */
 	public boolean hasFragment(String name) {
 		for (Fragment f : fragments) {
 			if (f.getName().equalsIgnoreCase(name)) {
@@ -85,6 +109,12 @@ public class WorkflowJson {
 		return false;
 	}
 
+	/**
+	 * Add a fragment to the workflow with the given name and description
+	 * 
+	 * @param name        | Name of fragment
+	 * @param description | description of fragment
+	 */
 	public void addFragment(String name, String description) {
 		if (!hasFragment(name)) {
 			Fragment fragment = new Fragment(name, description);
@@ -92,13 +122,22 @@ public class WorkflowJson {
 		}
 	}
 
+	/**
+	 * Add node to fragment's internal list of nodes. This also adds the fragment to
+	 * the node's internal list of fragments. If the relation already exists then no
+	 * change will be made. A warning will be printed to terminal if the fragment
+	 * does not exists in the workflow.
+	 * 
+	 * @param fragmentName | Name of fragment
+	 * @param node         | workflowNode object
+	 */
 	public void addFragmentNodeRelation(String fragmentName, WorkflowNode node) {
+		// Sanity check input parameter
 		if (fragmentName == null || fragmentName.equalsIgnoreCase("null"))
 			return;
 
 		if (hasFragment(fragmentName)) {
-			Fragment fragment = getFragment(fragmentName);
-			fragment.addNode(node);
+			getFragment(fragmentName).addNode(node);
 		} else {
 			System.out.println("Error adding fragment(" + fragmentName + ") node(" + node.getFullName()
 					+ ") relation. There is no fragment with this name.");
@@ -115,16 +154,15 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Get a WorflowNode from the workflows array from the given id. id can either
+	 * Get a WorflowNode from the workflows array from the given id. Id can either
 	 * be the name of the workflow or its id. If the workflow is not in the list
 	 * then this function returns null.
 	 * 
-	 * @param id Name or Id string of the node to search for
+	 * @param indicator | id Name or Id string of the node to search for
 	 * @return WorkflowNode with the given name/id or null if does not exist
 	 */
 	public WorkflowNode getWorkflowNode(String indicator) {
 
-		// O(n)
 		for (WorkflowNode wn : workflows) {
 			String name = wn.getFullName();
 			String id = wn.getId();
@@ -213,7 +251,9 @@ public class WorkflowJson {
 
 	/**
 	 * Returns a list of nodes that are either a parent or child of this node and
-	 * all sub children and parents
+	 * all sub children and parents. Currently this method has no use, but it is
+	 * intended to be used with a diagram of the workflow so the path of the
+	 * currently selected node can be hilighted.
 	 * 
 	 * @param node node to find full path of
 	 * @return list of nodes that are either children or parents of the given node
@@ -253,7 +293,7 @@ public class WorkflowJson {
 	 * any node above the given node in the workflow that eventually links to the
 	 * given node.
 	 * 
-	 * @param node node to find parents of
+	 * @param node | node to find parents of
 	 * @return list of nodes that are parents of the given node
 	 */
 	public ArrayList<WorkflowNode> getParents(WorkflowNode node) {
@@ -278,7 +318,7 @@ public class WorkflowJson {
 	 * is any node above the given node in the workflow that the given node
 	 * eventually links to.
 	 * 
-	 * @param node node to find parents of
+	 * @param node | node to find parents of
 	 * @return list of nodes that are parents of the given node
 	 */
 	public ArrayList<WorkflowNode> getChildren(WorkflowNode node) {
@@ -299,10 +339,13 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * validate the provided json path against the dana schema.json. Return true if
-	 * given json is valid, prints the ValidationException otherwise.
+	 * validate the provided json path against the DANA schema.json. Return true if
+	 * given json is valid, prints the ValidationException otherwise. The DANA json
+	 * (readData.json by default) needs to be validated before being reread since it
+	 * contains user input information and a typo could crash the program in odd
+	 * ways
 	 * 
-	 * @param path
+	 * @param path | path to the json needing validation
 	 * @return
 	 */
 	public boolean validateJson(String path) {
@@ -320,14 +363,32 @@ public class WorkflowJson {
 
 	/**
 	 * Returns the longest path in the workflow. This is defined as the path that
-	 * has the most steps and contains an input + output node.
+	 * has the most steps and contains an input + output node. By default, this will
+	 * be the path used while generating a workflow description since only a single
+	 * path can be described in non-linear workflows. The path returned will include
+	 * nodes that are within the max criticality threshold. This threshold is the
+	 * highest supported criticality value (since lower criticality values mean the
+	 * node is more critical).
+	 * 
+	 * This means that if a workflow has two parallel paths, one that is 5 steps
+	 * long each with a criticality value of 2 and the other that is 3 steps long
+	 * each with a criticality value of 1. Then if this method is called with a
+	 * maxCriticalityThreshold=1, the path with 3 nodes will be returned. But if the
+	 * method is called with maxCriticalityThreshold=2 then the path with 5 nodes
+	 * will be returned.
+	 * 
+	 * @param maxCriticalityThreshold | maximum Criticality value allowed in the
+	 *                                returned "longest path". Lower threshold means
+	 *                                only more important nodes will be included in
+	 *                                path
+	 * @return longest path that meets the criticality threshold
 	 */
-	public ArrayList<WorkflowNode> getLongestPath(int minCriticality) {
+	public ArrayList<WorkflowNode> getLongestPath(int maxCriticalityThreshold) {
 		ArrayList<WorkflowNode> longestPath = new ArrayList<WorkflowNode>();
 		ArrayList<DatasetNode> inputs = getInputs();
 
 		for (DatasetNode i : inputs) {
-			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(i, minCriticality);
+			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(i, maxCriticalityThreshold);
 			if (tmp.size() > longestPath.size()) {
 				longestPath = tmp;
 			}
@@ -341,14 +402,14 @@ public class WorkflowJson {
 	 * decide if a dataset should be included in the path. If a step is not critical
 	 * enough then its output also needs to not be included in the path
 	 */
-	private boolean datasetParentMeetsCriticality(WorkflowNode dataset, int minCriticality) {
+	private boolean datasetParentMeetsCriticality(WorkflowNode dataset, int maxCriticalityThreshold) {
 		if (dataset.getIncomingLinks() == null) {
 			return true;
 		}
 		for (WorkflowNode parent : dataset.getIncomingLinks()) {
 			try {
 				StepNode step = (StepNode) parent;
-				if (step.getCriticality() <= minCriticality) {
+				if (step.getCriticality() <= maxCriticalityThreshold) {
 					return true;
 				}
 			} catch (Exception e) {
@@ -359,10 +420,10 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Helper function for getLongestPath(). Recursively finds the longest sup-path
+	 * Helper function for getLongestPath(). Recursively finds the longest sub-path
 	 * for the given path
 	 */
-	private ArrayList<WorkflowNode> recursiveGetLongestPath(WorkflowNode node, int minCriticality) {
+	private ArrayList<WorkflowNode> recursiveGetLongestPath(WorkflowNode node, int maxCriticalityThreshold) {
 		ArrayList<WorkflowNode> outputs = node.getOutgoingLinks();
 		ArrayList<WorkflowNode> largestSubPath = new ArrayList<WorkflowNode>();
 		if (outputs == null || outputs.size() == 0) {
@@ -371,15 +432,15 @@ public class WorkflowJson {
 		}
 
 		for (WorkflowNode o : outputs) {
-			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o, minCriticality);
+			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o, maxCriticalityThreshold);
 
-			if (node.isDataset() && datasetParentMeetsCriticality(node, minCriticality)) {
+			if (node.isDataset() && datasetParentMeetsCriticality(node, maxCriticalityThreshold)) {
 				tmp.add(0, node);
 
 			} else if (!node.isDataset()) {
 				try {
 					StepNode s = (StepNode) node;
-					if (s.getCriticality() <= minCriticality) {
+					if (s.getCriticality() <= maxCriticalityThreshold) {
 						tmp.add(0, node);
 					}
 				} catch (Exception e) {
@@ -395,7 +456,8 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Count how many time a node is used/appears in a workflow
+	 * Count how many time a node is used/appears in a workflow. This counts the
+	 * nodes common name (name displayed in wings viewer).
 	 * 
 	 * @return count
 	 */
@@ -410,14 +472,16 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Read in the json generated by DANA after it has been manually filled out.
-	 * This will populate the metadata fields for each of the workflow nodes
+	 * Read in the json generated by DANA after it has been manually filled out by
+	 * the worfklow's author. This will populate the metadata fields for each of the
+	 * workflow nodes
 	 * 
-	 * @param path to json
+	 * @param path | path to json (by default ./readData.json)
 	 * @return true if json was successfully read and serialized; false otherwise
 	 */
 	public boolean readDanaJson(String path) {
 
+		// Check json against schema
 		if (!validateJson(path)) {
 			System.out.println("Cannot read an invalid JSON");
 			return false;
@@ -549,13 +613,13 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Test to make sure the workflow (and metadata entered) is logical. This means
-	 * checking that each node has a connection. Checking that each fragment is part
-	 * of a connected subgraph. And validating the date entered is in a valid
-	 * format.
+	 * Test to make sure the workflow (and metadata entered) is logical. This
+	 * includes checking that each node has a connection. Checking that each
+	 * fragment is part of a connected subgraph. And validating the date entered is
+	 * in a valid format.
 	 * 
 	 * This function is intended to be called after readDanaJson() to validate a
-	 * narrative of this workflow can be generated
+	 * logical narrative of this workflow can be generated
 	 * 
 	 */
 	private boolean checkWorkflowLogicIsValid() {
@@ -563,7 +627,7 @@ public class WorkflowJson {
 		boolean isValid = true;
 
 		try {
-			
+
 			// Validate each fragment is part of a connected subgraph
 			for (Fragment f : fragments) {
 				for (WorkflowNode wn : f.getNodes()) {
@@ -574,7 +638,7 @@ public class WorkflowJson {
 					}
 				}
 
-				//Check that the workflow has a connected subgraph
+				// Check that the workflow has a connected subgraph
 				if (f.getNodes().size() > 0) {
 					ArrayList<WorkflowNode> subgraph = new ArrayList<WorkflowNode>();
 					fragmentSubgraphIsConnected(f, f.getNodes().get(0), subgraph);
@@ -587,11 +651,12 @@ public class WorkflowJson {
 					// Throw a warning but does not need to invalidate the workflow
 					System.out.println("Warning a fragment(" + f.getName() + ") has no nodes associated with it");
 				}
-				
-				//TODO: check every node has correct fragment
-				//TODO: check workflow is connected (subgraph from any node is length of all nodes in workflow)
-				return isValid;
+
+				// TODO: check every node has correct fragment
+				// TODO: check workflow is connected (subgraph from any node is length of all
+				// nodes in workflow)
 			}
+			return isValid;
 		} catch (Exception e) {
 			System.out.println(
 					"An exception has been thrown while validating the json's logic. Please check that the workflow is valid");
@@ -601,10 +666,11 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Helper function for checkWorkflowLogicIsValid(). This function recursively
-	 * finds all the nodes connected to the given node within the same fragment. If
-	 * the returned graph is the same size as the list of all nodes in the given
-	 * fragment then we know the subgraph of fragments is connected
+	 * Helper function for checkWorkflowLogicIsValid(). Workflow fragments must
+	 * contain sub-graphs that are all connected. This function recursively finds
+	 * all the nodes connected to the given node within the same fragment. If the
+	 * returned graph is the same size as the list of all nodes in the given
+	 * fragment then the subgraph of fragments is connected.
 	 * 
 	 */
 	private void fragmentSubgraphIsConnected(Fragment fragment, WorkflowNode curr, ArrayList<WorkflowNode> subgraph) {
@@ -632,11 +698,11 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Helper function for readDanaJson(). This function gears the value from the
-	 * specified key of the given json. If there is an error reading in the value,
-	 * it will return an empty string. Additionally, since the strings read in from
-	 * the json have their string wrapper attached, this function removes the
-	 * leading and trailing quotes (if applicable)
+	 * Helper function for readDanaJson(). This function gets the value from the
+	 * specified value of the given json and key. If there is an error reading in
+	 * the value, it will return an empty string. Additionally, since the strings
+	 * read in from the json have their string wrapper attached, this function
+	 * removes the leading and trailing quotes (if applicable)
 	 * 
 	 * @param key
 	 * @param json
@@ -673,6 +739,7 @@ public class WorkflowJson {
 	 */
 	private void generateWorkflowNodesListFromWings() {
 
+		// Set the name of the workflow
 		JsonObject t = getValue(json, "template");
 		String[] url = t.getString("id").split("#");
 		this.name = url[url.length - 1];
@@ -687,8 +754,8 @@ public class WorkflowJson {
 	 * Recursively populate the parentsList given the current node. Helper function
 	 * for getParents()
 	 * 
-	 * @param curr        current node
-	 * @param parentsList list of parents from the origin node
+	 * @param curr        | current node
+	 * @param parentsList | list of parents from the origin node
 	 */
 	private void getParentsRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> parentsList) {
 		if (curr != null && !parentsList.contains(curr)) {
@@ -705,8 +772,8 @@ public class WorkflowJson {
 	 * Recursively populate the childList given the current node. Helper function
 	 * for getChildren()
 	 * 
-	 * @param curr        current node
-	 * @param parentsList list of parents from the origin node
+	 * @param curr        | current node
+	 * @param parentsList | list of parents from the origin node
 	 */
 	private void getChildrenRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> childList) {
 		if (curr != null && !childList.contains(curr)) {
@@ -721,9 +788,8 @@ public class WorkflowJson {
 
 	/**
 	 * Adds any dataset nodes from the json into the workflows array. This method
-	 * must be called before the addInOutLinks() method so that the program can add
-	 * a link to the WorkflowNode object when a link between two objects has been
-	 * found
+	 * must be called before the addInOutLinks() method so that dana can add a link
+	 * to the WorkflowNode object when a link between two objects has been found
 	 */
 	private void addDatasets() {
 		String[] arr = { "template", "Variables" };
@@ -805,7 +871,9 @@ public class WorkflowJson {
 	}
 
 	/**
-	 * Add incoming and outgoing links to each node in the workflow.
+	 * Add incoming and outgoing links to each node in the workflow. This allows
+	 * each node to have an internal relationship to any nodes that connect in and
+	 * out of it in the workflow
 	 */
 	private void addInOutLinks() {
 
@@ -851,8 +919,8 @@ public class WorkflowJson {
 	 * value and will return and empty jsonObject if the given key links to a value
 	 * (ie: {"key": 1})
 	 * 
-	 * @param object json object
-	 * @param key    key of desired json object value
+	 * @param object | json object
+	 * @param key    | key of desired json object value
 	 * @return json object from given key
 	 */
 	private JsonObject getValue(JsonObject object, String key) {
@@ -872,8 +940,8 @@ public class WorkflowJson {
 	 * value and will return and empty jsonObject {} if the given key links to a
 	 * value (ie: {"key": 1})
 	 * 
-	 * @param object input json object
-	 * @param key    array of keys to search down
+	 * @param object | input json object
+	 * @param key    | array of keys to search down
 	 * @return json object from given key list
 	 */
 	private JsonObject getValue(JsonObject object, String[] key) {
@@ -916,7 +984,8 @@ public class WorkflowJson {
 
 	/**
 	 * Read in a file from the given file path and return a string representation of
-	 * that file
+	 * that file. This function is used to get the string representation of a json
+	 * file
 	 * 
 	 * @param filePath path of file to read
 	 * @return String of files contents

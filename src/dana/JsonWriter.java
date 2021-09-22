@@ -11,12 +11,11 @@ import java.io.IOException;
  * 
  *         Generate a json file used to enter in all the human entered data for
  *         DANA. This allows DANA to collect additional metadata fields it would
- *         be unable to assertain from the winds json alone
+ *         be unable to ascertain from the winds json alone
  */
 public class JsonWriter {
 
 	WorkflowJson workflow;
-
 
 	public JsonWriter(WorkflowJson workflow) {
 		this.workflow = workflow;
@@ -76,14 +75,15 @@ public class JsonWriter {
 		keys.add(new KeyValuePair("dateCreated"));
 		keys.add(new KeyValuePair("name", workflow.getName()));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));
-		keys.add(new KeyValuePair("fragments", keyValueStringFormatter(new ArrayList<KeyValuePair>()))); 
+		keys.add(new KeyValuePair("fragments", keyValueStringFormatter(new ArrayList<KeyValuePair>())));
 
 		return keyValueStringFormatter(keys);
 	}
 
 	/**
 	 * Generate a json object representing each of the workflow's nodes. This
-	 * includes dataset nodes, parameter nodes and step nodes
+	 * includes dataset nodes, parameter nodes and step nodes. The structure of this
+	 * json is defined in the schema (schema.json)
 	 * 
 	 * @return String representation of the datasets json object
 	 */
@@ -103,15 +103,15 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("data", "(path to data should go here)"));
 				datasetMetadata.add(new KeyValuePair("id", wn.getId()));
 
-				if(!wn.isParameter()) {
+				if (!wn.isParameter()) {
 					datasetMetadata.add(new KeyValuePair("doi"));
 					datasetMetadata.add(new KeyValuePair("url"));
 					datasetMetadata.add(new KeyValuePair("license"));
 					datasetMetadata.add(new KeyValuePair("author"));
 					datasetMetadata.add(new KeyValuePair("citation"));
 				}
-				
-				//Reference to any nodes that point into the current no)de
+
+				// Reference to any nodes that point into the current no)de
 				if (wn.getIncomingLinks() != null) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
@@ -124,7 +124,7 @@ public class JsonWriter {
 					datasetMetadata.add(new KeyValuePair("hasInput", null));
 				}
 
-				//Reference to any nodes that the current node points to
+				// Reference to any nodes that the current node points to
 				if (wn.getOutgoingLinks() != null) {
 					String[] outgoingLinks = new String[wn.getOutgoingLinks().size()];
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
@@ -138,7 +138,7 @@ public class JsonWriter {
 					datasetMetadata.add(new KeyValuePair("hasOutput", null));
 				}
 
-				//Keep separate objects for parameters and datasets
+				// Keep separate objects for parameters and datasets
 				KeyValuePair c = new KeyValuePair(wn.getFullName(), keyValueStringFormatter(datasetMetadata));
 				if (wn.isParameter()) {
 					parameterKeys.add(c);
@@ -162,14 +162,15 @@ public class JsonWriter {
 		for (WorkflowNode wn : list) {
 			if (!wn.isDataset()) {
 
-				//Add all metadata fields (these are all fields that a human will need to fill out)
+				// Add all metadata fields (these are all fields that a human will need to fill
+				// out)
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
 				datasetMetadata.add(new KeyValuePair("fullName", wn.getFullName()));
 				datasetMetadata.add(new KeyValuePair("displayName", wn.getDisplayName()));
 				datasetMetadata.add(new KeyValuePair("shortDescription"));
 				datasetMetadata.add(new KeyValuePair("longDescription"));
 				datasetMetadata.add(new KeyValuePair("gitHubUrl"));
-				datasetMetadata.add(new KeyValuePair("criticality",1));
+				datasetMetadata.add(new KeyValuePair("criticality", 1));
 				datasetMetadata.add(new KeyValuePair("fragments"));
 				datasetMetadata.add(new KeyValuePair("stepType"));
 				datasetMetadata.add(new KeyValuePair("website"));
@@ -181,8 +182,8 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("documentationLink"));
 				datasetMetadata.add(new KeyValuePair("commandLineInvocation"));
 				datasetMetadata.add(new KeyValuePair("id", wn.getId()));
-				
-				//Reference to any nodes that point into the current step
+
+				// Reference to any nodes that point into the current step
 				if (wn.getIncomingLinks() != null) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
@@ -195,7 +196,7 @@ public class JsonWriter {
 					datasetMetadata.add(new KeyValuePair("hasInput", null));
 				}
 
-				//Reference to any nodes that the current step points to
+				// Reference to any nodes that the current step points to
 				if (wn.getOutgoingLinks() != null) {
 					String[] outgoingLinks = new String[wn.getOutgoingLinks().size()];
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
@@ -211,7 +212,7 @@ public class JsonWriter {
 				stepKeys.add(c);
 			}
 		}
-		
+
 		return stepKeys;
 	}
 
@@ -246,8 +247,8 @@ public class JsonWriter {
 	/**
 	 * Creates a csv string from the given array
 	 * 
-	 * @param arr input array
-	 * @return comma separated values
+	 * @param arr| array of elements to transform into a csv
+	 * @return string representation of comma separated values
 	 */
 	private String arrayToCsv(String[] arr) {
 		String outp = "";
@@ -265,7 +266,7 @@ public class JsonWriter {
 	 * Given a string representation of a json, format with spaces for nested json
 	 * objects. This will make it look nicer to read when printed to a file
 	 * 
-	 * @param json Json to format
+	 * @param json | Json to format
 	 * @return formatted json
 	 */
 	public String prettyJson(String json) {

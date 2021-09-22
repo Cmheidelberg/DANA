@@ -75,8 +75,11 @@ public class DatasetNode extends WorkflowNode {
 		if (description != null && description != "") {
 			out += "\nDescription: " + description; 
 		}
-		if (doi != null && doi != "") {
+		if (doi != null && doi != "" && !doi.equalsIgnoreCase("null")) {
 			out += "\ndoi: " + doi; 
+		}
+		if (type != null && type != "" && !type.equalsIgnoreCase("null")) {
+			out += "\ntype: " + type; 
 		}
 		out += "\n";
 		return out;

@@ -463,7 +463,7 @@ class StepNarrative implements Narrative {
 		ArrayList<WorkflowNode> inputs = step.getIncomingLinks();
 		ArrayList<DatasetNode> datasetInputs = new ArrayList<DatasetNode>();
 		ArrayList<DatasetNode> parameterInputs = new ArrayList<DatasetNode>();
-
+		
 		// Separate Dataset inputs from parameter inputs
 		for (WorkflowNode i : inputs) {
 			if (i.isDataset()) {
@@ -490,20 +490,19 @@ class StepNarrative implements Narrative {
 		}
 
 		remainingDP = discussionPoints;
-
+		String ctypeSpaced;
 		// Generate description for each unique type of input
 		for (String ctype : types) {
 			ctype = ctype.toLowerCase();
-			ctype = ctype.length() > 0 ? " " + ctype : ctype;
+			ctypeSpaced = ctype.length() > 0 ? " " + ctype : ctype;
 
 			ArrayList<DatasetNode> currDatasets = getDatasetsWithType(ctype, datasetInputs);
-
 			if (currDatasets.size() == 1) {
-				outp += "a" + ctype + " file[" + datasetInputs.get(0).getDisplayName() + "]";
+				outp += "a" + ctypeSpaced + " file[" + datasetInputs.get(0).getDisplayName() + "]";
 				remainingDP--;
 
 			} else if (currDatasets.size() > 1) {
-				outp += Num2Word.convert(currDatasets.size()) + ctype + "files[";
+				outp += Num2Word.convert(currDatasets.size()) + ctypeSpaced + "files[";
 				for (int i = 0; i < currDatasets.size(); i++) {
 					outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName()
 							: currDatasets.get(i).getDisplayName() + ",";
@@ -704,7 +703,6 @@ class StepNarrative implements Narrative {
 	 * contain the given type.
 	 */
 	private ArrayList<DatasetNode> getDatasetsWithType(String type, ArrayList<DatasetNode> inputs) {
-
 		ArrayList<DatasetNode> out = new ArrayList<DatasetNode>();
 		for (DatasetNode d : inputs) {
 			if (d.getType() != null && d.getType().equalsIgnoreCase(type)) {

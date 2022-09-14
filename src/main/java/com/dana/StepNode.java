@@ -1,4 +1,4 @@
-package dana;
+package com.dana;
 
 public class StepNode extends WorkflowNode{
 

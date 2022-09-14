@@ -1,4 +1,4 @@
-package dana;
+package com.dana;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,7 +1,8 @@
-package dana;
+package com.dana;
 
 import java.util.ArrayList;
-
+import java.util.Collections;
+import java.util.stream.Collectors;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -278,18 +279,21 @@ public class JsonWriter {
 			switch (json.charAt(i)) {
 			case '{':
 				tabLevel += 1;
-				tabs = spacesPerTab.repeat(tabLevel);
+				//tabs = spacesPerTab.repeat(tabLevel);
+				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out += json.charAt(i) + tabs;
 				break;
 
 			case '}':
 				tabLevel -= 1;
-				tabs = spacesPerTab.repeat(tabLevel);
+				//tabs = spacesPerTab.repeat(tabLevel);
+				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out = out.substring(0, out.length() - 3);
 				out += json.charAt(i);
 				break;
 			case '\n':
-				tabs = spacesPerTab.repeat(tabLevel);
+				//tabs = spacesPerTab.repeat(tabLevel);
+				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out += json.charAt(i) + tabs;
 				break;
 

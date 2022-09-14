@@ -4,6 +4,8 @@ import java.io.*;
 import java.io.StringReader;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.WingsConnection;
+
 import java.util.Scanner;
 
 import javax.json.Json;
@@ -15,9 +17,20 @@ public class Dana {
 
 	// This path is used so a path does not have to be entered each time while
 	// developing. It represents the json from wings
-	static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\Caesar_Cypher.json";
+	static String workflowPath = "examples/Caesar_Cypher.json";
 
 	public static void main(String[] args) {
+		StringBuilder contentBuilder = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader("password"))) {
+			String sCurrentLine;
+			while ((sCurrentLine = br.readLine()) != null) {
+				contentBuilder.append(sCurrentLine);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String password = contentBuilder.toString();
+		WingsConnection wings = new WingsConnection(password);
 
 		// Read in
 		JsonObject workflowJson = openWorkflow(false);
@@ -27,7 +40,7 @@ public class Dana {
 		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
 		
-		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+		if (workflow.readDanaJson("readData.json")) {
 
 			// Print workflows debug tostring
 			System.out.println("NODE METADATA DEBUG: ");
@@ -140,7 +153,7 @@ public class Dana {
 		JsonObject workflowJson = openWorkflow(false);
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 		NarrativeGenerator ng = null;
-		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+		if (workflow.readDanaJson("readData.json")) {
 			ng = new NarrativeGenerator(workflow);
 		} else {
 			System.out.println("Please read in a new Wings JSON");
@@ -175,7 +188,7 @@ public class Dana {
 						.println("Please enter in additional metadata to readData.json and hit any button to continue");
 				scan.next();
 
-				if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+				if (workflow.readDanaJson("readData.json")) {
 					ng = new NarrativeGenerator(workflow);
 				} else {
 					System.out.println("Error. Invalid metadata entered!");

@@ -1,0 +1,554 @@
+{
+  "template": {
+    "version": 0,
+    "onturl": "http://www.wings-workflows.org/ontology/workflow.owl",
+    "wflowns": "http://www.wings-workflows.org/ontology/workflow.owl#",
+    "Nodes": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl#NaiveBayesModeler",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler_component"
+        },
+        "comment": "x=33.5,y=274.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData": {
+            "role": {
+              "type": 1,
+              "roleid": "trainingData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize": {
+            "role": {
+              "type": 2,
+              "roleid": "javaHeapSize",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex1": {
+            "role": {
+              "type": 2,
+              "roleid": "classIndex",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex1"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1": {
+            "role": {
+              "type": 1,
+              "roleid": "model",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex1", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl#Discretize",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1_component"
+        },
+        "comment": "x=358.5,y=115.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex3": {
+            "role": {
+              "type": 2,
+              "roleid": "classIndex",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex3_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex3"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1": {
+            "role": {
+              "type": 1,
+              "roleid": "inputData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins1": {
+            "role": {
+              "type": 2,
+              "roleid": "numberOfBins",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins1"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1": {
+            "role": {
+              "type": 1,
+              "roleid": "outputData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins1", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex3", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl#Discretize",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize_component"
+        },
+        "comment": "x=244.5,y=115.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex2": {
+            "role": {
+              "type": 2,
+              "roleid": "classIndex",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex2_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex2"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins": {
+            "role": {
+              "type": 2,
+              "roleid": "numberOfBins",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData": {
+            "role": {
+              "type": 1,
+              "roleid": "inputData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData": {
+            "role": {
+              "type": 1,
+              "roleid": "outputData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex2", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl#NaiveBayesClassifier",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier_component"
+        },
+        "comment": "x=189.5,y=432.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex": {
+            "role": {
+              "type": 2,
+              "roleid": "classIndex",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model": {
+            "role": {
+              "type": 1,
+              "roleid": "model",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData": {
+            "role": {
+              "type": 1,
+              "roleid": "testData",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification": {
+            "role": {
+              "type": 1,
+              "roleid": "classification",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier"
+      }
+    },
+    "Links": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData_trainingData": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData_trainingData",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize" },
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_numberOfBins1": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_numberOfBins1",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins1" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_javaHeapSize": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_javaHeapSize",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex3": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex3",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex3" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex2": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex2",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex2" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_inputData": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_inputData",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification_op": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification_op",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex1": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_classIndex1",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex1" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1_model": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1_model",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesModeler" },
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model1" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_inputData1": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_inputData1",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_numberOfBins": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ip_numberOfBins",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1_testData": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1_testData",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#Discretize1" },
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#NaiveBayesClassifier" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#outputData1" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData" }
+      }
+    },
+    "Variables": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1": {
+        "comment": "x=484.5,y=36.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData": {
+        "comment": "x=132.5,y=194.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#trainingData"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification": {
+        "comment": "x=221.5,y=512.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize": {
+        "comment": "x=20.5,y=194.5",
+        "type": 2,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins": {
+        "comment": "x=365.5,y=36.5",
+        "type": 2,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex": {
+        "comment": "x=180.5,y=36.5",
+        "type": 2,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model": {
+        "comment": "x=143.5,y=353.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#model"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData": {
+        "comment": "x=348.5,y=274.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#testData"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData": {
+        "comment": "x=272.5,y=36.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData"
+      }
+    },
+    "inputRoles": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1": {
+        "type": 1,
+        "roleid": "inputData",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1_irole"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize": {
+        "type": 2,
+        "roleid": "javaHeapSize",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize_irole"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins": {
+        "type": 2,
+        "roleid": "numberOfBins",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins_irole"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex": {
+        "type": 2,
+        "roleid": "classIndex",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex_irole"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData": {
+        "type": 1,
+        "roleid": "inputData",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData_irole"
+      }
+    },
+    "outputRoles": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification": {
+        "type": 1,
+        "roleid": "classification",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classification_orole"
+      }
+    },
+    "subtemplates": {},
+    "metadata": {
+      "lastUpdateTime": "2014-10-02",
+      "contributors": [ "admin" ],
+      "createdFrom": []
+    },
+    "rules": {},
+    "props": {
+      "lib.resource.url": "http://datascience4all.org/wings-portal-new/export/common/resource/library.owl",
+      "tdb.repository.dir": "/opt/wings-new/storage/default/TDB",
+      "viewer.id": "cheidelb",
+      "ont.domain.component.ns": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl#",
+      "lib.domain.code.storage": "/opt/wings-new/storage/default/users/cheidelb/DMDomain/code/library",
+      "use_rules": "true",
+      "domain.workflows.dir.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows",
+      "ont.resource.url": "http://www.wings-workflows.org/ontology/resource.owl",
+      "domain.executions.dir.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/executions",
+      "ont.component.url": "http://www.wings-workflows.org/ontology/component.owl",
+      "logs.dir": "/opt/wings-new/storage/default/logs",
+      "lib.domain.data.storage": "/opt/wings-new/storage/default/users/cheidelb/DMDomain/data",
+      "ont.dir.url": "http://www.wings-workflows.org/ontology",
+      "lib.abstract.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/abstract.owl",
+      "lib.provenance.url": "http://datascience4all.org/wings-portal-new/export/common/provenance/library.owl",
+      "lib.concrete.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/components/library.owl",
+      "dot.path": "/usr/bin/dot",
+      "ont.data.url": "http://www.wings-workflows.org/ontology/data.owl",
+      "lib.domain.data.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl",
+      "ont.workflow.url": "http://www.wings-workflows.org/ontology/workflow.owl",
+      "ont.domain.data.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/ontology.owl",
+      "lib.domain.execution.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/executions/library.owl",
+      "lib.domain.workflow.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/library.owl",
+      "user.id": "cheidelb",
+      "ont.execution.url": "http://www.wings-workflows.org/ontology/execution.owl"
+    },
+    "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#ModelThenNaiveBayesClassifyContinuousData"
+  },
+  "inputs": [
+    {
+      "name": "classIndex",
+      "dtype": "http://www.w3.org/2001/XMLSchema#integer",
+      "binding": "",
+      "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#classIndex",
+      "type": "param"
+    },
+    {
+      "name": "inputData",
+      "options": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110958-10000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110950-10000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110944-1000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110938-1000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110928-100.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110933-100.arff" ],
+      "dtype": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/ontology.owl#ContinuousInstance",
+      "dim": 0,
+      "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData",
+      "type": "data"
+    },
+    {
+      "name": "inputData1",
+      "options": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110958-10000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110950-10000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110944-1000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110938-1000.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110928-100.arff", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/library.owl#iris-2010-05-04-110933-100.arff" ],
+      "dtype": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/data/ontology.owl#ContinuousInstance",
+      "dim": 0,
+      "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1",
+      "type": "data"
+    },
+    {
+      "name": "javaHeapSize",
+      "dtype": "http://www.w3.org/2001/XMLSchema#string",
+      "binding": "",
+      "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#javaHeapSize",
+      "type": "param"
+    },
+    {
+      "name": "numberOfBins",
+      "dtype": "http://www.w3.org/2001/XMLSchema#integer",
+      "binding": "",
+      "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#numberOfBins",
+      "type": "param"
+    }
+  ],
+  "constraints": [
+    {
+      "subject": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData",
+        "isLiteral": false
+      },
+      "predicate": {
+        "id": "http://www.wings-workflows.org/ontology/workflow.owl#hasDifferentDataFrom",
+        "isLiteral": false
+      },
+      "object": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/DMDomain/workflows/ModelThenNaiveBayesClassifyContinuousData.owl#inputData1",
+        "isLiteral": false
+      }
+    }
+  ]
+}

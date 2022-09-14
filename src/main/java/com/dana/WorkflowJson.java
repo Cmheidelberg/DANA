@@ -350,12 +350,15 @@ public class WorkflowJson {
 	 */
 	public boolean validateJson(String path) {
 		try {
-			String schemaString = readFile("schema.json");
+			String schemaString = readFile("examples/schema.json");
 			JSONObject rawSchema = new JSONObject(schemaString);
 			Schema schema = SchemaLoader.load(rawSchema);
 			schema.validate(new JSONObject(readFile(path))); // throws a ValidationException if this object is invalid
 		} catch (org.everit.json.schema.ValidationException e) {
 			System.out.println("[ERROR] Invalid DANA JSON: " + e.getMessage());
+			return false;
+		} catch (Exception e){
+			e.printStackTrace();
 			return false;
 		}
 		return true;

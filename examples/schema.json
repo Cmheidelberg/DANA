@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "danaJson",
+  "description": "The JSON used internally by DANA to collect and record any metadata from each node",
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "description": "Metadata about the workflow",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": [ "string", "null" ] },
+        "citation": { "type": [ "string", "null" ] },
+        "author": { "type": [ "string", "null" ] },
+        "dateCreated": {
+          "type": [ "number", "null" ],
+          "description": "Long ingeger time since epoch"
+        },
+        "nodes": {
+          "type": "string",
+          "description": "Comma separated list of every node in the workflow (by full name)"
+        },
+        "fragments": {
+          "type": "object",
+          "description": "Json object representation for each fragment. Every fragment from the workflow must be included in this field. An optional description firld can be added to each fragment",
+          "additionalProperties": {
+              "$ref": "#/$defs/fragment"
+          }
+        }
+      },
+      "required": [ "dateCreated", "nodes", "name", "fragments" ]
+    },
+    "nodes": {
+      "description": "Information about each of the node types (Dataset, Parameter, Step) from the workflow",
+      "type": "object",
+      "properties": {
+        "datasets": {
+          "type": "object",
+          "additionalProperties": {
+              "$ref": "#/$defs/dataset"
+          }
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+          	"$ref": "#/$defs/parameter"
+          }
+        },
+        "steps": {
+          "type": "object",
+          "additionalProperties": {
+          	"$ref": "#/$defs/step"
+          }
+        }
+      },
+      "required": [ "steps", "datasets", "parameters" ]
+    }
+  },
+  "required": [ "metadata", "nodes" ],
+
+  "$defs": {
+  	"fragment": {
+  		"type": "object",
+  		"properties": {
+  			"description": { "type": [ "string", "null" ] }
+  		}
+  	},
+    "parameter": {
+      "type": "object",
+      "properties": {
+        "description": { "type": [ "string", "null" ] },
+        "data": { "type": "string" },
+        "criticality": { "type": "number" },
+        "id": { "type": "string" },
+        "hasInput": { "type": [ "string", "null" ] },
+        "hasOutput": { "type": [ "string", "null" ] }
+      },
+      "required": [ "hasOutput", "hasInput", "id" ]
+    },
+    "dataset": {
+      "type": "object",
+      "properties": {
+        "description": { "type": [ "string", "null" ] },
+        "license": { "type": [ "string", "null" ] },
+        "author": { "type": [ "string", "null" ] },
+        "citation": { "type": [ "string", "null" ] },
+        "doi": { "type": [ "string", "null" ] },
+        "criticality": { "type": "number" },
+        "url": { "type": [ "string", "null" ] },
+        "type": { "type": [ "string", "null" ] },
+        "data": { "type": "string" },
+        "id": { "type": "string" },
+        "hasInput": { "type": [ "string", "null" ] },
+        "hasOutput": { "type": [ "string", "null" ] }
+      },
+      "required": [ "hasOutput", "hasInput", "id", "type" ]
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "displayName": { "type": "string" },
+        "shortDescription": { "type": [ "string", "null" ] },
+        "longDescription": { "type": [ "string", "null" ] },
+        "gitHubUrl": { "type": [ "string", "null" ] },
+        "criticality": { "type": "number" },
+        "stepType": { "type": [ "string", "null" ] },
+        "website": { "type": [ "string", "null" ] },
+        "citation": { "type": [ "string", "null" ] },
+        "author": { "type": [ "string", "null" ] },
+        "license": { "type": [ "string", "null" ] },
+        "versionNumber": { "type": [ "string", "null" ] },
+        "documentationLink": { "type": [ "string", "null" ] },
+        "commandLineInvocation": { "type": [ "string", "null" ] },
+        "fragments": { "type": [ "string", "null" ] },
+        "id": { "type": "string" },
+        "hasInput": { "type": [ "string", "null" ] },
+        "hasOutput": { "type": [ "string", "null" ] }
+      },
+      "required": ["fullName", "displayName", "criticality", "id", "hasInput", "hasOutput"]
+    }
+  }
+}

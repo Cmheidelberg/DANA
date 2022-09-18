@@ -100,7 +100,7 @@ public class NarrativeGenerator {
 
 	public String getCitation(String nodeName) {
 		for (Narrative n : citations) {
-			if (n.getName().equalsIgnoreCase(nodeName)) {
+			if (n.getName().equals(nodeName)) {
 				return n.getCitation();
 			}
 		}

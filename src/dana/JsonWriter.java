@@ -11,7 +11,7 @@ import java.io.IOException;
  * 
  *         Generate a json file used to enter in all the human entered data for
  *         DANA. This allows DANA to collect additional metadata fields it would
- *         be unable to ascertain from the winds json alone
+ *         be unable to ascertain from the wings json alone
  */
 public class JsonWriter {
 
@@ -111,7 +111,7 @@ public class JsonWriter {
 					datasetMetadata.add(new KeyValuePair("citation"));
 				}
 
-				// Reference to any nodes that point into the current no)de
+				// Reference to any nodes that point into the current node
 				if (wn.getIncomingLinks() != null) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();

@@ -31,7 +31,7 @@ public class Fragment {
 	
 	public boolean hasNode(String fullName) {
 		for(WorkflowNode wn : nodes) {
-			if (fullName.equalsIgnoreCase(wn.getFullName())) {
+			if (fullName.equals(wn.getFullName())) {
 				return true;
 			}
 		}

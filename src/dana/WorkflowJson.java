@@ -33,7 +33,7 @@ public class WorkflowJson {
 	private String description = "";
 	private String citation = "";
 	private String name = "";
-	private ArrayList<WorkflowNode> workflows; // This should be "workflow" but i'm too used to the original name now
+	private ArrayList<WorkflowNode> workflows; // This should be "workflow". The object is not plural...
 	private ArrayList<Fragment> fragments;
 
 	// Read in WINGS json file to populate workflow list with nodes
@@ -80,7 +80,7 @@ public class WorkflowJson {
 	 */
 	public Fragment getFragment(String name) {
 		for (Fragment f : fragments) {
-			if (f.getName().equalsIgnoreCase(name)) {
+			if (f.getName().equals(name)) {
 				return f;
 			}
 		}
@@ -102,7 +102,7 @@ public class WorkflowJson {
 	 */
 	public boolean hasFragment(String name) {
 		for (Fragment f : fragments) {
-			if (f.getName().equalsIgnoreCase(name)) {
+			if (f.getName().equals(name)) {
 				return true;
 			}
 		}
@@ -168,12 +168,12 @@ public class WorkflowJson {
 			String id = wn.getId();
 
 			// Return workflow if it has the same name
-			if (name.equalsIgnoreCase(indicator)) {
+			if (name.equals(indicator)) {
 				return wn;
 			}
 
 			// Return workflow if it has the same id
-			if (id.equalsIgnoreCase(indicator)) {
+			if (id.equals(indicator)) {
 				return wn;
 			}
 		}
@@ -464,7 +464,7 @@ public class WorkflowJson {
 	public int CountTimesUsedInWorkflow(WorkflowNode node) {
 		int count = 0;
 		for (WorkflowNode wn : workflows) {
-			if (wn.getDisplayName().equalsIgnoreCase(node.getDisplayName())) {
+			if (wn.getDisplayName().equals(node.getDisplayName())) {
 				count++;
 			}
 		}
@@ -998,6 +998,7 @@ public class WorkflowJson {
 				contentBuilder.append(sCurrentLine).append("\n");
 			}
 		} catch (IOException e) {
+			System.out.println(String.format("Could not read given file: %s",filePath));
 			e.printStackTrace();
 		}
 		return contentBuilder.toString();

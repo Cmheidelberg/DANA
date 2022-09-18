@@ -15,7 +15,8 @@ public class Dana {
 
 	// This path is used so a path does not have to be entered each time while
 	// developing. It represents the json from wings
-	static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\Caesar_Cypher.json";
+	static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\USC\\Internships\\ISI\\DANA\\JSONS\\AutoTS-spectral-analysis.json";
+	static String readDataPath = "readData.json";
 
 	public static void main(String[] args) {
 
@@ -24,23 +25,27 @@ public class Dana {
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow);
-		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
 		
-		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+		if (workflow.readDanaJson("readData.json")) {
 
 			// Print workflows debug tostring
-			System.out.println("NODE METADATA DEBUG: ");
+//			System.out.println("NODE METADATA DEBUG: ");
 			for (WorkflowNode wn : workflow.getWorkflowNodes()) {
-				System.out.println("====" + wn.getFullName() + "====");
-				System.out.println(wn);
+				if(wn.getDisplayName().toLowerCase().contains("timeseriesplot")) {
+					System.out.println("====" + wn.getFullName() + "====");
+					System.out.println(wn);
+				}
 			}
 
 			System.out.println("DATA NARRATIVES FOR EACH STEP: ");
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
-				System.out.println("+++" + s.getDisplayName() + "+++");
-				System.out.println(ng.getNodeNarrative(s));
-				System.out.println("\n");
+				if (s.getDisplayName().toLowerCase().contains("timeseriesplot")) {
+					System.out.println("+++" + s.getDisplayName() + "+++");
+					System.out.println(ng.getNodeNarrative(s));
+					System.out.println("\n");
+				}
 			}
 
 			//Debug print of citations when multiple node narratives are printed
@@ -70,7 +75,7 @@ public class Dana {
 				System.out.println(s);
 			}
 		}
-		// danaCliMenu();
+		//danaCliMenu();
 
 	}
 
@@ -89,13 +94,13 @@ public class Dana {
 		JsonObject doc = null;
 		String path = "";
 
-		// If the workflow path isnt hard-coded prompt the user for a path
+		// If the workflow path isn't hard-coded prompt the user for a path
 		if (workflowPath.length() == 0 || overrideWorkflowPath) {
 			final JFileChooser fc = new JFileChooser();
 			
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON files", "json");
 			fc.addChoosableFileFilter(filter);
-			//fc.setCurrentDirectory(new File("C:\\Users\\Admin\\Desktop"));
+			fc.setCurrentDirectory(new File("C:\\Users\\Admin\\Desktop\\USC\\Internships\\ISI\\DANA"));
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -140,7 +145,7 @@ public class Dana {
 		JsonObject workflowJson = openWorkflow(false);
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 		NarrativeGenerator ng = null;
-		if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+		if (workflow.readDanaJson(readDataPath)) {
 			ng = new NarrativeGenerator(workflow);
 		} else {
 			System.out.println("Please read in a new Wings JSON");
@@ -165,7 +170,7 @@ public class Dana {
 					break;
 				}
 
-				workflowJson = openWorkflow(true);
+				workflowJson = openWorkflow(false);
 				System.out.println(workflowJson);
 				workflow = new WorkflowJson(workflowJson);
 				JsonWriter jw = new JsonWriter(workflow);
@@ -175,7 +180,7 @@ public class Dana {
 						.println("Please enter in additional metadata to readData.json and hit any button to continue");
 				scan.next();
 
-				if (workflow.readDanaJson("C:\\Users\\Admin\\eclipse-workspace\\DANA\\readData.json")) {
+				if (workflow.readDanaJson(readDataPath)) {
 					ng = new NarrativeGenerator(workflow);
 				} else {
 					System.out.println("Error. Invalid metadata entered!");
@@ -200,7 +205,7 @@ public class Dana {
 						}
 					}
 
-					System.out.println("Hit any button to continue");
+					System.out.println("Enter anything to continue");
 					scan.nextLine();
 				} else {
 					System.out.println(

@@ -722,7 +722,7 @@ class StepNarrative implements Narrative {
 					remainingDP--;
 
 				} else if (currDatasets.size() > 1) {
-					outp += Num2Word.convert(currDatasets.size()) + s + "files[";
+					outp += Num2Word.convert(currDatasets.size()) + s + " files[";
 					for (int i = 0; i < currDatasets.size(); i++) {
 						outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName() : 
 							currDatasets.get(i).getDisplayName() + ",";

@@ -66,7 +66,7 @@ public class Dana {
 			//Work in progress: Workflow Narrative generation
 			NarrativeGenerator ngWorkflow = new NarrativeGenerator(workflow);
 
-			String workflowNarrative = ngWorkflow.getWorkflowNarrative(1);
+			String workflowNarrative = ngWorkflow.getWorkflowNarrative(1,0);
 			System.out.println(workflowNarrative);
 
 			for (String s : ngWorkflow.getAllCitations()) {
@@ -215,7 +215,7 @@ public class Dana {
 
 				try {
 					int cv = Integer.parseInt(scan.nextLine());
-					ng.getWorkflowNarrative(cv);
+					ng.getWorkflowNarrative(cv,0);
 					// System.out.println(ng.getWorkflowNarrative(cv));
 
 //					if (ng.getAllCitations().size() > 0) {

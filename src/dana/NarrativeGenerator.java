@@ -1,6 +1,9 @@
 package dana;
 
 import java.util.ArrayList;
+import java.util.FormatFlagsConversionMismatchException;
+
+import com.sun.org.apache.xerces.internal.impl.xpath.XPath.Step;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -76,16 +79,22 @@ public class NarrativeGenerator {
 		}
 	}
 
-	public String getWorkflowNarrative(int minCriticality) {
-		return getWorkflowNarrative(true, minCriticality);
+	/**
+	 * 
+	 * @param minCriticality
+	 * @param level_of_detail: High = 3, Med = 2, Low = 1
+	 * @return
+	 */
+	public String getWorkflowNarrative(int minCriticality, int level_of_detail) {
+		return getWorkflowNarrative(true, minCriticality, level_of_detail);
 	}
 
 	/**
 	 * Warning: Calling this function resets the citationReference counter.
 	 */
-	public String getWorkflowNarrative(boolean trackCitations, int minCriticality) {
+	public String getWorkflowNarrative(boolean trackCitations, int minCriticality, int level_of_detail) {
 		resetCitationReference();
-		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference, minCriticality);
+		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference, minCriticality, level_of_detail);
 		if (!workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("")) {
 			updateCitations(wn);
 		}
@@ -135,12 +144,15 @@ class WorkflowNarrative implements Narrative {
 	boolean hasCitation;
 	int citationReference;
 	int minCriticality;
+	int lod;
 
-	WorkflowNarrative(WorkflowJson workflow, int citationReference, int minCriticality) {
+	//Level of detail: 3 = High, 2 = Med, 1 = Low
+	WorkflowNarrative(WorkflowJson workflow, int citationReference, int minCriticality, int level_of_detail) {
 		this.workflow = workflow;
 		this.hasCitation = !workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("");
 		this.citationReference = citationReference;
 		this.minCriticality = minCriticality;
+		this.lod = level_of_detail;
 	}
 
 	public String getNarrative() {
@@ -150,21 +162,14 @@ class WorkflowNarrative implements Narrative {
 		int numOutputs = workflow.getOutputs().size();
 		int numParameters = workflow.getParameters().size();
 
-		boolean hasDescription = workflow.getDescription() != null
-				&& !workflow.getDescription().equalsIgnoreCase("null") && !workflow.getDescription().equals("");
 		// Workflow metadata
 		String citationReferenceString = "";
 		if (hasCitation) {
 			citationReferenceString = " [" + citationReference + "] ";
 		}
 
-		if (hasDescription) {
-			outp += "This workflow" + citationReferenceString + workflow.getDescription() + ".\n";
-		}
-		outp += "\n";
-
 		// Workflow link descriptions
-		outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
+		// outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
 		if (numInputs > 0) {
 			String inputs = numInputs == 1 ? "input" : "inputs";
 			outp += "takes in " + Num2Word.convert(numInputs) + " " + inputs;
@@ -206,21 +211,77 @@ class WorkflowNarrative implements Narrative {
 			outp += ".";
 		}
 		
-		//Note: this type of approach only works on linear workflows/workflows where we only care about one type of straight-
-		//shot narrative
-		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
-		outp += "\n";
-		if(longestPath.size() > 0) {
-			for (WorkflowNode wn : longestPath) {
-				String line = wn.equals(longestPath.get(longestPath.size() - 1)) ? wn.getDisplayName() + "\n"
-						: wn.getDisplayName() + " -> ";
-				System.out.print(line);
-				outp += line; // TODO replace this with the actual description
+		// Workflow Description
+		if (workflow.hasDescription()) {
+			String desc = workflow.getDescription();
+			if (desc.charAt(desc.length()-1) == '.') {
+				desc = desc.substring(0, desc.length()-1);
 			}
-		} else {
-			outp += " This workflow has no steps.";
+			outp += " [THIS WORKFLOW] " + desc + ".";
 		}
-
+		
+		if (lod < 3) {
+			//Note: this type of approach only works on linear workflows/workflows where we only care about one type of straight-
+			//shot narrative
+			ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
+			ArrayList<StepNode> stepsInPath = new ArrayList<StepNode>();
+			outp += "\n";
+			if(longestPath.size() > 0) {
+				for (WorkflowNode wn : longestPath) {
+					try{ 
+						StepNode s = (StepNode) wn;
+						stepsInPath.add(s);
+					} catch (ClassCastException cce) {
+						continue;
+					}
+				}
+				
+				// TODO: Transitions are terrible, med level could summarize (first input is passed int abc, followed by bbb, ccc,ddd eee and finally fff.
+				// TODO: low level could be: first input is passed into aaa. This step does blabla. Next, inpout is passed into bbb allong with the parameter zzz, producing vvv...
+				// TODO: Complete dataflow part
+				// TODO: dataflow at multi level
+				// TODO: Fragments don't work
+				// TODO: test test test (show with example data)
+				// TODO: get Deborah to fill out metadata
+				// TODO: Fix [THIS WORKFLOW] reference
+				StepNode firstNode = stepsInPath.get(0);
+				String inputs = firstNode.getIncomingLinks().size() > 1 ? "inputs" : "input";
+				String go = firstNode.getIncomingLinks().size() > 1 ? "go" : "goes";
+				String steps = stepsInPath.size() > 1 ? "steps" : "step";
+				String series = stepsInPath.size() > 1 ? "through a series of": "through";
+				
+				String[] all_transitions = {" Next, ", " Afterward, ", " Next, ", " Next, "};
+				outp += "The " + inputs + " " + go + " " + series + " " + Num2Word.convert(stepsInPath.size()) + " " 
+						+ steps + ".";
+				int count = 0;
+				for (StepNode sn : stepsInPath) {
+					String transition = all_transitions[count % all_transitions.length];
+					
+					// Special transition if first one
+					if (sn.equals(stepsInPath.get(0))) {
+						transition = " First, ";
+						count--;
+					}
+					
+					// Special transition if last one
+					if (sn.equals(stepsInPath.get(stepsInPath.size()-1))) {
+						transition = " Finally, ";
+					}
+					
+					String inputData = sn.getIncomingLinks().size() > 1 ? 
+							"the inputs" : firstNode.getIncomingLinks().get(0).getDisplayName();
+					String is = sn.getIncomingLinks().size() > 1 ? "are" : "is";
+					String stepType = sn.getStepType().equalsIgnoreCase("null") ? 
+							"\"" + sn.getDisplayName() + "\"." : "a " + sn.getStepType() + "[" + sn.getDisplayName() + "] step.";
+					
+					outp += transition + inputData + " " + is + " passed into " + stepType;
+					count++;
+				}
+				
+			} else {
+				outp += " This workflow has no steps.";
+			}
+		}
 		return outp;
 	}
 

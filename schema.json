@@ -13,8 +13,8 @@
         "citation": { "type": [ "string", "null" ] },
         "author": { "type": [ "string", "null" ] },
         "dateCreated": {
-          "type": [ "number", "null" ],
-          "description": "Long ingeger time since epoch"
+          "type": [ "string", "null" ],
+          "description": "yyyy-mm-dd hh-mm-ss time of the workflows creation date"
         },
         "nodes": {
           "type": "string",

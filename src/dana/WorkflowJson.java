@@ -403,6 +403,9 @@ public class WorkflowJson {
 		} catch (org.everit.json.schema.ValidationException e) {
 			System.out.println("[ERROR] Invalid DANA JSON: " + e.getMessage());
 			return false;
+		} catch (org.json.JSONException e) {
+			System.out.println("[ERROR] Malformatted/Unparsable JSON: " + e.getMessage());
+			return false;
 		}
 		return true;
 	}
@@ -547,7 +550,6 @@ public class WorkflowJson {
 		
 		if (d.length() > 0 && !d.equalsIgnoreCase("yyyy-MM-dd HH:mm:ss")) {
 			try { 
-				System.out.print("D: " + d);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 				this.publish_date = LocalDateTime.parse(d, formatter);
 			} catch (DateTimeParseException dtpe) {
@@ -784,8 +786,10 @@ public class WorkflowJson {
 			if (end == '\"' || end == '\'') {
 				endIndex -= 1;
 			}
-
-			return read.substring(startIndex, endIndex);
+			
+			String removed_quotes = read.substring(startIndex, endIndex);
+			return removed_quotes.trim();
+			
 		} catch (NullPointerException npe) {
 			return "";
 		}

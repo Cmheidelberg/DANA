@@ -75,7 +75,7 @@ public class WorkflowJson {
 	/**
 	 * Get a specific fragment by name. Returns null if no such fragment exists
 	 * 
-	 * @param name | Name of fragment to search for. Case insensitive
+	 * @param name | Name of fragment to search for. Case sensitive
 	 * @return Fragment object if exists. Null otherwise
 	 */
 	public Fragment getFragment(String name) {
@@ -98,7 +98,7 @@ public class WorkflowJson {
 	/**
 	 * @param fragment
 	 * @return T/F if a fragment with the given name exists within the workflow.
-	 *         Case insensitive
+	 *         Case sensitive
 	 */
 	public boolean hasFragment(String name) {
 		for (Fragment f : fragments) {

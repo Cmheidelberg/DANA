@@ -637,18 +637,22 @@ class StepNarrative implements Narrative {
 				} else if (currDatasets.size() > 1) {
 					outp += Num2Word.convert(currDatasets.size()) + s + "files[";
 					for (int i = 0; i < currDatasets.size(); i++) {
-						outp += i == currDatasets.size() - 1 ? currDatasets.get(i) : currDatasets.get(i) + ",";
+						outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName() : 
+							currDatasets.get(i).getDisplayName() + ",";
 					}
 					outp += "]";
 					remainingDP--;
 				}
-
-				if (discussionPoints > 2 && remainingDP >= 1 && !s.equalsIgnoreCase(types.get(0))) {
-					outp += ", ";
-				} else if (remainingDP == 0 && discussionPoints > 1) {
-					outp += "and ";
-				} else {
-					outp += " ";
+				
+				// If not at the end then find appropriate linkage for next point
+				if (!s.equals(uniqueOutputTypes.get(uniqueOutputTypes.size()-1))) {
+					if (discussionPoints > 2 && remainingDP >= 1 && !s.equalsIgnoreCase(types.get(0))) {
+						outp += ", ";
+					} else if (remainingDP == 0 && discussionPoints > 1) {
+						outp += "and ";
+					} else {
+						outp += " ";
+					}
 				}
 			}
 

@@ -25,30 +25,28 @@ public class Dana {
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow);
-		jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
 		
 		if (workflow.readDanaJson("readData.json")) {
 
 			// Print workflows debug tostring
-//			System.out.println("NODE METADATA DEBUG: ");
+			System.out.println("NODE METADATA DEBUG: ");
 			for (WorkflowNode wn : workflow.getWorkflowNodes()) {
-				if(wn.getDisplayName().toLowerCase().contains("timeseriesplot")) {
-					System.out.println("====" + wn.getFullName() + "====");
-					System.out.println(wn);
-				}
+				System.out.println("====" + wn.getFullName() + "====");
+				System.out.println(wn);
+
 			}
 
 			System.out.println("DATA NARRATIVES FOR EACH STEP: ");
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
-				if (s.getDisplayName().toLowerCase().contains("timeseriesplot")) {
 					System.out.println("+++" + s.getDisplayName() + "+++");
 					System.out.println(ng.getNodeNarrative(s));
 					System.out.println("\n");
-				}
 			}
 
 			//Debug print of citations when multiple node narratives are printed
+			System.out.println("ALL CITATIONS");
 			for (String s : ng.getAllCitations()) {
 				System.out.println(s);
 			}

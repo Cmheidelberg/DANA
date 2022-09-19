@@ -186,13 +186,19 @@ class WorkflowNarrative implements Narrative {
 			outp += " There are no inputs for this workflow.";
 		}
 
+		//Note: this type of approach only works on linear workflows/workflows where we only care about one type of straight-
+		//shot narrative
 		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
 		outp += "\n";
-		for (WorkflowNode wn : longestPath) {
-			String line = wn.equals(longestPath.get(longestPath.size() - 1)) ? wn.getDisplayName() + "\n"
-					: wn.getDisplayName() + " -> ";
-			System.out.print(line);
-			outp += line; // TODO replace this with the actual description
+		if(longestPath.size() > 0) {
+			for (WorkflowNode wn : longestPath) {
+				String line = wn.equals(longestPath.get(longestPath.size() - 1)) ? wn.getDisplayName() + "\n"
+						: wn.getDisplayName() + " -> ";
+				System.out.print(line);
+				outp += line; // TODO replace this with the actual description
+			}
+		} else {
+			outp += " This workflow has no steps.";
 		}
 
 		return outp;

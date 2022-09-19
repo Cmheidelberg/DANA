@@ -17,6 +17,10 @@ import org.everit.json.schema.loader.SchemaLoader;
 
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 /**
  * @author Christopher Heidelberg
  *
@@ -30,9 +34,11 @@ import org.json.JSONObject;
 public class WorkflowJson {
 
 	private JsonObject json;
-	private String description = "";
 	private String citation = "";
-	private String name = "";
+	private String workflow_name = "";
+	private String author = "";
+	private LocalDateTime publish_date;
+	private String description = "";
 	private ArrayList<WorkflowNode> workflows; // This should be "workflow". The object is not plural...
 	private ArrayList<Fragment> fragments;
 
@@ -58,13 +64,13 @@ public class WorkflowJson {
 	}
 
 	// Returns workflow's name
-	public String getName() {
-		return this.name;
+	public String getWorkflowName() {
+		return this.workflow_name;
 	}
 
 	// Set workflow's name
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String workflow_name) {
+		this.workflow_name = workflow_name;
 	}
 
 	// Return a ArrayList of all fragments defined in the workflow
@@ -494,7 +500,22 @@ public class WorkflowJson {
 
 		// Add workflow metadata
 		JsonObject metadata = getValue(danaJson, "metadata");
-		this.description = metadata.get("description").toString();
+		this.description = readJsonValue("description", metadata);
+		this.author = readJsonValue("author", metadata);
+		
+		String d = readJsonValue("dateCreated", metadata);
+		
+		if (d.length() > 0 && !d.equalsIgnoreCase("yyyy-MM-dd HH:mm:ss")) {
+			try { 
+				System.out.print("D: " + d);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				this.publish_date = LocalDateTime.parse(d, formatter);
+			} catch (DateTimeParseException dtpe) {
+				System.out.println("[Error]: Cannot interpret date from Json. Must be exactly in the format: yyyy-MM-dd HH:mm:ss");
+				return false;
+			}
+		}
+
 		this.citation = metadata.get("citation").toString();
 
 		JsonObject fragmentMetadata = getValue(metadata, "fragments");
@@ -742,7 +763,7 @@ public class WorkflowJson {
 		// Set the name of the workflow
 		JsonObject t = getValue(json, "template");
 		String[] url = t.getString("id").split("#");
-		this.name = url[url.length - 1];
+		this.workflow_name = url[url.length - 1];
 
 		addDatasets(); // Add all dataset nodes to the workflows array
 		addSteps(); // Add all step nodes to the workflows array

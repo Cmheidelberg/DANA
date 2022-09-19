@@ -72,8 +72,8 @@ public class JsonWriter {
 		keys.add(new KeyValuePair("description"));
 		keys.add(new KeyValuePair("citation"));
 		keys.add(new KeyValuePair("author"));
-		keys.add(new KeyValuePair("dateCreated"));
-		keys.add(new KeyValuePair("name", workflow.getName()));
+		keys.add(new KeyValuePair("dateCreated", "YYYY-MM-DD HH:MM:SS"));
+		keys.add(new KeyValuePair("name", workflow.getWorkflowName()));
 		keys.add(new KeyValuePair("nodes", arrayToCsv(nodes)));
 		keys.add(new KeyValuePair("fragments", keyValueStringFormatter(new ArrayList<KeyValuePair>())));
 

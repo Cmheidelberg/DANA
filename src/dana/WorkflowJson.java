@@ -57,6 +57,16 @@ public class WorkflowJson {
 	public String getDescription() {
 		return this.description;
 	}
+	
+	// Returns workflow's author
+	public String getAuthor() {
+		return this.author;
+	}
+		
+	// Set workflow's name
+	public LocalDateTime getDate() {
+		return this.publish_date;
+	}
 
 	// Returns workflow's citation
 	public String getCitation() {
@@ -71,6 +81,21 @@ public class WorkflowJson {
 	// Set workflow's name
 	public void setName(String workflow_name) {
 		this.workflow_name = workflow_name;
+	}
+	
+	// Set workflow's author
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	
+	// Set workflow's description
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	// Set workflow's name
+	public void setDate(LocalDateTime date) {
+		this.publish_date = date;
 	}
 
 	// Return a ArrayList of all fragments defined in the workflow
@@ -113,6 +138,21 @@ public class WorkflowJson {
 			}
 		}
 		return false;
+	}
+	
+	// Returns if workflow has description set
+	public Boolean hasDescription() {
+		return !(this.description.equals("") || this.description.equalsIgnoreCase("null"));
+	}
+	
+	// Returns if workflow has author set
+	public Boolean hasAuthor() {
+		return !(this.author.equals("") || this.author.equalsIgnoreCase("null"));
+	}
+		
+	// Returns if workflow has date set
+	public Boolean hasDate() {
+		return this.publish_date != null;
 	}
 
 	/**

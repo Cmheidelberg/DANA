@@ -2,6 +2,10 @@ package dana;
 
 import java.util.ArrayList;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class NarrativeGenerator {
 
 	WorkflowJson workflow;
@@ -160,7 +164,6 @@ class WorkflowNarrative implements Narrative {
 		outp += "\n";
 
 		// Workflow link descriptions
-
 		outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
 		if (numInputs > 0) {
 			String inputs = numInputs == 1 ? "input" : "inputs";
@@ -186,6 +189,23 @@ class WorkflowNarrative implements Narrative {
 			outp += " There are no inputs for this workflow.";
 		}
 
+		// Workflow author/date
+		if (workflow.hasAuthor()) {
+			outp += " [THIS WORKFLOW] was authored by " + workflow.getAuthor();
+			if (workflow.hasDate()) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM. DD, YYYY");
+				String formattedDateTime = workflow.getDate().format(formatter);
+				
+				outp += " and publushed on " + formattedDateTime;
+			}
+			outp += ".";
+		} else if (workflow.hasDate()) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM. DD, YYYY");
+			String formattedDateTime = workflow.getDate().format(formatter);
+			outp += " [THIS WORKFLOW] was published on " + formattedDateTime;
+			outp += ".";
+		}
+		
 		//Note: this type of approach only works on linear workflows/workflows where we only care about one type of straight-
 		//shot narrative
 		ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);

@@ -1,4 +1,4 @@
-package dana;
+package main.java.com.dana;
 
 import java.util.ArrayList;
 import java.util.FormatFlagsConversionMismatchException;
@@ -82,19 +82,21 @@ public class NarrativeGenerator {
 	/**
 	 * 
 	 * @param minCriticality
-	 * @param level_of_detail: High = 3, Med = 2, Low = 1
+	 * @param                level_of_detail: High = 3, Med = 2, Low = 1
 	 * @return
 	 */
-	public String getWorkflowNarrative(int minCriticality, int level_of_detail) {
-		return getWorkflowNarrative(true, minCriticality, level_of_detail);
+	public String getWorkflowNarrative(int minCriticality, int level_of_detail, boolean use_fragments) {
+		return getWorkflowNarrative(true, minCriticality, level_of_detail, use_fragments);
 	}
 
 	/**
 	 * Warning: Calling this function resets the citationReference counter.
 	 */
-	public String getWorkflowNarrative(boolean trackCitations, int minCriticality, int level_of_detail) {
+	public String getWorkflowNarrative(boolean trackCitations, int minCriticality, int level_of_detail,
+			boolean use_fragments) {
 		resetCitationReference();
-		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference, minCriticality, level_of_detail);
+		WorkflowNarrative wn = new WorkflowNarrative(workflow, citationReference, minCriticality, level_of_detail,
+				use_fragments);
 		if (!workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("")) {
 			updateCitations(wn);
 		}
@@ -145,14 +147,17 @@ class WorkflowNarrative implements Narrative {
 	int citationReference;
 	int minCriticality;
 	int lod;
+	boolean use_fragments;
 
-	//Level of detail: 3 = High, 2 = Med, 1 = Low
-	WorkflowNarrative(WorkflowJson workflow, int citationReference, int minCriticality, int level_of_detail) {
+	// Level of detail: 3 = High, 2 = Med, 1 = Low
+	WorkflowNarrative(WorkflowJson workflow, int citationReference, int minCriticality, int level_of_detail,
+			boolean use_fragments) {
 		this.workflow = workflow;
 		this.hasCitation = !workflow.getCitation().equalsIgnoreCase("null") && !workflow.getCitation().equals("");
 		this.citationReference = citationReference;
 		this.minCriticality = minCriticality;
 		this.lod = level_of_detail;
+		this.use_fragments = use_fragments;
 	}
 
 	public String getNarrative() {
@@ -169,7 +174,8 @@ class WorkflowNarrative implements Narrative {
 		}
 
 		// Workflow link descriptions
-		// outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" + citationReferenceString;
+		// outp += hasDescription ? "[THIS WORKFLOW] " : "[THIS WORKFLOW]" +
+		// citationReferenceString;
 		if (numInputs > 0) {
 			String inputs = numInputs == 1 ? "input" : "inputs";
 			outp += "takes in " + Num2Word.convert(numInputs) + " " + inputs;
@@ -200,7 +206,7 @@ class WorkflowNarrative implements Narrative {
 			if (workflow.hasDate()) {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM. DD, YYYY");
 				String formattedDateTime = workflow.getDate().format(formatter);
-				
+
 				outp += " and publushed on " + formattedDateTime;
 			}
 			outp += ".";
@@ -210,74 +216,79 @@ class WorkflowNarrative implements Narrative {
 			outp += " [THIS WORKFLOW] was published on " + formattedDateTime;
 			outp += ".";
 		}
-		
+
 		// Workflow Description
 		if (workflow.hasDescription()) {
 			String desc = workflow.getDescription();
-			if (desc.charAt(desc.length()-1) == '.') {
-				desc = desc.substring(0, desc.length()-1);
+			if (desc.charAt(desc.length() - 1) == '.') {
+				desc = desc.substring(0, desc.length() - 1);
 			}
 			outp += " [THIS WORKFLOW] " + desc + ".";
 		}
-		
+
 		if (lod < 3) {
-			//Note: this type of approach only works on linear workflows/workflows where we only care about one type of straight-
-			//shot narrative
-			ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality);
+			// Note: this type of approach only works on linear workflows/workflows where we
+			// only care about one type of straight-
+			// shot narrative
+			ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality,use_fragments);
 			ArrayList<StepNode> stepsInPath = new ArrayList<StepNode>();
 			outp += "\n";
-			if(longestPath.size() > 0) {
+			if (longestPath.size() > 0) {
 				for (WorkflowNode wn : longestPath) {
-					try{ 
+					try {
 						StepNode s = (StepNode) wn;
 						stepsInPath.add(s);
 					} catch (ClassCastException cce) {
 						continue;
 					}
 				}
-				
-				// TODO: Transitions are terrible, med level could summarize (first input is passed int abc, followed by bbb, ccc,ddd eee and finally fff.
-				// TODO: low level could be: first input is passed into aaa. This step does blabla. Next, inpout is passed into bbb allong with the parameter zzz, producing vvv...
+
+				// TODO: Transitions are terrible, med level could summarize (first input is
+				// passed int abc, followed by bbb, ccc,ddd eee and finally fff.
+				// TODO: low level could be: first input is passed into aaa. This step does
+				// blabla. Next, inpout is passed into bbb allong with the parameter zzz,
+				// producing vvv...
 				// TODO: Complete dataflow part
 				// TODO: dataflow at multi level
 				// TODO: Fragments don't work
 				// TODO: test test test (show with example data)
 				// TODO: get Deborah to fill out metadata
 				// TODO: Fix [THIS WORKFLOW] reference
+				// TODO: Check you can cast DatasetNode -> FragmentNode and StepNode -> FragmentNode and vice versa
 				StepNode firstNode = stepsInPath.get(0);
 				String inputs = firstNode.getIncomingLinks().size() > 1 ? "inputs" : "input";
 				String go = firstNode.getIncomingLinks().size() > 1 ? "go" : "goes";
 				String steps = stepsInPath.size() > 1 ? "steps" : "step";
-				String series = stepsInPath.size() > 1 ? "through a series of": "through";
-				
-				String[] all_transitions = {" Next, ", " Afterward, ", " Next, ", " Next, "};
-				outp += "The " + inputs + " " + go + " " + series + " " + Num2Word.convert(stepsInPath.size()) + " " 
+				String series = stepsInPath.size() > 1 ? "through a series of" : "through";
+
+				String[] all_transitions = { " Next, ", " Afterward, ", " Next, ", " Next, " };
+				outp += "The " + inputs + " " + go + " " + series + " " + Num2Word.convert(stepsInPath.size()) + " "
 						+ steps + ".";
 				int count = 0;
 				for (StepNode sn : stepsInPath) {
 					String transition = all_transitions[count % all_transitions.length];
-					
+
 					// Special transition if first one
 					if (sn.equals(stepsInPath.get(0))) {
 						transition = " First, ";
 						count--;
 					}
-					
+
 					// Special transition if last one
-					if (sn.equals(stepsInPath.get(stepsInPath.size()-1))) {
+					if (sn.equals(stepsInPath.get(stepsInPath.size() - 1))) {
 						transition = " Finally, ";
 					}
-					
-					String inputData = sn.getIncomingLinks().size() > 1 ? 
-							"the inputs" : firstNode.getIncomingLinks().get(0).getDisplayName();
+
+					String inputData = sn.getIncomingLinks().size() > 1 ? "the inputs"
+							: firstNode.getIncomingLinks().get(0).getDisplayName();
 					String is = sn.getIncomingLinks().size() > 1 ? "are" : "is";
-					String stepType = sn.getStepType().equalsIgnoreCase("null") ? 
-							"\"" + sn.getDisplayName() + "\"." : "a " + sn.getStepType() + "[" + sn.getDisplayName() + "] step.";
-					
+					String stepType = sn.getStepType().equalsIgnoreCase("null") ? "\"" + sn.getDisplayName() + "\"."
+							: "a " + sn.getStepType() + "[" + sn.getDisplayName() + "] step.";
+
 					outp += transition + inputData + " " + is + " passed into " + stepType;
 					count++;
 				}
-				
+
 			} else {
 				outp += " This workflow has no steps.";
 			}
@@ -550,7 +561,7 @@ class StepNarrative implements Narrative {
 		ArrayList<WorkflowNode> inputs = step.getIncomingLinks();
 		ArrayList<DatasetNode> datasetInputs = new ArrayList<DatasetNode>();
 		ArrayList<DatasetNode> parameterInputs = new ArrayList<DatasetNode>();
-		
+
 		// Separate Dataset inputs from parameter inputs
 		for (WorkflowNode i : inputs) {
 			if (i.isDataset()) {
@@ -724,15 +735,15 @@ class StepNarrative implements Narrative {
 				} else if (currDatasets.size() > 1) {
 					outp += Num2Word.convert(currDatasets.size()) + s + " files[";
 					for (int i = 0; i < currDatasets.size(); i++) {
-						outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName() : 
-							currDatasets.get(i).getDisplayName() + ",";
+						outp += i == currDatasets.size() - 1 ? currDatasets.get(i).getDisplayName()
+								: currDatasets.get(i).getDisplayName() + ",";
 					}
 					outp += "]";
 					remainingDP--;
 				}
-				
+
 				// If not at the end then find appropriate linkage for next point
-				if (!s.equals(uniqueOutputTypes.get(uniqueOutputTypes.size()-1))) {
+				if (!s.equals(uniqueOutputTypes.get(uniqueOutputTypes.size() - 1))) {
 					if (discussionPoints > 2 && remainingDP >= 1 && !s.equalsIgnoreCase(types.get(0))) {
 						outp += ", ";
 					} else if (remainingDP == 0 && discussionPoints > 1) {

@@ -1,4 +1,4 @@
-package dana;
+package main.java.com.dana;
 
 import java.util.ArrayList;
 
@@ -15,25 +15,27 @@ public abstract class WorkflowNode {
 	private String fullName = "";
 	private String displayName = "";
 	private String id;
-	private ArrayList<WorkflowNode> outgoingLinks;
-	private ArrayList<WorkflowNode> incomingLinks;
+	private ArrayList<WorkflowNode> outgoingLinks = new ArrayList<WorkflowNode>();
+	private ArrayList<WorkflowNode> incomingLinks = new ArrayList<WorkflowNode>();
 
 	// Manually entered metadata
 	private String author = "";
 	private String license = "";
 	private String url = "";
 	private String citation = "";
-	private ArrayList<Fragment> fragments;
+	private ArrayList<FragmentNode> fragments;
 
 	abstract boolean isDataset();
 
 	abstract boolean isParameter();
+	
+	abstract boolean isFragment();
 
 	// -------|
 	// SETTERS|
 	// -------|
 
-	public void setFragments(ArrayList<Fragment> fragments) {
+	public void setFragments(ArrayList<FragmentNode> fragments) {
 		this.fragments = fragments;
 	}
 
@@ -77,7 +79,7 @@ public abstract class WorkflowNode {
 	// GETTERS|
 	// -------|
 
-	public ArrayList<Fragment> getFragments() {
+	public ArrayList<FragmentNode> getFragments() {
 		return fragments;
 	}
 
@@ -125,14 +127,14 @@ public abstract class WorkflowNode {
 	// MUTATORS/OTHER|
 	// --------------|
 
-	public void addFragment(Fragment fragment) {
+	public void addFragment(FragmentNode fragment) {
 		if (fragments == null) {
-			fragments = new ArrayList<Fragment>();
+			fragments = new ArrayList<FragmentNode>();
 		}
 
 		// Validate the given fragment doesnt already exist in the fragments array
 		// before adding it. Only unique fragments should exist in the fragments array
-		for (Fragment f : fragments) {
+		for (FragmentNode f : fragments) {
 			if (f.getName().equalsIgnoreCase(fragment.getName()))
 				return;
 		}
@@ -143,11 +145,11 @@ public abstract class WorkflowNode {
 	/**
 	 * Returns true if this node is within the given fragment
 	 */
-	public boolean hasFragment(Fragment fragment) {
+	public boolean hasFragment(FragmentNode fragment) {
 		if (fragments == null)
 			return false;
 
-		for (Fragment s : fragments) {
+		for (FragmentNode s : fragments) {
 			if (fragment.equals(s)) {
 				return true;
 			}
@@ -197,7 +199,7 @@ public abstract class WorkflowNode {
 
 		outp += "\nFragments: ";
 		if (fragments != null) {
-			for (Fragment s : fragments) {
+			for (FragmentNode s : fragments) {
 				outp += s.equals(fragments.get(fragments.size() - 1)) ? s.getName() : s.getName() + ",";
 			}
 		} else {

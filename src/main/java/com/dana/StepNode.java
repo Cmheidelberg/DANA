@@ -1,4 +1,4 @@
-package dana;
+package main.java.com.dana;
 
 public class StepNode extends WorkflowNode{
 
@@ -119,6 +119,10 @@ public class StepNode extends WorkflowNode{
 	}
 	
 	public boolean isParameter() {
+		return false;
+	}
+	
+	public boolean isFragment() {
 		return false;
 	}
 	

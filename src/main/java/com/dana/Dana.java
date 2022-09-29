@@ -1,8 +1,10 @@
-package dana;
+package main.java.com.dana;
 
 import java.io.*;
 import java.io.StringReader;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import main.java.com.WingsConnection;
 
 import java.util.Scanner;
 
@@ -15,19 +17,31 @@ public class Dana {
 
 	// This path is used so a path does not have to be entered each time while
 	// developing. It represents the json from wings
+
 	static String workflowPath = "\\C:\\Users\\Admin\\Desktop\\USC\\Internships\\ISI\\DANA\\JSONS\\AutoTS-spectral-analysis.json";
 	static String readDataPath = "readData.json";
 
 	public static void main(String[] args) {
+//		StringBuilder contentBuilder = new StringBuilder();
+//		try (BufferedReader br = new BufferedReader(new FileReader("password"))) {
+//			String sCurrentLine;
+//			while ((sCurrentLine = br.readLine()) != null) {
+//				contentBuilder.append(sCurrentLine);
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		String password = contentBuilder.toString();
+//		WingsConnection wings = new WingsConnection(password);
 
 		// Read in
 		JsonObject workflowJson = openWorkflow(false);
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow);
-		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		// jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
-		
+
 		if (workflow.readDanaJson("readData.json")) {
 
 			// Print workflows debug tostring
@@ -40,40 +54,51 @@ public class Dana {
 
 			System.out.println("DATA NARRATIVES FOR EACH STEP: ");
 			for (WorkflowNode s : workflow.getWorkflowNodes()) {
-					System.out.println("+++" + s.getDisplayName() + "+++");
-					System.out.println(ng.getNodeNarrative(s));
-					System.out.println("\n");
+				System.out.println("+++" + s.getDisplayName() + "+++");
+				System.out.println(ng.getNodeNarrative(s));
+				System.out.println("\n");
 			}
 
-			//Debug print of citations when multiple node narratives are printed
+			// Debug print of citations when multiple node narratives are printed
 			System.out.println("ALL CITATIONS");
 			for (String s : ng.getAllCitations()) {
 				System.out.println(s);
 			}
 
-			
-			System.out.println("\n[Workflow Fragments:]");
-			for (Fragment f: workflow.getWorkflowFragments()) {
+			System.out.println("\n[Workflow Fragments--:]");
+			for (FragmentNode f : workflow.getWorkflowFragments()) {
 				System.out.println("Name: " + f.getName() + "| Description: " + f.getDescription());
 				System.out.print("Associated Node(s): ");
-				for(WorkflowNode n : f.getNodes()) {
+				for (WorkflowNode n : f.getNodes()) {
+					System.out.print(n.getFullName() + ", ");
+				}
+				System.out.print("\nInputNode(s): ");
+				for (WorkflowNode n : f.getIncomingLinks()) {
+					System.out.print(n.getFullName() + ", ");
+				}
+				System.out.print("\nOutputNode(s): ");
+				for (WorkflowNode n : f.getOutgoingLinks()) {
 					System.out.print(n.getFullName() + ", ");
 				}
 				System.out.print("\n");
 			}
-			
+
 			System.out.println("\nWorkflow Narrative debug info:");
-			//Work in progress: Workflow Narrative generation
+			// Work in progress: Workflow Narrative generation
 			NarrativeGenerator ngWorkflow = new NarrativeGenerator(workflow);
 
-			String workflowNarrative = ngWorkflow.getWorkflowNarrative(1,0);
+			int criticality = 1;
+			int lod = 0;
+			boolean fragments = false;
+
+			String workflowNarrative = ngWorkflow.getWorkflowNarrative(criticality, lod, fragments);
 			System.out.println(workflowNarrative);
 
 			for (String s : ngWorkflow.getAllCitations()) {
 				System.out.println(s);
 			}
 		}
-		//danaCliMenu();
+		// danaCliMenu();
 
 	}
 
@@ -95,7 +120,7 @@ public class Dana {
 		// If the workflow path isn't hard-coded prompt the user for a path
 		if (workflowPath.length() == 0 || overrideWorkflowPath) {
 			final JFileChooser fc = new JFileChooser();
-			
+
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("JSON files", "json");
 			fc.addChoosableFileFilter(filter);
 			fc.setCurrentDirectory(new File("C:\\Users\\Admin\\Desktop\\USC\\Internships\\ISI\\DANA"));
@@ -107,7 +132,7 @@ public class Dana {
 		} else {
 			path = workflowPath;
 		}
-		
+
 		String jsonString = readFile(path);
 		JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
 		JsonObject object = jsonReader.readObject();
@@ -215,7 +240,7 @@ public class Dana {
 
 				try {
 					int cv = Integer.parseInt(scan.nextLine());
-					ng.getWorkflowNarrative(cv,0);
+					ng.getWorkflowNarrative(cv, 0, false);
 					// System.out.println(ng.getWorkflowNarrative(cv));
 
 //					if (ng.getAllCitations().size() > 0) {

@@ -1,4 +1,4 @@
-package dana;
+package main.java.com.dana;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,7 +14,6 @@ import javax.json.JsonValue;
 
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
-
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
@@ -35,19 +34,23 @@ public class WorkflowJson {
 
 	private JsonObject json;
 	private String citation = "";
-	private String workflow_name = "";
+	private String workflowName = "";
 	private String author = "";
-	private LocalDateTime publish_date;
+	private LocalDateTime publishDate;
 	private String description = "";
-	private ArrayList<WorkflowNode> workflows; // This should be "workflow". The object is not plural...
-	private ArrayList<Fragment> fragments;
+	private ArrayList<WorkflowNode> workflow; // This should be "workflow". The object is not plural...
+	private ArrayList<WorkflowNode> fragmentWorkflow; // workflow representation with fragment steps instead of steps
+	private ArrayList<FragmentNode> fragments; // Keep track of each unique fragment
 
 	// Read in WINGS json file to populate workflow list with nodes
 	public WorkflowJson(JsonObject json) {
 		this.json = json;
-		workflows = new ArrayList<WorkflowNode>();
-		fragments = new ArrayList<Fragment>();
-
+		this.workflow = new ArrayList<WorkflowNode>();
+		this.fragmentWorkflow = new ArrayList<WorkflowNode>();
+		this.fragments = new ArrayList<FragmentNode>();
+		TODO: generate fragmentWorkflow & longest path 
+		
+		
 		// Populate the workflows array list with all nodes from the workflow as well as
 		// gather metadata on them from the json.
 		generateWorkflowNodesListFromWings();
@@ -57,15 +60,15 @@ public class WorkflowJson {
 	public String getDescription() {
 		return this.description;
 	}
-	
+
 	// Returns workflow's author
 	public String getAuthor() {
 		return this.author;
 	}
-		
+
 	// Set workflow's name
 	public LocalDateTime getDate() {
-		return this.publish_date;
+		return this.publishDate;
 	}
 
 	// Returns workflow's citation
@@ -75,31 +78,31 @@ public class WorkflowJson {
 
 	// Returns workflow's name
 	public String getWorkflowName() {
-		return this.workflow_name;
+		return this.workflowName;
 	}
 
 	// Set workflow's name
 	public void setName(String workflow_name) {
-		this.workflow_name = workflow_name;
+		this.workflowName = workflow_name;
 	}
-	
+
 	// Set workflow's author
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	
+
 	// Set workflow's description
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	// Set workflow's name
 	public void setDate(LocalDateTime date) {
-		this.publish_date = date;
+		this.publishDate = date;
 	}
 
 	// Return a ArrayList of all fragments defined in the workflow
-	public ArrayList<Fragment> getWorkflowFragments() {
+	public ArrayList<FragmentNode> getWorkflowFragments() {
 		return fragments;
 	}
 
@@ -109,8 +112,8 @@ public class WorkflowJson {
 	 * @param name | Name of fragment to search for. Case sensitive
 	 * @return Fragment object if exists. Null otherwise
 	 */
-	public Fragment getFragment(String name) {
-		for (Fragment f : fragments) {
+	public FragmentNode getFragment(String name) {
+		for (FragmentNode f : fragments) {
 			if (f.getName().equals(name)) {
 				return f;
 			}
@@ -122,7 +125,7 @@ public class WorkflowJson {
 	 * @param fragment
 	 * @return T/F if given fragment exists within the workflow
 	 */
-	public boolean hasFragment(Fragment fragment) {
+	public boolean hasFragment(FragmentNode fragment) {
 		return fragments.contains(fragment);
 	}
 
@@ -132,27 +135,27 @@ public class WorkflowJson {
 	 *         Case sensitive
 	 */
 	public boolean hasFragment(String name) {
-		for (Fragment f : fragments) {
+		for (FragmentNode f : fragments) {
 			if (f.getName().equals(name)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	// Returns if workflow has description set
 	public Boolean hasDescription() {
 		return !(this.description.equals("") || this.description.equalsIgnoreCase("null"));
 	}
-	
+
 	// Returns if workflow has author set
 	public Boolean hasAuthor() {
 		return !(this.author.equals("") || this.author.equalsIgnoreCase("null"));
 	}
-		
+
 	// Returns if workflow has date set
 	public Boolean hasDate() {
-		return this.publish_date != null;
+		return this.publishDate != null;
 	}
 
 	/**
@@ -160,10 +163,11 @@ public class WorkflowJson {
 	 * 
 	 * @param name        | Name of fragment
 	 * @param description | description of fragment
+	 * @param criticality | criticality of the fragment node
 	 */
-	public void addFragment(String name, String description) {
+	public void addFragment(String name, String description, int criticality) {
 		if (!hasFragment(name)) {
-			Fragment fragment = new Fragment(name, description);
+			FragmentNode fragment = new FragmentNode(name, description, criticality);
 			fragments.add(fragment);
 		}
 	}
@@ -183,10 +187,47 @@ public class WorkflowJson {
 			return;
 
 		if (hasFragment(fragmentName)) {
-			getFragment(fragmentName).addNode(node);
+			FragmentNode fragment = getFragment(fragmentName);
+
+			fragment.addNode(node);
+
 		} else {
 			System.out.println("Error adding fragment(" + fragmentName + ") node(" + node.getFullName()
 					+ ") relation. There is no fragment with this name.");
+		}
+	}
+
+	public void updateFragmentInputAndOutputLinks(FragmentNode f) {
+		for (WorkflowNode node : f.getNodes()) {
+			// Update incoming links to fragment
+			for (WorkflowNode wn : node.getIncomingLinks()) {
+				if (wn != null && (wn.getFragments() == null || !wn.getFragments().contains(f))) {
+					boolean hasIncomingLinkAlready = false;
+					for (WorkflowNode existingInputs : f.getIncomingLinks()) {
+						if (existingInputs.getFullName().equals(wn.getFullName())) {
+							hasIncomingLinkAlready = true;
+						}
+					}
+					if (!hasIncomingLinkAlready) {
+						f.addIncomingLink(wn);
+					}
+				}
+			}
+
+			// Update outgoing links to fragment
+			for (WorkflowNode wn : node.getOutgoingLinks()) {
+				if (wn != null && (wn.getFragments() == null || !wn.getFragments().contains(f))) {
+					boolean hasOutgoingLinkAlready = false;
+					for (WorkflowNode existingInputs : f.getOutgoingLinks()) {
+						if (existingInputs.getFullName().equals(wn.getFullName())) {
+							hasOutgoingLinkAlready = true;
+						}
+					}
+					if (!hasOutgoingLinkAlready) {
+						f.addOutgoingLink(wn);
+					}
+				}
+			}
 		}
 	}
 
@@ -196,11 +237,20 @@ public class WorkflowJson {
 	 * @return list of workflow nodes
 	 */
 	public ArrayList<WorkflowNode> getWorkflowNodes() {
-		return workflows;
+		return workflow;
 	}
 
 	/**
-	 * Get a WorflowNode from the workflows array from the given id. Id can either
+	 * Returns a full list of all nodes in this workflow
+	 * 
+	 * @return list of workflow nodes
+	 */
+	public ArrayList<WorkflowNode> getFragmentWorkflowNodes() {
+		return fragmentWorkflow;
+	}
+
+	/**
+	 * Get a WorflowNode from the workflows array from the given id. Is can either
 	 * be the name of the workflow or its id. If the workflow is not in the list
 	 * then this function returns null.
 	 * 
@@ -209,7 +259,7 @@ public class WorkflowJson {
 	 */
 	public WorkflowNode getWorkflowNode(String indicator) {
 
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			String name = wn.getFullName();
 			String id = wn.getId();
 
@@ -231,13 +281,13 @@ public class WorkflowJson {
 	/**
 	 * Returns input datasets of the workflow. An input is any dataset node that
 	 * does not have any incoming links and is not a parameter
-	 * 
+	 *
 	 * @return input datasets
 	 */
 	public ArrayList<DatasetNode> getInputs() {
 
 		ArrayList<DatasetNode> inputNodes = new ArrayList<DatasetNode>();
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			if (wn.getIncomingLinks() == null && !wn.isParameter()) {
 				inputNodes.add((DatasetNode) wn);
 			}
@@ -253,7 +303,7 @@ public class WorkflowJson {
 	public ArrayList<DatasetNode> getParameters() {
 
 		ArrayList<DatasetNode> parameterNodes = new ArrayList<DatasetNode>();
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			if (wn.getIncomingLinks() == null && wn.isParameter()) {
 				parameterNodes.add((DatasetNode) wn);
 			}
@@ -270,7 +320,7 @@ public class WorkflowJson {
 	public ArrayList<DatasetNode> getOutputs() {
 
 		ArrayList<DatasetNode> outputNodes = new ArrayList<DatasetNode>();
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			if (wn.getOutgoingLinks() == null) {
 				outputNodes.add((DatasetNode) wn);
 			}
@@ -287,9 +337,30 @@ public class WorkflowJson {
 	public ArrayList<StepNode> getSteps() {
 
 		ArrayList<StepNode> stepNodes = new ArrayList<StepNode>();
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			if (!wn.isDataset()) {
 				stepNodes.add((StepNode) wn);
+			}
+		}
+		return stepNodes;
+	}
+
+	/**
+	 * Returns a list of every fragment step and regular step node (that is not in a
+	 * fragment) in the workflow.
+	 * 
+	 * @return array list of step nodes
+	 */
+	public ArrayList<WorkflowNode> getFragmentSteps() {
+
+		ArrayList<WorkflowNode> stepNodes = new ArrayList<WorkflowNode>();
+		for (WorkflowNode wn : fragmentWorkflow) {
+			if (!wn.isDataset()) {
+				try {
+					stepNodes.add((StepNode) wn);
+				} catch (ClassCastException cce) {
+					stepNodes.add((FragmentNode) wn);
+				}
 			}
 		}
 		return stepNodes;
@@ -299,9 +370,9 @@ public class WorkflowJson {
 	 * Returns a list of nodes that are either a parent or child of this node and
 	 * all sub children and parents. Currently this method has no use, but it is
 	 * intended to be used with a diagram of the workflow so the path of the
-	 * currently selected node can be hilighted.
+	 * currently selected node can be highlighted.
 	 * 
-	 * @param node node to find full path of
+	 * @param node | node to find full path of
 	 * @return list of nodes that are either children or parents of the given node
 	 */
 	public ArrayList<WorkflowNode> getFullWorkflowPathFromNode(WorkflowNode node) {
@@ -396,7 +467,7 @@ public class WorkflowJson {
 	 */
 	public boolean validateJson(String path) {
 		try {
-			String schemaString = readFile("schema.json");
+			String schemaString = readFile("examples/schema.json");
 			JSONObject rawSchema = new JSONObject(schemaString);
 			Schema schema = SchemaLoader.load(rawSchema);
 			schema.validate(new JSONObject(readFile(path))); // throws a ValidationException if this object is invalid
@@ -405,6 +476,9 @@ public class WorkflowJson {
 			return false;
 		} catch (org.json.JSONException e) {
 			System.out.println("[ERROR] Malformatted/Unparsable JSON: " + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("[ERROR] Unknown error while validating JSON: " + e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -430,9 +504,12 @@ public class WorkflowJson {
 	 *                                returned "longest path". Lower threshold means
 	 *                                only more important nodes will be included in
 	 *                                path
+	 * @param use_fragments           | flag determining whether or not the path
+	 *                                returned should use fragment nodes or the
+	 *                                actual nodes
 	 * @return longest path that meets the criticality threshold
 	 */
-	public ArrayList<WorkflowNode> getLongestPath(int maxCriticalityThreshold) {
+	public ArrayList<WorkflowNode> getLongestPath(int maxCriticalityThreshold, boolean use_fragments) {
 		ArrayList<WorkflowNode> longestPath = new ArrayList<WorkflowNode>();
 		ArrayList<DatasetNode> inputs = getInputs();
 
@@ -512,7 +589,7 @@ public class WorkflowJson {
 	 */
 	public int CountTimesUsedInWorkflow(WorkflowNode node) {
 		int count = 0;
-		for (WorkflowNode wn : workflows) {
+		for (WorkflowNode wn : workflow) {
 			if (wn.getDisplayName().equals(node.getDisplayName())) {
 				count++;
 			}
@@ -545,15 +622,16 @@ public class WorkflowJson {
 		JsonObject metadata = getValue(danaJson, "metadata");
 		this.description = readJsonValue("description", metadata);
 		this.author = readJsonValue("author", metadata);
-		
+
 		String d = readJsonValue("dateCreated", metadata);
-		
+
 		if (d.length() > 0 && !d.equalsIgnoreCase("yyyy-MM-dd HH:mm:ss")) {
-			try { 
+			try {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-				this.publish_date = LocalDateTime.parse(d, formatter);
+				this.publishDate = LocalDateTime.parse(d, formatter);
 			} catch (DateTimeParseException dtpe) {
-				System.out.println("[Error]: Cannot interpret date from Json. Must be exactly in the format: yyyy-MM-dd HH:mm:ss");
+				System.out.println(
+						"[Error]: Cannot interpret date from Json. Must be exactly in the format: yyyy-MM-dd HH:mm:ss");
 				return false;
 			}
 		}
@@ -563,7 +641,9 @@ public class WorkflowJson {
 		JsonObject fragmentMetadata = getValue(metadata, "fragments");
 		for (String key : fragmentMetadata.keySet()) {
 			String description = readJsonValue("description", getValue(fragmentMetadata, key));
-			addFragment(key, description);
+			String criticality = readJsonValue("criticality", getValue(fragmentMetadata, key));
+			System.out.println("name:" + key + " desc: " + description + " crit: " + criticality);
+			addFragment(key, description, Integer.parseInt(criticality));
 		}
 
 		// Add dataset metadata
@@ -668,11 +748,14 @@ public class WorkflowJson {
 			curr.setCommandLineInvocation(commandLineInvocation);
 		}
 
-		if (checkWorkflowLogicIsValid()) {
-			return true;
-		} else {
-			return false;
+		for (FragmentNode f : fragments) {
+			System.out.println("=================");
+			System.out.println(f);
+			updateFragmentInputAndOutputLinks(f);
 		}
+
+		return checkWorkflowLogicIsValid();
+
 	}
 
 	/**
@@ -692,7 +775,7 @@ public class WorkflowJson {
 		try {
 
 			// Validate each fragment is part of a connected subgraph
-			for (Fragment f : fragments) {
+			for (FragmentNode f : fragments) {
 				for (WorkflowNode wn : f.getNodes()) {
 					if (!wn.hasFragment(f)) {
 						System.out.println(
@@ -713,6 +796,34 @@ public class WorkflowJson {
 				} else {
 					// Throw a warning but does not need to invalidate the workflow
 					System.out.println("Warning a fragment(" + f.getName() + ") has no nodes associated with it");
+				}
+
+				// Check that all input nodes are not fragment nodes (inputs and outputs must be
+				// datasets)
+				for (DatasetNode in : getInputs()) {
+					for (WorkflowNode fn : f.getNodes()) {
+						if (fn.isDataset() && fn.getDisplayName().equals(in.getDisplayName())) {
+							isValid = false;
+							System.out.print(
+									"Workflow inputs/outputs (datasets) cannot be part of a fragment. Please remove dataset "
+											+ in.getDisplayName() + " from fragment " + f.getName());
+
+						}
+					}
+				}
+
+				// Check that all output nodes are not fragment nodes (inputs and outputs must
+				// be datasets)
+				for (DatasetNode out : getOutputs()) {
+					for (WorkflowNode fn : f.getNodes()) {
+						if (fn.isDataset() && fn.getDisplayName().equals(out.getDisplayName())) {
+							isValid = false;
+							System.out.print(
+									"Workflow inputs/outputs (datasets) cannot be part of a fragment. Please remove dataset "
+											+ out.getDisplayName() + " from fragment " + f.getName());
+
+						}
+					}
 				}
 
 				// TODO: check every node has correct fragment
@@ -736,7 +847,8 @@ public class WorkflowJson {
 	 * fragment then the subgraph of fragments is connected.
 	 * 
 	 */
-	private void fragmentSubgraphIsConnected(Fragment fragment, WorkflowNode curr, ArrayList<WorkflowNode> subgraph) {
+	private void fragmentSubgraphIsConnected(FragmentNode fragment, WorkflowNode curr,
+			ArrayList<WorkflowNode> subgraph) {
 
 		ArrayList<WorkflowNode> incoming = curr.getIncomingLinks();
 		ArrayList<WorkflowNode> outgoing = curr.getOutgoingLinks();
@@ -786,10 +898,10 @@ public class WorkflowJson {
 			if (end == '\"' || end == '\'') {
 				endIndex -= 1;
 			}
-			
+
 			String removed_quotes = read.substring(startIndex, endIndex);
 			return removed_quotes.trim();
-			
+
 		} catch (NullPointerException npe) {
 			return "";
 		}
@@ -807,12 +919,11 @@ public class WorkflowJson {
 		// Set the name of the workflow
 		JsonObject t = getValue(json, "template");
 		String[] url = t.getString("id").split("#");
-		this.workflow_name = url[url.length - 1];
+		this.workflowName = url[url.length - 1];
 
 		addDatasets(); // Add all dataset nodes to the workflows array
 		addSteps(); // Add all step nodes to the workflows array
 		addInOutLinks(); // Add i/o links for every node in the workflows array
-
 	}
 
 	/**
@@ -891,7 +1002,7 @@ public class WorkflowJson {
 			dataset.setIsParameter(isParameter);
 			dataset.setId(key);
 
-			workflows.add(dataset);
+			workflow.add(dataset);
 		}
 
 	}
@@ -931,7 +1042,7 @@ public class WorkflowJson {
 			step.setDisplayName(displayName);
 			step.setId(id);
 
-			workflows.add(step);
+			workflow.add(step);
 		}
 	}
 
@@ -974,7 +1085,6 @@ public class WorkflowJson {
 					}
 				}
 			}
-
 		}
 	}
 
@@ -1063,7 +1173,7 @@ public class WorkflowJson {
 				contentBuilder.append(sCurrentLine).append("\n");
 			}
 		} catch (IOException e) {
-			System.out.println(String.format("Could not read given file: %s",filePath));
+			System.out.println(String.format("Could not read given file: %s", filePath));
 			e.printStackTrace();
 		}
 		return contentBuilder.toString();

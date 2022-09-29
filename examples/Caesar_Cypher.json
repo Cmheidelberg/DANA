@@ -1,0 +1,273 @@
+{
+  "template": {
+    "version": 0,
+    "onturl": "http://www.wings-workflows.org/ontology/workflow.owl",
+    "wflowns": "http://www.wings-workflows.org/ontology/workflow.owl#",
+    "Nodes": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/components/library.owl#Caesar",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode_component"
+        },
+        "comment": "x=51.5,y=365.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile": {
+            "role": {
+              "type": 1,
+              "roleid": "Input1TextFile",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile"
+          },
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Param1key": {
+            "role": {
+              "type": 2,
+              "roleid": "Param1key",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Param1key_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Param1key"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile": {
+            "role": {
+              "type": 1,
+              "roleid": "Output1TextFile",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Param1key", "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#linebreakNode": {
+        "componentVariable": {
+          "isConcrete": true,
+          "binding": {
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/components/library.owl#linebreak",
+            "type": "uri"
+          },
+          "type": 3,
+          "autofill": false,
+          "breakpoint": false,
+          "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#linebreakNode_component"
+        },
+        "comment": "x=37.5,y=139.5",
+        "inputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile1": {
+            "role": {
+              "type": 1,
+              "roleid": "Input1TextFile",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile1"
+          }
+        },
+        "outputPorts": {
+          "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1": {
+            "role": {
+              "type": 1,
+              "roleid": "Output1TextFile",
+              "dimensionality": 0,
+              "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1_role"
+            },
+            "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1"
+          }
+        },
+        "prule": {
+          "expr": {
+            "op": "XPRODUCT",
+            "args": [ "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile1" ]
+          },
+          "type": "WTYPE"
+        },
+        "crule": { "type": "WTYPE" },
+        "machineIds": [],
+        "inactive": false,
+        "skip": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#linebreakNode"
+      }
+    },
+    "Links": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ip_port_Input1TextFile1": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ip_port_Input1TextFile1",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#linebreakNode" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile1" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile_op": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile_op",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1_port_Input1TextFile": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1_port_Input1TextFile",
+        "fromNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#linebreakNode" },
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#DocumentWithLineBreaks" },
+        "fromPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Output1TextFile1" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Input1TextFile" }
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ip_port_Param1key": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ip_port_Param1key",
+        "toNode": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#CaesarNode" },
+        "variable": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ShiftKey" },
+        "toPort": { "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#port_Param1key" }
+      }
+    },
+    "Variables": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#DocumentWithLineBreaks": {
+        "comment": "x=20.5,y=243.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#DocumentWithLineBreaks"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document": {
+        "comment": "x=24.5,y=36.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument": {
+        "comment": "x=23.5,y=489.5",
+        "type": 1,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ShiftKey": {
+        "comment": "x=231.5,y=245.5",
+        "type": 2,
+        "autofill": false,
+        "breakpoint": false,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ShiftKey"
+      }
+    },
+    "inputRoles": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document": {
+        "type": 1,
+        "roleid": "Input1TextFile",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document_irole"
+      },
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ShiftKey": {
+        "type": 2,
+        "roleid": "Param1key",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#ShiftKey_irole"
+      }
+    },
+    "outputRoles": {
+      "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument": {
+        "type": 1,
+        "roleid": "EncryptedDocument",
+        "dimensionality": 0,
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument_orole"
+      }
+    },
+    "subtemplates": {},
+    "metadata": {
+      "lastUpdateTime": "2016-01-24",
+      "contributors": [ "datascience", "nayely" ],
+      "createdFrom": [ "http://ontosoft.isi.edu:8080/wings-portal/export/users/datascience/CaesarCypher/workflows/Caesar_Cypher.owl#Caesar_Cypher" ]
+    },
+    "rules": {},
+    "props": {
+      "lib.resource.url": "http://datascience4all.org/wings-portal-new/export/common/resource/library.owl",
+      "tdb.repository.dir": "/opt/wings-new/storage/default/TDB",
+      "viewer.id": "cheidelb",
+      "ont.domain.component.ns": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/components/library.owl#",
+      "lib.domain.code.storage": "/opt/wings-new/storage/default/users/cheidelb/CaesarCypher/code/library",
+      "use_rules": "true",
+      "domain.workflows.dir.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows",
+      "ont.resource.url": "http://www.wings-workflows.org/ontology/resource.owl",
+      "domain.executions.dir.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/executions",
+      "ont.component.url": "http://www.wings-workflows.org/ontology/component.owl",
+      "logs.dir": "/opt/wings-new/storage/default/logs",
+      "lib.domain.data.storage": "/opt/wings-new/storage/default/users/cheidelb/CaesarCypher/data",
+      "ont.dir.url": "http://www.wings-workflows.org/ontology",
+      "lib.abstract.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/components/abstract.owl",
+      "lib.provenance.url": "http://datascience4all.org/wings-portal-new/export/common/provenance/library.owl",
+      "lib.concrete.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/components/library.owl",
+      "dot.path": "/usr/bin/dot",
+      "ont.data.url": "http://www.wings-workflows.org/ontology/data.owl",
+      "lib.domain.data.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/data/library.owl",
+      "ont.workflow.url": "http://www.wings-workflows.org/ontology/workflow.owl",
+      "ont.domain.data.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/data/ontology.owl",
+      "lib.domain.execution.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/executions/library.owl",
+      "lib.domain.workflow.url": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/library.owl",
+      "user.id": "cheidelb",
+      "ont.execution.url": "http://www.wings-workflows.org/ontology/execution.owl"
+    },
+    "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Caesar_Cypher"
+  },
+  "constraints": [
+    {
+      "subject": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#DocumentWithLineBreaks",
+        "isLiteral": false
+      },
+      "predicate": {
+        "id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "isLiteral": false
+      },
+      "object": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/data/ontology.owl#TextFile",
+        "isLiteral": false
+      }
+    },
+    {
+      "subject": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#Document",
+        "isLiteral": false
+      },
+      "predicate": {
+        "id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "isLiteral": false
+      },
+      "object": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/data/ontology.owl#TextFile",
+        "isLiteral": false
+      }
+    },
+    {
+      "subject": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/workflows/Caesar_Cypher.owl#EncryptedDocument",
+        "isLiteral": false
+      },
+      "predicate": {
+        "id": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "isLiteral": false
+      },
+      "object": {
+        "id": "http://datascience4all.org/wings-portal-new/export/users/cheidelb/CaesarCypher/data/ontology.owl#TextFile",
+        "isLiteral": false
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package dana;
+package main.java.com.dana;
 
 public class DatasetNode extends WorkflowNode {
 
@@ -64,6 +64,10 @@ public class DatasetNode extends WorkflowNode {
 	
 	public boolean isParameter() {
 		return isParameter;
+	}
+	
+	public boolean isFragment() {
+		return false;
 	}
 	
 	public void setIsParameter(boolean isParameter) {

@@ -62,8 +62,10 @@
   	"fragment": {
   		"type": "object",
   		"properties": {
-  			"description": { "type": [ "string", "null" ] }
-  		}
+  			"description": { "type": [ "string", "null" ] },
+  			"criticality": { "type": ["number"] }
+  		},
+		"required": [ "description", "criticality" ]
   	},
     "parameter": {
       "type": "object",

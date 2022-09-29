@@ -99,6 +99,12 @@ public class JsonWriter {
 
 				ArrayList<KeyValuePair> datasetMetadata = new ArrayList<KeyValuePair>();
 				datasetMetadata.add(new KeyValuePair("description"));
+
+				// Input and output datasets/parameters can have criticality
+				if (!wn.hasInputs() || !wn.hasOutputs()) {
+					datasetMetadata.add(new KeyValuePair("criticality", 0));
+				}
+
 				datasetMetadata.add(new KeyValuePair("fragments"));
 				datasetMetadata.add(new KeyValuePair("type"));
 				datasetMetadata.add(new KeyValuePair("data", "(path to data should go here)"));
@@ -113,7 +119,7 @@ public class JsonWriter {
 				}
 
 				// Reference to any nodes that point into the current node
-				if (wn.getIncomingLinks() != null) {
+				if (wn.hasInputs()) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
 
@@ -126,7 +132,7 @@ public class JsonWriter {
 				}
 
 				// Reference to any nodes that the current node points to
-				if (wn.getOutgoingLinks() != null) {
+				if (wn.hasOutputs()) {
 					String[] outgoingLinks = new String[wn.getOutgoingLinks().size()];
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
 
@@ -185,7 +191,7 @@ public class JsonWriter {
 				datasetMetadata.add(new KeyValuePair("id", wn.getId()));
 
 				// Reference to any nodes that point into the current step
-				if (wn.getIncomingLinks() != null) {
+				if (wn.hasInputs()) {
 					String[] inputLinks = new String[wn.getIncomingLinks().size()];
 					ArrayList<WorkflowNode> incoming = wn.getIncomingLinks();
 
@@ -198,7 +204,7 @@ public class JsonWriter {
 				}
 
 				// Reference to any nodes that the current step points to
-				if (wn.getOutgoingLinks() != null) {
+				if (wn.hasOutputs()) {
 					String[] outgoingLinks = new String[wn.getOutgoingLinks().size()];
 					ArrayList<WorkflowNode> outgoing = wn.getOutgoingLinks();
 
@@ -279,20 +285,20 @@ public class JsonWriter {
 			switch (json.charAt(i)) {
 			case '{':
 				tabLevel += 1;
-				//tabs = spacesPerTab.repeat(tabLevel);
+				// tabs = spacesPerTab.repeat(tabLevel);
 				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out += json.charAt(i) + tabs;
 				break;
 
 			case '}':
 				tabLevel -= 1;
-				//tabs = spacesPerTab.repeat(tabLevel);
+				// tabs = spacesPerTab.repeat(tabLevel);
 				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out = out.substring(0, out.length() - 3);
 				out += json.charAt(i);
 				break;
 			case '\n':
-				//tabs = spacesPerTab.repeat(tabLevel);
+				// tabs = spacesPerTab.repeat(tabLevel);
 				tabs = Collections.nCopies(tabLevel, spacesPerTab).stream().collect(Collectors.joining(""));
 				out += json.charAt(i) + tabs;
 				break;

@@ -15,6 +15,7 @@ public abstract class WorkflowNode {
 	private String fullName = "";
 	private String displayName = "";
 	private String id;
+	private int criticality = 0;
 	private ArrayList<WorkflowNode> outgoingLinks = new ArrayList<WorkflowNode>();
 	private ArrayList<WorkflowNode> incomingLinks = new ArrayList<WorkflowNode>();
 
@@ -28,12 +29,16 @@ public abstract class WorkflowNode {
 	abstract boolean isDataset();
 
 	abstract boolean isParameter();
-	
+
 	abstract boolean isFragment();
 
 	// -------|
 	// SETTERS|
 	// -------|
+
+	public void setCriticality(String criticality) {
+		this.criticality = Integer.parseInt(criticality);
+	}
 
 	public void setFragments(ArrayList<FragmentNode> fragments) {
 		this.fragments = fragments;
@@ -81,6 +86,10 @@ public abstract class WorkflowNode {
 
 	public ArrayList<FragmentNode> getFragments() {
 		return fragments;
+	}
+
+	public int getCriticality() {
+		return this.criticality;
 	}
 
 	public String getFullName() {
@@ -172,6 +181,24 @@ public abstract class WorkflowNode {
 		}
 
 		incomingLinks.add(incomingLink);
+	}
+
+	/**
+	 * Function returning whether or not the node has incoming links
+	 * 
+	 * @return true/false if the given node has any inputs or not
+	 */
+	public boolean hasInputs() {
+		return getIncomingLinks() == null || getIncomingLinks().size() == 0;
+	}
+
+	/**
+	 * Function returning whether or not the node has outgoing links
+	 * 
+	 * @return true/false if the given node has any outputs or not
+	 */
+	public boolean hasOutputs() {
+		return getOutgoingLinks() == null || getOutgoingLinks().size() == 0;
 	}
 
 	// toString provides general debug information

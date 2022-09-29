@@ -16,7 +16,7 @@ public class DatasetNode extends WorkflowNode {
 	public void setParameter(boolean isParameter) {
 		this.isParameter = isParameter;
 	}
-
+	
 	public void setType(String type) {
 		this.type = type.equalsIgnoreCase("null") ? "" : type;
 	}

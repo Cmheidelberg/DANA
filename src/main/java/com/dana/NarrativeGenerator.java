@@ -163,9 +163,9 @@ class WorkflowNarrative implements Narrative {
 	public String getNarrative() {
 		String outp = "";
 
-		int numInputs = workflow.getInputs().size();
-		int numOutputs = workflow.getOutputs().size();
-		int numParameters = workflow.getParameters().size();
+		int numInputs = getWorkflowInputs(minCriticality).size();
+		int numOutputs = getWorkflowOutputs(minCriticality).size();
+		int numParameters = getWorkflowParameters(minCriticality).size();
 
 		// Workflow metadata
 		String citationReferenceString = "";
@@ -230,7 +230,7 @@ class WorkflowNarrative implements Narrative {
 			// Note: this type of approach only works on linear workflows/workflows where we
 			// only care about one type of straight-
 			// shot narrative
-			ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality,use_fragments);
+			ArrayList<WorkflowNode> longestPath = workflow.getLongestPath(minCriticality, use_fragments);
 			ArrayList<StepNode> stepsInPath = new ArrayList<StepNode>();
 			outp += "\n";
 			if (longestPath.size() > 0) {
@@ -254,10 +254,11 @@ class WorkflowNarrative implements Narrative {
 				// TODO: test test test (show with example data)
 				// TODO: get Deborah to fill out metadata
 				// TODO: Fix [THIS WORKFLOW] reference
-				// TODO: Check you can cast DatasetNode -> FragmentNode and StepNode -> FragmentNode and vice versa
+				// TODO: Check you can cast DatasetNode -> FragmentNode and StepNode ->
+				// FragmentNode and vice versa
 				StepNode firstNode = stepsInPath.get(0);
-				String inputs = firstNode.getIncomingLinks().size() > 1 ? "inputs" : "input";
-				String go = firstNode.getIncomingLinks().size() > 1 ? "go" : "goes";
+				String inputs = getNodeInputs(firstNode, minCriticality).size() > 1 ? "inputs" : "input";
+				String go = getNodeInputs(firstNode, minCriticality).size() > 1 ? "go" : "goes";
 				String steps = stepsInPath.size() > 1 ? "steps" : "step";
 				String series = stepsInPath.size() > 1 ? "through a series of" : "through";
 
@@ -279,9 +280,9 @@ class WorkflowNarrative implements Narrative {
 						transition = " Finally, ";
 					}
 
-					String inputData = sn.getIncomingLinks().size() > 1 ? "the inputs"
+					String inputData = getNodeInputs(sn, minCriticality).size() > 1 ? "the inputs"
 							: firstNode.getIncomingLinks().get(0).getDisplayName();
-					String is = sn.getIncomingLinks().size() > 1 ? "are" : "is";
+					String is = getNodeInputs(sn, minCriticality).size()  > 1 ? "are" : "is";
 					String stepType = sn.getStepType().equalsIgnoreCase("null") ? "\"" + sn.getDisplayName() + "\"."
 							: "a " + sn.getStepType() + "[" + sn.getDisplayName() + "] step.";
 
@@ -306,6 +307,86 @@ class WorkflowNarrative implements Narrative {
 
 	public String getName() {
 		return "workflow";
+	}
+
+	/**
+	 * Returns all workflow inputs that arent ignored because of criticality
+	 * 
+	 * @param minCriticality | highest value of criticality we accept
+	 * @return subset of workflow inputs
+	 */
+	private ArrayList<WorkflowNode> getWorkflowInputs(int maxCriticality) {
+		ArrayList<WorkflowNode> nodesWithCrit = new ArrayList<WorkflowNode>();
+		for (WorkflowNode node : workflow.getInputs()) {
+			if (node.getCriticality() <= minCriticality) {
+				nodesWithCrit.add(node);
+			}
+		}
+		return nodesWithCrit;
+	}
+		
+	/**
+	 * Returns all workflow outputs that aren't ignored because of criticality
+	 * 
+	 * @param minCriticality | highest value of criticality we accept
+	 * @return subset of workflow outputs
+	 */
+	private ArrayList<WorkflowNode> getWorkflowOutputs(int maxCriticality) {
+		ArrayList<WorkflowNode> nodesWithCrit = new ArrayList<WorkflowNode>();
+		for (WorkflowNode node : workflow.getOutputs()) {
+			if (node.getCriticality() <= minCriticality) {
+				nodesWithCrit.add(node);
+			}
+		}
+		return nodesWithCrit;
+	}
+	
+	/**
+	 * Returns all workflow parameters that aren't ignored because of criticality
+	 * 
+	 * @param minCriticality | highest value of criticality we accept
+	 * @return subset of workflow parameters
+	 */
+	private ArrayList<WorkflowNode> getWorkflowParameters(int maxCriticality) {
+		ArrayList<WorkflowNode> nodesWithCrit = new ArrayList<WorkflowNode>();
+		for (WorkflowNode node : workflow.getParameters()) {
+			if (node.getCriticality() <= minCriticality) {
+				nodesWithCrit.add(node);
+			}
+		}
+		return nodesWithCrit;
+	}
+	
+	/**
+	 * Returns all of a node'ss incoming links that aren't ignored because of criticality
+	 * 
+	 * @param minCriticality | highest value of criticality we accept
+	 * @return subset of node's inputs
+	 */
+	private ArrayList<WorkflowNode> getNodeInputs(WorkflowNode wn, int maxCriticality) {
+		ArrayList<WorkflowNode> nodesWithCrit = new ArrayList<WorkflowNode>();
+		for (WorkflowNode node : wn.getIncomingLinks()) {
+			if (node.getCriticality() <= minCriticality) {
+				nodesWithCrit.add(node);
+			}
+		}
+		return nodesWithCrit;
+	}
+	
+	/**
+	 * Returns all of a node'ss outgoing links that aren't ignored because of criticality
+	 * 
+	 * @param minCriticality | highest value of criticality we accept
+	 * @return subset of node's outputs
+	 */
+	private ArrayList<WorkflowNode> getNodeOutputs(WorkflowNode wn, int maxCriticality) {
+		ArrayList<WorkflowNode> nodesWithCrit = new ArrayList<WorkflowNode>();
+		for (WorkflowNode node : wn.getOutgoingLinks()) {
+			if (node.getCriticality() <= minCriticality) {
+				nodesWithCrit.add(node);
+			}
+		}
+		return nodesWithCrit;
 	}
 }
 

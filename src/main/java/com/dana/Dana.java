@@ -39,7 +39,7 @@ public class Dana {
 		WorkflowJson workflow = new WorkflowJson(workflowJson);
 
 		JsonWriter jw = new JsonWriter(workflow);
-		// jw.writeJson(); //comment out to prevent rewriting of readData.json every run
+		//jw.writeJson(); //comment out to prevent rewriting of readData.json every run
 		NarrativeGenerator ng = new NarrativeGenerator(workflow);
 
 		if (workflow.readDanaJson("readData.json")) {
@@ -65,7 +65,12 @@ public class Dana {
 				System.out.println(s);
 			}
 
-			System.out.println("\n[Workflow Fragments--:]");
+			System.out.println("InputNodes: ");
+			for (WorkflowNode wn : workflow.getInputs()) {
+				System.out.print(wn.getDisplayName() + ",");
+			}
+			
+			System.out.println("\n[Workflow Fragments]");
 			for (FragmentNode f : workflow.getWorkflowFragments()) {
 				System.out.println("Name: " + f.getName() + "| Description: " + f.getDescription());
 				System.out.print("Associated Node(s): ");

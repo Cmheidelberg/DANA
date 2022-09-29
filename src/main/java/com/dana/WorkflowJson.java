@@ -48,9 +48,8 @@ public class WorkflowJson {
 		this.workflow = new ArrayList<WorkflowNode>();
 		this.fragmentWorkflow = new ArrayList<WorkflowNode>();
 		this.fragments = new ArrayList<FragmentNode>();
-		TODO: generate fragmentWorkflow & longest path 
-		
-		
+		// TODO: generate fragmentWorkflow & longest path
+
 		// Populate the workflows array list with all nodes from the workflow as well as
 		// gather metadata on them from the json.
 		generateWorkflowNodesListFromWings();
@@ -287,11 +286,14 @@ public class WorkflowJson {
 	public ArrayList<DatasetNode> getInputs() {
 
 		ArrayList<DatasetNode> inputNodes = new ArrayList<DatasetNode>();
+		System.out.println("===========GETTING INPUTS=================");
 		for (WorkflowNode wn : workflow) {
-			if (wn.getIncomingLinks() == null && !wn.isParameter()) {
+			System.out.println(wn);
+			if (wn.isDataset() && wn.hasInputs() && !wn.isParameter()) {
 				inputNodes.add((DatasetNode) wn);
 			}
 		}
+		System.out.println("===========FINISH INPUTS=================");
 		return inputNodes;
 	}
 
@@ -304,7 +306,7 @@ public class WorkflowJson {
 
 		ArrayList<DatasetNode> parameterNodes = new ArrayList<DatasetNode>();
 		for (WorkflowNode wn : workflow) {
-			if (wn.getIncomingLinks() == null && wn.isParameter()) {
+			if (wn.hasInputs() && wn.isParameter()) {
 				parameterNodes.add((DatasetNode) wn);
 			}
 		}
@@ -321,7 +323,7 @@ public class WorkflowJson {
 
 		ArrayList<DatasetNode> outputNodes = new ArrayList<DatasetNode>();
 		for (WorkflowNode wn : workflow) {
-			if (wn.getOutgoingLinks() == null) {
+			if (wn.isDataset() && !wn.hasOutputs() && !wn.isParameter()) {
 				outputNodes.add((DatasetNode) wn);
 			}
 		}
@@ -415,7 +417,7 @@ public class WorkflowJson {
 	 */
 	public ArrayList<WorkflowNode> getParents(WorkflowNode node) {
 
-		if (node.getIncomingLinks() == null) {
+		if (!node.hasInputs()) {
 			return null;
 		}
 
@@ -440,7 +442,7 @@ public class WorkflowJson {
 	 */
 	public ArrayList<WorkflowNode> getChildren(WorkflowNode node) {
 
-		if (node.getOutgoingLinks() == null) {
+		if (!node.hasOutputs()) {
 			return null;
 		}
 
@@ -529,7 +531,7 @@ public class WorkflowJson {
 	 * enough then its output also needs to not be included in the path
 	 */
 	private boolean datasetParentMeetsCriticality(WorkflowNode dataset, int maxCriticalityThreshold) {
-		if (dataset.getIncomingLinks() == null) {
+		if (!dataset.hasInputs()) {
 			return true;
 		}
 		for (WorkflowNode parent : dataset.getIncomingLinks()) {
@@ -561,7 +563,13 @@ public class WorkflowJson {
 			ArrayList<WorkflowNode> tmp = recursiveGetLongestPath(o, maxCriticalityThreshold);
 
 			if (node.isDataset() && datasetParentMeetsCriticality(node, maxCriticalityThreshold)) {
-				tmp.add(0, node);
+
+				// Input and output datasets/parameters can have criticality
+				if ((!node.hasInputs() || !node.hasOutputs()) && node.getCriticality() <= maxCriticalityThreshold) {
+					tmp.add(0, node);
+				} else {
+					tmp.add(0, node);
+				}
 
 			} else if (!node.isDataset()) {
 				try {
@@ -656,6 +664,7 @@ public class WorkflowJson {
 			JsonObject currKeyJson = getValue(danaJson, currDatasetArr);
 
 			String description = readJsonValue("description", currKeyJson);
+			String criticality = readJsonValue("criticality", currKeyJson);
 			String license = readJsonValue("license", currKeyJson);
 			String author = readJsonValue("author", currKeyJson);
 			String doi = readJsonValue("doi", currKeyJson);
@@ -671,6 +680,7 @@ public class WorkflowJson {
 			}
 
 			curr.setDescription(description);
+			curr.setCriticality(criticality.length() > 0 ? criticality : "0");
 			curr.setLicense(license);
 			curr.setAuthor(author);
 			curr.setDoi(doi);
@@ -689,6 +699,7 @@ public class WorkflowJson {
 			JsonObject currKeyJson = getValue(danaJson, currParameterArr);
 
 			String description = readJsonValue("description", currKeyJson);
+			String criticality = readJsonValue("criticality", currKeyJson);
 			String type = readJsonValue("type", currKeyJson);
 
 			// Add fragments to current parameter object
@@ -699,6 +710,7 @@ public class WorkflowJson {
 			}
 
 			curr.setDescription(description);
+			curr.setCriticality(criticality.length() > 0 ? criticality : "0");
 			curr.setType(type);
 			curr.setCitation(citation);
 		}
@@ -936,7 +948,7 @@ public class WorkflowJson {
 	private void getParentsRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> parentsList) {
 		if (curr != null && !parentsList.contains(curr)) {
 			parentsList.add(0, curr);
-			if (curr.getIncomingLinks() != null) {
+			if (curr.hasInputs()) {
 				for (WorkflowNode p : curr.getIncomingLinks()) {
 					getParentsRecursivePopulate(p, parentsList);
 				}
@@ -954,7 +966,7 @@ public class WorkflowJson {
 	private void getChildrenRecursivePopulate(WorkflowNode curr, ArrayList<WorkflowNode> childList) {
 		if (curr != null && !childList.contains(curr)) {
 			childList.add(curr);
-			if (curr.getOutgoingLinks() != null) {
+			if (curr.hasOutputs()) {
 				for (WorkflowNode c : curr.getOutgoingLinks()) {
 					getChildrenRecursivePopulate(c, childList);
 				}
